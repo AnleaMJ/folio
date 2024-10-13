@@ -20,6 +20,17 @@ export class View
         {
             this.update()
         }, 0)
+
+        this.game.viewport.events.on('change', () =>
+        {
+            this.resize()
+        })
+    }
+
+    resize()
+    {
+        this.camera.aspect = this.game.viewport.width / this.game.viewport.height
+        this.camera.updateProjectionMatrix()
     }
 
     update()

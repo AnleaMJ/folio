@@ -16,6 +16,16 @@ export class Rendering
         {
             this.render()
         }, 999)
+
+        this.game.viewport.events.on('change', () =>
+        {
+            this.resize()
+        })
+    }
+
+    resize()
+    {
+        this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
     }
 
     render()
