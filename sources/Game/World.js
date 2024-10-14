@@ -9,11 +9,14 @@ export class World
 
         this.scene = new THREE.Scene()
 
-        this.dummy = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshNormalMaterial()
-        )
-        this.scene.add(this.dummy)
+        // this.dummy = new THREE.Mesh(
+        //     new THREE.BoxGeometry(1, 1, 1),
+        //     new THREE.MeshNormalMaterial()
+        // )
+        // this.scene.add(this.dummy)
+
+        const axesHelper = new THREE.AxesHelper()
+        this.scene.add(axesHelper)
 
         this.game.time.events.on('tick', () =>
         {
@@ -23,6 +26,5 @@ export class World
 
     update()
     {
-        this.dummy.rotation.y = this.game.time.elapsed
     }
 }

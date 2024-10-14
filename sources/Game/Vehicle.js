@@ -15,26 +15,51 @@ export class Vehicle
         this.controller = this.game.physics.world.createVehicleController(this.chassisBody)
 
         const wheelGeneral = {
-            axleCs: new THREE.Vector3(0, 0, -1),
-            suspensionRestLength: 0.125,
-            suspensionStiffness: 24,
-            maxSuspensionTravel: 1,
-            radius: 0.5,
+            directionCs: new THREE.Vector3(0, -1, 0), // Suspension direction
+            axleCs: new THREE.Vector3(-1, 0, 0),      // Rotation axis
+            frictionSlip: 10.5,          // 10.5
+            maxSuspensionForce: 6000,    // 6000
+            maxSuspensionTravel: 5,      // 5
+            radius: 0.5,                 // No default
+            sideFrictionStiffness: 1,    // 1
+            suspensionCompression: 0.83, // 0.83
+            suspensionRelaxation: 0.88,  // 0.88
+            suspensionRestLength: 0.125, // No default
+            suspensionStiffness: 24,     // 5.88
+            offset: new THREE.Vector3(0.65, -0.2,  0.75), // No default
+
         }
-        const wheels = [
-            { position: new THREE.Vector3( 0.65, -0.2,  0.75), ...wheelGeneral },
-            { position: new THREE.Vector3( 0.65, -0.2, -0.75), ...wheelGeneral },
-            { position: new THREE.Vector3(-0.65, -0.2,  0.75), ...wheelGeneral },
-            { position: new THREE.Vector3(-0.65, -0.2, -0.75), ...wheelGeneral },
+        const wheelsPositions = [
+            new THREE.Vector3(  wheelGeneral.offset.x, wheelGeneral.offset.y,   wheelGeneral.offset.z),
+            new THREE.Vector3(  wheelGeneral.offset.x, wheelGeneral.offset.y, - wheelGeneral.offset.z),
+            new THREE.Vector3(- wheelGeneral.offset.x, wheelGeneral.offset.y,   wheelGeneral.offset.z),
+            new THREE.Vector3(- wheelGeneral.offset.x, wheelGeneral.offset.y, - wheelGeneral.offset.z),
         ]
 
-        let i = 0
-        for(const _wheel of wheels)
+        for(let i = 0; i < 4; i++)
         {
-            this.controller.addWheel(_wheel.position, new THREE.Vector3(0, -1, 0), _wheel.axleCs, _wheel.suspensionRestLength, _wheel.radius)
-            this.controller.setWheelSuspensionStiffness(i, _wheel.suspensionStiffness)
-            this.controller.setWheelMaxSuspensionTravel(i, _wheel.maxSuspensionTravel)
-            i++
+            this.controller.addWheel(wheelsPositions[i], wheelGeneral.directionCs, wheelGeneral.axleCs, wheelGeneral.suspensionRestLength, wheelGeneral.radius)
+
+            // Don't change
+            // this.controller.setWheelAxleCs(i, wheelGeneral.axleCs)
+            // this.controller.setWheelDirectionCs(i, wheelGeneral.directionCs)
+
+            // Player controlled
+            // this.controller.setWheelBrake(i, )
+            // this.controller.setWheelEngineForce(i, )
+            // this.controller.setWheelSteering(i, )
+
+            // To tweak
+            this.controller.setWheelChassisConnectionPointCs(i, wheelsPositions[i])
+            this.controller.setWheelFrictionSlip(i, wheelGeneral.frictionSlip)
+            this.controller.setWheelMaxSuspensionForce(i, wheelGeneral.maxSuspensionForce)
+            this.controller.setWheelMaxSuspensionTravel(i, wheelGeneral.maxSuspensionTravel)
+            this.controller.setWheelRadius(i, wheelGeneral.radius)
+            this.controller.setWheelSideFrictionStiffness(i, wheelGeneral.sideFrictionStiffness)
+            this.controller.setWheelSuspensionCompression(i, wheelGeneral.suspensionCompression)
+            this.controller.setWheelSuspensionRelaxation(i, wheelGeneral.suspensionRelaxation)
+            this.controller.setWheelSuspensionRestLength(i, wheelGeneral.suspensionRestLength)
+            this.controller.setWheelSuspensionStiffness(i, wheelGeneral.suspensionStiffness)
         }
 
         this.game.time.events.on('tick', () =>
