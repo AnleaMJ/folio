@@ -16,15 +16,15 @@ export class Vehicle
         const wheelGeneral = {
             directionCs: new THREE.Vector3(0, -1, 0), // Suspension direction
             axleCs: new THREE.Vector3(-1, 0, 0),      // Rotation axis
-            frictionSlip: 10.5,          // 10.5
+            frictionSlip: 4   ,          // 10.5
             maxSuspensionForce: 6000,    // 6000
             maxSuspensionTravel: 5,      // 5
             radius: 0.5,                 // No default
-            sideFrictionStiffness: 1,    // 1
-            suspensionCompression: 0.83, // 0.83
-            suspensionRelaxation: 0.88,  // 0.88
+            sideFrictionStiffness: 0.6,   // 1
+            suspensionCompression: 2, // 0.83
+            suspensionRelaxation: 1.88,  // 0.88
             suspensionRestLength: 0.125, // No default
-            suspensionStiffness: 24,     // 5.88
+            suspensionStiffness: 30,     // 5.88
             offset: new THREE.Vector3(0.65, -0.2,  0.75), // No default
         }
         const wheelsPositions = [
@@ -47,7 +47,7 @@ export class Vehicle
             // this.controller.setWheelEngineForce(i, )
             // this.controller.setWheelSteering(i, )
 
-            // To tweak
+            // Can be tweaked
             this.controller.setWheelChassisConnectionPointCs(i, wheelsPositions[i])
             this.controller.setWheelFrictionSlip(i, wheelGeneral.frictionSlip)
             this.controller.setWheelMaxSuspensionForce(i, wheelGeneral.maxSuspensionForce)
@@ -70,9 +70,9 @@ export class Vehicle
     {
         let wheelEngineForce = 0
         if(this.game.controls.keys.up)
-            wheelEngineForce = 4
+            wheelEngineForce = 10
         if(this.game.controls.keys.down)
-            wheelEngineForce = -4
+            wheelEngineForce = -10
 
         for(let i = 0; i < 4; i++)
             this.controller.setWheelEngineForce(i, wheelEngineForce)
@@ -87,6 +87,6 @@ export class Vehicle
 
 
         for(let i = 0; i < 4; i++)
-            this.controller.setWheelBrake(i, 0.01)
+            this.controller.setWheelBrake(i, 0.04)
     }
 }
