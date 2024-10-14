@@ -70,9 +70,9 @@ export class Vehicle
     {
         let wheelEngineForce = 0
         if(this.game.controls.keys.up)
-            wheelEngineForce = 2
+            wheelEngineForce = 4
         if(this.game.controls.keys.down)
-            wheelEngineForce = -2
+            wheelEngineForce = -4
 
         for(let i = 0; i < 4; i++)
             this.controller.setWheelEngineForce(i, wheelEngineForce)
