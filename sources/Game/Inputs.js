@@ -1,21 +1,12 @@
 import { Events } from './Events.js'
 
-export class Controls
+export class Inputs
 {
-    constructor()
+    constructor(_map)
     {
         this.events = new Events()
 
-        this.map = [
-            { name: 'up', keys: [ 'ArrowUp', 'KeyW' ] },
-            { name: 'right', keys: [ 'ArrowRight', 'KeyD' ] },
-            { name: 'down', keys: [ 'ArrowDown', 'KeyS' ] },
-            { name: 'left', keys: [ 'ArrowLeft', 'KeyA' ] },
-            { name: 'jump', keys: [ 'Space' ] },
-            { name: 'boost', keys: [ 'ShiftLeft', 'ShiftRight' ] },
-            { name: 'brake', keys: [ 'KeyB' ] },
-            { name: 'reset', keys: [ 'KeyR' ] },
-        ]
+        this.map = _map
 
         this.keys = {}
 

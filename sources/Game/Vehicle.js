@@ -127,7 +127,7 @@ export class Vehicle
                 this.chassis.physical.body.applyImpulse(impulse)
 
                 let torqueY = 0
-                if(this.game.controls.keys.left)
+                if(this.game.inputs.keys.left)
                     torqueY += 2
                 else
                     torqueY -= 2
@@ -135,7 +135,7 @@ export class Vehicle
             }
         }
 
-        this.game.controls.events.on('jump', (_down) =>
+        this.game.inputs.events.on('jump', (_down) =>
         {
             if(_down)
                 this.jump.activate()
@@ -153,7 +153,7 @@ export class Vehicle
             this.chassis.physical.body.setAngvel({ x: 0, y: 0, z: 0 })
         }
 
-        this.game.controls.events.on('reset', (_down) =>
+        this.game.inputs.events.on('reset', (_down) =>
         {
             if(_down)
                 this.reset.activate()
@@ -163,24 +163,24 @@ export class Vehicle
     updatePrePhysics()
     {
         this.wheels.engineForce = 0
-        if(this.game.controls.keys.up)
+        if(this.game.inputs.keys.up)
             this.wheels.engineForce += 6
-        if(this.game.controls.keys.down)
+        if(this.game.inputs.keys.down)
             this.wheels.engineForce -= 6
 
-        if(this.game.controls.keys.boost)
+        if(this.game.inputs.keys.boost)
             this.wheels.engineForce *= 2.5
 
         this.wheels.steering = 0
-        if(this.game.controls.keys.right)
+        if(this.game.inputs.keys.right)
             this.wheels.steering -= 0.5
-        if(this.game.controls.keys.left)
+        if(this.game.inputs.keys.left)
             this.wheels.steering += 0.5
         this.controller.setWheelSteering(0, this.wheels.steering)
         this.controller.setWheelSteering(2, this.wheels.steering)
 
         let brake = 0.04
-        if(this.game.controls.keys.brake)
+        if(this.game.inputs.keys.brake)
         {
             this.wheels.engineForce *= 0.5
             brake = 0.5

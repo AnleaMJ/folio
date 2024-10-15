@@ -1,4 +1,4 @@
-import { Controls } from './Controls.js'
+import { Inputs } from './Inputs.js'
 import { Physics } from './Physics/Physics.js'
 import { PhysicsDebug } from './Physics/PhysicsDebug.js'
 import { Rendering } from './Rendering.js'
@@ -21,7 +21,16 @@ export class Game
         // Setup
         this.domElement = document.querySelector('.game')
 
-        this.controls = new Controls()
+        this.inputs = new Inputs([
+            { name: 'up', keys: [ 'ArrowUp', 'KeyW' ] },
+            { name: 'right', keys: [ 'ArrowRight', 'KeyD' ] },
+            { name: 'down', keys: [ 'ArrowDown', 'KeyS' ] },
+            { name: 'left', keys: [ 'ArrowLeft', 'KeyA' ] },
+            { name: 'jump', keys: [ 'Space' ] },
+            { name: 'boost', keys: [ 'ShiftLeft', 'ShiftRight' ] },
+            { name: 'brake', keys: [ 'KeyB' ] },
+            { name: 'reset', keys: [ 'KeyR' ] },
+        ])
         this.time = new Time()
         this.viewport = new Viewport(this.domElement)
         this.physics = new Physics()
