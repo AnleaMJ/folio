@@ -1,30 +1,18 @@
 import * as THREE from 'three'
-import { Game } from './Game.js'
-import MeshGridMaterial, { MeshGridMaterialLine } from './Materials/MeshGridMaterial.js'
-import { Terrain } from './Terrain.js'
-import { Bush } from './Bush.js'
+import { Game } from '../Game.js'
+import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
 
-export class World
+export class GridFloor
 {
     constructor()
     {
         this.game = new Game()
 
-        this.bush = new Bush()
-        this.setGround()
-        // this.setTestCube()
-
-        const axesHelper = new THREE.AxesHelper()
-        axesHelper.position.y = 2
-        this.game.scene.add(axesHelper)
-
-        this.game.time.events.on('tick', () =>
-        {
-            this.update()
-        }, 4)
+        this.setVisual()
+        this.setPhysical()
     }
 
-    setGround()
+    setVisual()
     {
         const lines = [
             // new MeshGridMaterialLine(0x444444, 0.1, 0.04),
@@ -48,17 +36,11 @@ export class World
         ground.rotation.x = - Math.PI * 0.5
         this.game.scene.add(ground)
 
-        // Physical ground
-        this.game.physics.addEntity({
-            type: 'fixed',
-            colliders: [ { shape: 'cuboid', parameters: [ 1000, 1, 1000 ], position: { x: 0, y: - 1.01, z: 0 } } ]
-        })
-
         // Debug
         if(this.game.debug.active)
         {
             const gridFolder = this.game.debug.panel.addFolder({
-                title: '🌐 Grid',
+                title: '🌐 Grid Floor',
                 expanded: false,
             })
 
@@ -78,26 +60,12 @@ export class World
             }
         }
     }
-    
-    setTestCube()
-    {
-        const visualCube = new THREE.Mesh(
-            new THREE.BoxGeometry(1, 1, 1),
-            new THREE.MeshNormalNodeMaterial()
-        )
-        this.game.scene.add(visualCube)
 
-        this.game.physics.addEntity(
-            {
-                type: 'dynamic',
-                position: { x: 0, y: 4, z: 0 },
-                colliders: [ { shape: 'cuboid', parameters: [ 0.5, 0.5, 0.5 ] } ]
-            },
-            visualCube
-        )
-    }
-
-    update()
+    setPhysical()
     {
+        this.game.physics.addEntity({
+            type: 'fixed',
+            colliders: [ { shape: 'cuboid', parameters: [ 1000, 1, 1000 ], position: { x: 0, y: - 1.01, z: 0 } } ]
+        })
     }
 }

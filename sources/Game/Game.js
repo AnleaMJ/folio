@@ -10,7 +10,7 @@ import { Time } from './Time.js'
 import { Vehicle } from './Vehicle.js'
 import { View } from './View.js'
 import { Viewport } from './Viewport.js'
-import { World } from './World.js'
+import { World } from './World/World.js'
 
 export class Game
 {

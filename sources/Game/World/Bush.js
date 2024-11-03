@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { Game } from './Game.js'
+import { Game } from '../Game.js'
 import { texture } from 'three'
 import { vec2 } from 'three'
 import { Fn } from 'three'

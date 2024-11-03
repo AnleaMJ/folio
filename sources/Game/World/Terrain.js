@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 
-import { Game } from './Game.js'
+import { Game } from '../Game.js'
 import { color } from 'three'
 import { texture } from 'three'
 import { uniform } from 'three'
