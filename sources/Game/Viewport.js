@@ -22,7 +22,7 @@ export class Viewport
 
         this.pixelRatioPure = window.devicePixelRatio
         this.pixelRatioMax = 2
-        this.pixelRatio = Math.min(this.pixelRatio, this.pixelRatioMax)
+        this.pixelRatio = Math.min(this.pixelRatioPure, this.pixelRatioMax)
     }
 
     setResize()
