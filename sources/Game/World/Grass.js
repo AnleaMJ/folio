@@ -116,6 +116,7 @@ export class Grass
                 - bladeHalfWidth,
                 0,
         ])
+
         this.material.positionNode = Fn(() =>
         {
             // Blade position
@@ -130,8 +131,14 @@ export class Grass
             const worldPosition = modelWorldMatrix.mul(position3).toVar()
             bladePosition.assign(worldPosition.xz)
 
+            // Wheel tracks
+            const wheelTracksColor = texture(
+                this.game.vehicle.wheelTracks.renderTarget.texture,
+                vec2(worldPosition.x, worldPosition.z).sub(-10).div(20)
+            )
+
             // Height
-            const height = attribute('randomness').mul(0.4).add(0.6)
+            const height = attribute('randomness').mul(0.4).add(0.6).mul(wheelTracksColor.a.oneMinus())
 
             // Shape
             const shape = vec3(

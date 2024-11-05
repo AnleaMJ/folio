@@ -7,7 +7,7 @@ export class Rendering
     {
         this.game = new Game()
 
-        this.renderer = new THREE.WebGPURenderer()
+        this.renderer = new THREE.WebGPURenderer({ forceWebGL: false })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
         this.renderer.domElement.classList.add('experience')
         this.renderer.setClearColor(0x1b191f)

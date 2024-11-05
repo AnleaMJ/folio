@@ -1,6 +1,8 @@
 import * as THREE from 'three'
 import { Game } from './Game.js'
 import { Events } from './Events.js'
+import { WheelTrack } from './WheelTrack.js'
+import { WheelTracks } from './WheelTracks.js'
 
 export class Vehicle
 {
@@ -21,6 +23,7 @@ export class Vehicle
         this.speed = 0
         this.absoluteSpeed = 0
         this.upsideDownRatio = 0
+        this.wheelTracks = new WheelTracks()
 
         if(this.game.debug.active)
         {
@@ -89,17 +92,26 @@ export class Vehicle
         // Create wheels
         for(let i = 0; i < 4; i++)
         {
+            const wheel = {}
+
             // Default wheel with random parameters
             this.controller.addWheel(new THREE.Vector3(), new THREE.Vector3(), new THREE.Vector3(), 1, 1)
 
             // Visual
-            const visual = new THREE.Mesh(
+            wheel.visual = new THREE.Mesh(
                 wheelGeometry,
                 new THREE.MeshNormalNodeMaterial({ flatShading: true })
             )
-            visual.rotation.reorder('YXZ')
-            this.chassis.visual.add(visual)
-            this.wheels.items.push({ visual, basePosition: new THREE.Vector3() })
+            wheel.visual.rotation.reorder('YXZ')
+            this.chassis.visual.add(wheel.visual)
+
+            // Track
+            wheel.track = this.wheelTracks.addTrack(new WheelTrack())
+
+            // Base position
+            wheel.basePosition = new THREE.Vector3()
+
+            this.wheels.items.push(wheel)
         }
 
         // Settings
@@ -442,8 +454,12 @@ export class Vehicle
             const suspensionY = wheel.basePosition.y - this.controller.wheelSuspensionLength(i)
             wheel.visual.position.y += (suspensionY - wheel.visual.position.y) * 25 * this.game.time.deltaScaled
 
-            if(this.controller.wheelIsInContact(i))
+            const inContact = this.controller.wheelIsInContact(i)
+            if(inContact)
                 this.wheels.inContact++
+
+            // Tracks
+            wheel.track.update(this.controller.wheelContactPoint(i), inContact)
         }
 
         // Stop
@@ -474,12 +490,11 @@ export class Vehicle
         this.game.view.target.copy(this.position)
 
         if(this.game.inputs.keys.boost && (this.game.inputs.keys.forward || this.game.inputs.keys.backward) && this.absoluteSpeed > 5)
-        {
             this.game.view.speedLines.targetStrength = 0.8
-        }
         else
-        {
             this.game.view.speedLines.targetStrength = 0
-        }
+
+        // Wheels tracks
+        this.wheelTracks.update()
     }
 }

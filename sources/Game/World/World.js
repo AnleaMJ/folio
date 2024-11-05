@@ -17,9 +17,9 @@ export class World
         this.grass = new Grass()
         // this.setTestCube()
 
-        const axesHelper = new THREE.AxesHelper()
-        axesHelper.position.y = 2
-        this.game.scene.add(axesHelper)
+        // const axesHelper = new THREE.AxesHelper()
+        // axesHelper.position.y = 2
+        // this.game.scene.add(axesHelper)
 
         this.game.time.events.on('tick', () =>
         {

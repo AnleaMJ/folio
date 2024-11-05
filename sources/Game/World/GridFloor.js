@@ -33,6 +33,7 @@ export class GridFloor
             new THREE.PlaneGeometry(1000, 1000),
             uvGridMaterial
         )
+        ground.position.y -= 0.02
         ground.rotation.x = - Math.PI * 0.5
         this.game.scene.add(ground)
 
