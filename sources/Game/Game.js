@@ -68,7 +68,7 @@ export class Game
         this.vehicle = new Vehicle()
         this.view = new View()
         this.rendering = new Rendering()
-        this.monitoring = new Monitoring()
+        // this.monitoring = new Monitoring()
     }
 }
 

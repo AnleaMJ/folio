@@ -1,6 +1,6 @@
 import * as THREE from 'three'
 import { Game } from '../Game.js'
-import { sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform } from 'three'
+import { color, sin, time, smoothstep, mix, matcapUV, float, mod, texture, transformNormalToView, uniformArray, varying, vertexIndex, rotateUV, cameraPosition, vec4, atan2, vec3, vec2, modelWorldMatrix, Fn, attribute, uniform } from 'three'
 import getWind from '../tsl/getWind.js'
 
 export class Grass
@@ -136,8 +136,10 @@ export class Grass
             const wheelsTracksHeight = groundDataColor.a.oneMinus().toVar()
 
             // Height
+            const heightVariation = texture(this.resources.noisesTexture, bladePosition.mul(0.0321)).add(0.5)
             const height = bladeHeight
                 .mul(bladeHeightRandomness.mul(attribute('heightRandomness')).add(bladeHeightRandomness.oneMinus()))
+                .mul(heightVariation.r)
                 .mul(wheelsTracksHeight)
 
             // Shape
@@ -150,13 +152,13 @@ export class Grass
             // Vertex positioning
             const vertexPosition = position3.add(shape)
 
-            // Wind
-            wind.assign(getWind([this.resources.noisesTexture, worldPosition.xz]).mul(tipness).mul(height).mul(2))
-            vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
-
             // Vertex rotation
             const angleToCamera = atan2(worldPosition.z.sub(cameraPosition.z), worldPosition.x.sub(cameraPosition.x)).add(- Math.PI * 0.5)
             vertexPosition.xz.assign(rotateUV(vertexPosition.xz, angleToCamera, worldPosition.xz))
+
+            // Wind
+            wind.assign(getWind([this.resources.noisesTexture, worldPosition.xz]).mul(tipness).mul(height).mul(2))
+            vertexPosition.addAssign(vec3(wind.x, 0, wind.y))
 
             return vertexPosition
         })()
@@ -166,13 +168,11 @@ export class Grass
         this.material.normalNode = transformNormalToView(normal)
 
         // Output
-        const colorVariationUv = varying(texture(this.resources.noisesTexture, bladePosition.mul(0.02)).smoothstep(0.4, 0.6))
+        const colorA = uniform(color('#72a51e'))
+        const colorB = uniform(color('#e0e239'))
+        const colorVariation = varying(texture(this.resources.noisesTexture, bladePosition.mul(0.02)).smoothstep(0.2, 0.8))
 
-        const inverseMatcapUV = matcapUV.sub(0.5).mul(-0.5).add(0.5).toVar()
-        const newMatcapUv = mix(matcapUV, inverseMatcapUV, colorVariationUv.r)
-
-        const matcapColor = texture(this.resources.matcapGrassOnGreen, newMatcapUv)
-        const finalColor = matcapColor.mul(tipness)
+        const finalColor = colorVariation.mix(colorA, colorB).mul(tipness)
 
         this.material.outputNode = vec4(finalColor.rgb, 1)
 
@@ -193,6 +193,10 @@ export class Grass
                 expanded: true,
             })
 
+            debugPanel.addBinding({ color: colorA.value.getHex(THREE.SRGBColorSpace) }, 'color', { color: { type: 'float' } })
+                .on('change', tweak => { colorA.value.set(tweak.value) })
+            debugPanel.addBinding({ color: colorB.value.getHex(THREE.SRGBColorSpace) }, 'color', { color: { type: 'float' } })
+                .on('change', tweak => { colorB.value.set(tweak.value) })
             debugPanel.addBinding(bladeWidth, 'value', { label: 'bladeWidth', min: 0, max: 1, step: 0.001 })
             debugPanel.addBinding(bladeHeight, 'value', { label: 'bladeHeight', min: 0, max: 2, step: 0.001 })
             debugPanel.addBinding(bladeHeightRandomness, 'value', { label: 'bladeHeightRandomness', min: 0, max: 1, step: 0.001 })
