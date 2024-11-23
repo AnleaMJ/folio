@@ -1,0 +1,97 @@
+import * as THREE from 'three'
+import { Game } from '../Game.js'
+import gsap from 'gsap'
+
+export class FragmentObject
+{
+    constructor(_position)
+    {
+        this.game = new Game()
+
+        this.caught = false
+        
+        this.group1 = new THREE.Group()
+        this.group1.position.copy(_position)
+        this.game.scene.add(this.group1)
+
+        this.group2 = this.game.resources.fragment.scene.clone(true)
+        this.group1.add(this.group2)
+
+        this.scale = 1
+        this.radiusMultiplier = 1
+        this.elapsedTime = 0
+        this.timeMultiplier = 1
+
+        this.main = null
+        this.fragments = []
+
+        for(const _child of this.group2.children)
+        {
+            if(_child.name.startsWith('main'))
+                this.main = _child
+            else
+            {
+                this.fragments.push(_child)
+                _child.position.y = (Math.random() - 0.5) * 0.5
+                _child.userData.timeOffset = Math.random() * Math.PI
+                _child.userData.timeMultiplier = (0.25 + Math.random() * 0.75) * Math.sign(Math.random() - 0.5)
+                _child.userData.radius = 0.25 + Math.random() * 0.5
+            }
+        }
+
+        this.game.materials.updateObject(this.group1)
+
+        this.game.time.events.on('tick', () =>
+        {
+            this.update()
+        }, 9)
+    }
+
+    catch()
+    {
+        if(this.caught)
+            return
+
+        this.caught = true
+
+        gsap.to(this.group1.position, { y: '+= 1', duration: 2, ease: 'power4.inOut' })
+        // gsap.to(this, { scale: 1.25, delay: 0.75, duration: 1, ease: 'power4.inOut', onComplete: () =>
+        // {
+        //     gsap.to(this, { scale: 0, duration: 0.25, ease: 'power4.in', onComplete: () =>
+        //     {
+        //         this.group2.visible = false
+        //         this.group2.visible = false
+        //     } })
+        // } })
+
+        gsap.to(this, { scale: 0, duration: 0.3, delay: 2, ease: 'power4.in', onComplete: () =>
+        {
+            this.group2.visible = false
+        } })
+
+        gsap.to(this, { radiusMultiplier: 3, delay: 0, duration: 1.5, ease: 'power4.inOut', onComplete: () =>
+        {
+            gsap.to(this, { radiusMultiplier: 0, duration: 0.5, ease: 'power4.in' })
+        } })
+    }
+
+    update()
+    {
+        if(this.caught)
+            this.timeMultiplier += this.game.time.deltaScaled * 8
+
+        this.elapsedTime += this.game.time.deltaScaled * this.timeMultiplier
+        this.group1.y = Math.sin(this.game.time.elapsedScaled * 0.5) * 0.3
+
+        this.group1.scale.setScalar(this.scale)
+        
+        this.main.rotation.x = Math.sin(this.elapsedTime) * 0.2
+        this.main.rotation.z = Math.sin(this.elapsedTime) * 0.2
+        
+        for(const _fragment of this.fragments)
+        {
+            _fragment.position.x = Math.sin((this.elapsedTime + _fragment.userData.timeOffset) * _fragment.userData.timeMultiplier) * _fragment.userData.radius * this.radiusMultiplier
+            _fragment.position.z = Math.cos((this.elapsedTime + _fragment.userData.timeOffset) * _fragment.userData.timeMultiplier) * _fragment.userData.radius * this.radiusMultiplier
+        }
+    }
+}

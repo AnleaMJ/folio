@@ -16,7 +16,7 @@ import { Monitoring } from './Monitoring.js'
 import { Lighting } from './Ligthing.js'
 import { Materials } from './Materials.js'
 import { Entities } from './Entities.js'
-import { BlackFriday } from './BlackFriday.js'
+import { BlackFriday } from './BlackFriday/BlackFriday.js'
 
 export class Game
 {
@@ -42,6 +42,7 @@ export class Game
                     { path: 'playground/playgroundVisual.glb', type: 'gltf', name: 'playgroundVisual' },
                     { path: 'playground/playgroundPhysical.glb', type: 'gltf', name: 'playgroundPhysical' },
                     { path: 'floor/keys.png', type: 'texture', name: 'floorKeysTexture' },
+                    { path: 'blackFriday/fragment.glb', type: 'gltf', name: 'fragment' },
                 ],
                 (resources) =>
                 {

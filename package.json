@@ -12,6 +12,7 @@
   "dependencies": {
     "@dimforge/rapier3d-compat": "^0.14.0",
     "camera-controls": "^2.9.0",
+    "gsap": "^3.12.5",
     "normalize-wheel": "^1.0.1",
     "stats-gl": "^3.6.0",
     "three": "github:mrdoob/three.js#dev",

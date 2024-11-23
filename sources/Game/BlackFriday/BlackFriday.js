@@ -1,5 +1,6 @@
 import * as THREE from 'three'
-import { Game } from './Game.js'
+import { Game } from '../Game.js'
+import { FragmentObject } from './FragmentObject.js'
 
 export class BlackFriday
 {
@@ -118,15 +119,15 @@ export class BlackFriday
 
         this.fragments.code = 'abc'
         this.fragments.list = [
-            { position: new THREE.Vector3(10, 1, 0), character: this.fragments.code[0] },
-            { position: new THREE.Vector3(10, 1, 5), character: this.fragments.code[1] },
-            { position: new THREE.Vector3(10, 1, 10), character: this.fragments.code[2] },
+            { position: new THREE.Vector3(7, 1, 0), character: this.fragments.code[0] },
+            { position: new THREE.Vector3(7, 1, 5), character: this.fragments.code[1] },
+            { position: new THREE.Vector3(7, 1, 10), character: this.fragments.code[2] },
         ]
-        
+
         const material = new THREE.MeshBasicNodeMaterial()
         material.color.set(20, 4, 40)
         const geometry = new THREE.IcosahedronGeometry(0.2, 1)
-        
+
         let i = 0
         for(const _fragment of this.fragments.list)
         {
@@ -134,9 +135,7 @@ export class BlackFriday
             _fragment.caught = false
             _fragment.element = this.fragments.fragmentElements[i]
 
-            _fragment.mesh = new THREE.Mesh(geometry, material)
-            _fragment.mesh.position.copy(_fragment.position)
-            this.game.scene.add(_fragment.mesh)
+            _fragment.object = new FragmentObject(_fragment.position)
 
             i++
         }
@@ -167,7 +166,7 @@ export class BlackFriday
 
         this.fragments.catch = (_fragment) =>
         {
-            _fragment.mesh.visible = false
+            _fragment.object.catch()
             _fragment.caught = true
             _fragment.element.innerHTML = /* html */`
                 <div class="character">${_fragment.character}</div>
@@ -199,7 +198,7 @@ export class BlackFriday
 
             if(this.fragments.allCaught)
             {
-                setTimeout(this.outro.show, 1000)
+                setTimeout(this.outro.show, 2500)
             }
         }
     }

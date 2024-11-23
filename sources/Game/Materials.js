@@ -75,6 +75,14 @@ export class Materials
         createEmissiveTweak(emissiveRed)
         emissiveRed.color.multiplyScalar(emissiveRed.userData.intensity / this.luminance.get(emissiveRed.color))
         this.save('emissiveRed', emissiveRed)
+    
+        // Emissive red
+        const emissivePurple = new THREE.MeshBasicNodeMaterial({ color: '#9830ff' })
+        emissivePurple.name = 'emissivePurple'
+        emissivePurple.userData.intensity = 30
+        createEmissiveTweak(emissivePurple)
+        emissivePurple.color.multiplyScalar(emissivePurple.userData.intensity / this.luminance.get(emissivePurple.color))
+        this.save('emissivePurple', emissivePurple)
     }
 
     setNodes()
