@@ -94,7 +94,7 @@ export class Floor
 
     setPhysical()
     {
-        const test = this.game.entities.add({
+        this.game.entities.add({
             type: 'fixed',
             friction: 0.25,
             colliders: [ { shape: 'cuboid', parameters: [ 1000, 1, 1000 ], position: { x: 0, y: - 1.01, z: 0 } } ]

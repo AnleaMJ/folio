@@ -51,6 +51,9 @@ export class Physics
         if(typeof _physicalDescription.linearDamping !== 'undefined')
             rigidBodyDesc.setLinearDamping(_physicalDescription.linearDamping)
 
+        if(typeof _physicalDescription.sleeping !== 'undefined')
+            rigidBodyDesc.setSleeping(_physicalDescription.sleeping)
+
         physical.body = this.world.createRigidBody(rigidBodyDesc)
 
         // Colliders
@@ -69,6 +72,9 @@ export class Physics
 
             if(_colliderDescription.quaternion)
                 colliderDescription = colliderDescription.setRotation(_colliderDescription.quaternion)
+                
+            if(typeof _colliderDescription.mass !== 'undefined')
+                colliderDescription = colliderDescription.setMass(_colliderDescription.mass)
 
             if(typeof _physicalDescription.friction !== 'undefined')
                 colliderDescription = colliderDescription.setFriction(_physicalDescription.friction)

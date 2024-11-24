@@ -102,7 +102,7 @@ export class Vehicle
                 rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 1, 0), - Math.PI * 0.4),
                 // rotation: new THREE.Quaternion().setFromAxisAngle(new THREE.Euler(0, 0, 1), - Math.PI * 0.5),
                 colliders: [
-                    { shape: 'cuboid', parameters: [ 1.5, 0.3, 0.85 ], position: { x: 0, y: - 0.07, z: 0 } },
+                    { shape: 'cuboid', parameters: [ 1.5, 0.4, 0.85 ], position: { x: 0, y: - 0.125, z: 0 } },
                     { shape: 'cuboid', parameters: [ 0.5, 0.15, 0.65 ], position: { x: 0, y: 0.4, z: 0 } },
                 ],
                 canSleep: false,

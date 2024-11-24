@@ -45,6 +45,7 @@ export class Game
                     { path: 'floor/keys.png', type: 'texture', name: 'floorKeysTexture' },
                     { path: 'blackFriday/fragment.glb', type: 'gltf', name: 'fragment' },
                     { path: 'blackFriday/fragments.glb', type: 'gltf', name: 'fragments' },
+                    { path: 'bricksWalls/bricksWalls.glb', type: 'gltf', name: 'bricksWalls' },
                 ],
                 (resources) =>
                 {

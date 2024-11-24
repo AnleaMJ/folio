@@ -8,6 +8,7 @@ import { Floor } from './Floor.js'
 import { Grass } from './Grass.js'
 import { remap } from '../utilities/maths.js'
 import { Playground } from './Playground.js'
+import { BricksWalls } from './BricksWalls.js'
 
 export class World
 {
@@ -19,6 +20,7 @@ export class World
         this.grass = new Grass()
         this.bushes = new Bushes()
         this.playground = new Playground()
+        this.bricksWalls = new BricksWalls()
         // this.setTestCube()
         // this.setAxesHelper()
         // this.setTest()
