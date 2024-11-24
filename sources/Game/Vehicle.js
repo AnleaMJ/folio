@@ -220,7 +220,7 @@ export class Vehicle
                 expanded: false,
             })
 
-            debugPanel.addBinding(this.wheels.settings, 'offset', { min: -1, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
+            debugPanel.addBinding(this.wheels.settings, 'offset', { min: -1, max: 2, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'radius', { min: 0, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'frictionSlip', { min: 0, max: 1, step: 0.01 }).on('change', this.wheels.updateSettings)
             debugPanel.addBinding(this.wheels.settings, 'maxSuspensionForce', { min: 0, max: 1000, step: 1 }).on('change', this.wheels.updateSettings)
@@ -401,9 +401,9 @@ export class Vehicle
                 // Torque
                 let torqueY = 0
                 if(this.game.inputs.keys.left)
-                    torqueY = 3 * (this.speed > - 0.1 ? 1 : - 1)
+                    torqueY = 4 * (this.speed > - 0.1 ? 1 : - 1)
                 else if(this.game.inputs.keys.right)
-                    torqueY = -3 * (this.speed > - 0.1 ? 1 : - 1)
+                    torqueY = -4 * (this.speed > - 0.1 ? 1 : - 1)
 
                 const torque = new THREE.Vector3(0, torqueY, 0)
                 torque.applyQuaternion(this.chassis.physical.body.rotation())

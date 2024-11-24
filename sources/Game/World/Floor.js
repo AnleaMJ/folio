@@ -97,6 +97,7 @@ export class Floor
         this.game.entities.add({
             type: 'fixed',
             friction: 0.25,
+            restitution: 0,
             colliders: [ { shape: 'cuboid', parameters: [ 1000, 1, 1000 ], position: { x: 0, y: - 1.01, z: 0 } } ]
         })
     }

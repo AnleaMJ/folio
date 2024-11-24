@@ -9,6 +9,18 @@ export class Physics
         this.game = new Game()
 
         this.world = new RAPIER.World({ x: 0.0, y: -9.81, z: 0.0 })
+
+        // this.world.integrationParameters.numSolverIterations = 4 // 4
+        // this.world.numAdditionalFrictionIterations = 0 // 0
+        // this.world.integrationParameters.numAdditionalFrictionIterations = 0 // 0
+        // this.world.numInternalPgsIterations = 1 // 1
+        // this.world.integrationParameters.numInternalPgsIterations = 1 // 1
+        // this.world.integrationParameters.normalizedAllowedLinearError = 0.001 // 0.001
+        // this.world.integrationParameters.minIslandSize = 128 // 128
+        // this.world.integrationParameters.maxCcdSubsteps = 1 // 1
+        // this.world.integrationParameters.normalizedPredictionDistance = 0.002 // 0.002
+        // this.world.lengthUnit = 1 // 1
+        // this.world.integrationParameters.lengthUnit = 1 // 1
         
         this.game.time.events.on('tick', () =>
         {
@@ -93,12 +105,12 @@ export class Physics
     {
         this.world.timestep = this.game.time.deltaScaled
         // this.world.timestep = 0.03
-        // this.world.timestep = Number(this.game.time.deltaScaled.toFixed(2))
-        this.world.step()
-
+        // this.world.timestep = Number(this.game.time.deltaScaled.toFixed(3))
         this.world.vehicleControllers.forEach((_vehicleController) =>
         {
-            _vehicleController.updateVehicle(this.world.timestep)
+            _vehicleController.updateVehicle(this.game.time.delta)
         })
+        
+        this.world.step()
     }
 }
