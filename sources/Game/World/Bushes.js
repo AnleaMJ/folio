@@ -11,20 +11,21 @@ export class Bushes
     {
         this.game = Game.getInstance()
 
-        this.items = this.getFromModel()
-        // this.items = this.getOne()
-        // this.items = this.getRandomClusters()
-        // this.items = this.getGrid()
+        this.setFromModel()
+        // this.setOne()
+        // this.setRandomClusters()
+        // this.setGrid()
         
         this.setGeometry()
         this.setMaterial()
         this.setInstancedMesh()
     }
 
-    getFromModel()
+    setFromModel()
     {
+        this.transformMatrices = []
+
         const towardCamera = this.game.view.spherical.offset.clone().normalize()
-        const items = []
 
         for(const _child of this.game.resources.bushes.scene.children)
         {
@@ -41,30 +42,28 @@ export class Bushes
             object.scale.setScalar(size)
             object.updateMatrix()
 
-            items.push(object.matrix)
+            this.transformMatrices.push(object.matrix)
         }
-
-        return items
     }
     
-    getOne()
+    setOne()
     {
+        this.transformMatrices = []
+
         const towardCamera = this.game.view.spherical.offset.clone().normalize()
-        const items = []
         const object = new THREE.Object3D()
         object.lookAt(towardCamera)
         object.position.z = -4
         object.updateMatrix()
 
-        items.push(object.matrix)
-
-        return items
+        this.transformMatrices.push(object.matrix)
     }
 
-    getRandomClusters()
+    setRandomClusters()
     {
+        this.transformMatrices = []
+
         const towardCamera = this.game.view.spherical.offset.clone().normalize()
-        const items = []
 
         for(let i = 0; i < 80; i++)
         {
@@ -93,17 +92,16 @@ export class Bushes
                 object.scale.setScalar(size)
                 object.updateMatrix()
 
-                items.push(object.matrix)
+                this.transformMatrices.push(object.matrix)
             }
         }
-
-        return items
     }
 
-    getGrid()
+    setGrid()
     {
+        this.transformMatrices = []
+
         const towardCamera = this.game.view.spherical.offset.clone().normalize()
-        const items = []
         const subdivisions = 100
         for(let i = 0; i < subdivisions; i++)
         {
@@ -122,11 +120,11 @@ export class Bushes
 
                 object.updateMatrix()
 
-                items.push(object.matrix)
+                this.transformMatrices.push(object.matrix)
             }
         }
 
-        return items
+        return this.transformMatrices
     }
 
     setGeometry()
@@ -195,12 +193,9 @@ export class Bushes
         const wind = getWind([this.game.resources.noisesTexture, positionLocal.xz])
         const multiplier = positionLocal.y.clamp(0, 1).mul(1)
 
-        const normalTest = vec3().toVar()
-
         this.material.positionNode = Fn( ( { object } ) =>
         {
             instance(object.count, this.instanceMatrix).append()
-            normalTest.assign(normalLocal)
 
             return positionLocal.add(vec3(wind.x, 0, wind.y).mul(multiplier))
         })()
@@ -235,7 +230,7 @@ export class Bushes
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.mesh.receiveShadow = true
         this.mesh.castShadow = true
-        this.mesh.count = this.items.length
+        this.mesh.count = this.transformMatrices.length
         this.mesh.frustumCulled = false
         this.game.scene.add(this.mesh)
 
@@ -243,7 +238,7 @@ export class Bushes
         this.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
         
         let i = 0
-        for(const _item of this.items)
+        for(const _item of this.transformMatrices)
         {
             _item.toArray(this.instanceMatrix.array, i * 16)
             i++

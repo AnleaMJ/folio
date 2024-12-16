@@ -21,15 +21,6 @@ export class Fog
         {
             this.update()
         }, 9)
-
-        // // Debug
-        // if(this.game.debug.active)
-        // {
-        //     const debugPanel = this.game.debug.panel.addFolder({
-        //         title: '☁️ Fog',
-        //         expanded: true,
-        //     })
-        // }
     }
 
     update()

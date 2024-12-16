@@ -15,7 +15,7 @@ export class Cycles
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '♻️ Cicles',
-                expanded: true,
+                expanded: false,
             })
             this.debugsToRefresh = []
         }

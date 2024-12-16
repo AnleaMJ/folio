@@ -1,6 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { Bushes } from './Bushes.js'
+import { Flowers } from './Flowers.js'
 import { Floor } from './Floor.js'
 import { Grass } from './Grass.js'
 import { Playground } from './Playground.js'
@@ -16,6 +17,7 @@ export class World
         this.floor = new Floor()
         this.grass = new Grass()
         this.bushes = new Bushes()
+        this.flowers = new Flowers()
         this.playground = new Playground()
         this.bricksWalls = new BricksWalls()
         // this.setTestCube()
@@ -91,7 +93,7 @@ export class World
     setAxesHelper()
     {
         const axesHelper = new THREE.AxesHelper()
-        axesHelper.position.y = 1.5
+        axesHelper.position.y = 3
         this.game.scene.add(axesHelper)
     }
 }

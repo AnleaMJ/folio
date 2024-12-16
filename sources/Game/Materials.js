@@ -39,7 +39,7 @@ export class Materials
     setPremades()
     {
         // Create materials functions
-        const createEmissiveMaterial = (_name = 'material', _color = '#ffffff', _intensity = '100') =>
+        const createEmissiveMaterial = (_name = 'material', _color = '#ffffff', _intensity = 3) =>
         {
             const threeColor = new THREE.Color(_color)
 
@@ -106,13 +106,13 @@ export class Materials
         this.save('pureWhite', pureWhite)
     
         // Emissive warn white
-        createEmissiveMaterial('emissiveWarnWhite', '#ff8641', 100)
+        createEmissiveMaterial('emissiveWarnWhite', '#ff8641', 3)
     
         // // Emissive red
-        createEmissiveMaterial('emissiveRed', '#ff3131', 100)
+        createEmissiveMaterial('emissiveRed', '#ff3131', 3)
     
         // // Emissive red
-        createEmissiveMaterial('emissivePurple', '#9830ff', 100)
+        createEmissiveMaterial('emissivePurple', '#9830ff', 3)
     }
 
     setNodes()

@@ -59,8 +59,8 @@ export class Rendering
         const scenePassColor = scenePass.getTextureNode('output')
 
         const bloomPass = bloom(scenePassColor)
-        bloomPass.threshold.value = 0
-        bloomPass.strength.value = 0.01
+        bloomPass.threshold.value = 1
+        bloomPass.strength.value = 0.25
 
         this.postProcessing.outputNode = scenePassColor.add(bloomPass)
 

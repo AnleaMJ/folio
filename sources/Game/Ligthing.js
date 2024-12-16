@@ -18,7 +18,7 @@ export class Lighting
         this.intensityUniform = uniform(1)
         this.count = 1
         this.lights = []
-        this.mapSizeMin = 512
+        this.mapSizeMin = 1024
         this.shadowAmplitude = 25
         this.near = 1
         this.depth = 100

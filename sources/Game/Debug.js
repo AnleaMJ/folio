@@ -16,7 +16,7 @@ export class Debug
 
     addThreeColorBinding(panel, object, label)
     {
-        panel.addBinding({ color: object.getHex(THREE.SRGBColorSpace) }, 'color', { label: label, view: 'color' })
+        return panel.addBinding({ color: object.getHex(THREE.SRGBColorSpace) }, 'color', { label: label, view: 'color' })
                     .on('change', tweak => { object.set(tweak.value) })
     }
 }
