@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import MeshGridMaterial, { MeshGridMaterialLine } from '../Materials/MeshGridMaterial.js'
-import { color, mix, output, positionGeometry, positionLocal, remap, remapClamp, smoothstep, texture, uniform, uv, vec3, vec4 } from 'three/tsl'
+import { color, Fn, mix, output, positionGeometry, positionLocal, positionWorld, remap, remapClamp, sin, smoothstep, step, texture, time, uniform, uv, vec3, vec4 } from 'three/tsl'
 
 export class Terrain
 {
@@ -16,6 +16,7 @@ export class Terrain
         // this.setKeys()
         // this.setPhysicalBox()
         this.setPhysicalHeightfield()
+        this.setWaterSurface()
 
         this.game.time.events.on('tick', () =>
         {
@@ -30,37 +31,18 @@ export class Terrain
         const terrainData = this.game.materials.terrainDataNode(uv())
         const terrainDataGrass = terrainData.g.smoothstep(0.4, 0.6)
         const baseColor = this.game.materials.terrainColorNode(terrainData)
-        // const baseColor = vec3(uv(), 1)
 
         const totalShadow = this.game.materials.getTotalShadow(material).mul(terrainDataGrass.oneMinus())
 
-        material.outputNode = this.game.materials.lightOutputNode(baseColor.rgb, totalShadow)
+        material.outputNode = this.game.materials.lightOutputNodeBuilder(baseColor.rgb, totalShadow, false, false)
 
         this.ground = new THREE.Mesh(this.geometry, material)
         this.ground.receiveShadow = true
         this.game.scene.add(this.ground)
-
-        // // Debug
-        // if(this.game.debug.active)
-        // {
-        //     const debugPanel = this.game.debug.panel.addFolder({
-        //         title: '🪴 Ground',
-        //         expanded: true,
-        //     })
-
-        //     this.game.debug.addThreeColorBinding(debugPanel, grassColorUniform.value, 'grassColor')
-        //     this.game.debug.addThreeColorBinding(debugPanel, dirtColorUniform.value, 'dirtColorUniform')
-        //     this.game.debug.addThreeColorBinding(debugPanel, waterSurfaceColorUniform.value, 'waterSurfaceColorUniform')
-        //     this.game.debug.addThreeColorBinding(debugPanel, waterDepthColorUniform.value, 'waterDepthColorUniform')
-        // }
     }
 
     setKeys()
     {
-        // Texture
-        // this.game.resources.floorKeysTexture.magFilter = THREE.NearestFilter
-        // this.game.resources.floorKeysTexture.minFilter = THREE.NearestFilter
-
         // Geometry
         const geometry = new THREE.PlaneGeometry(4, 1)
 
@@ -177,14 +159,47 @@ export class Terrain
         })
     }
 
+    setWaterSurface()
+    {
+
+        const geometry = new THREE.PlaneGeometry(80, 80, 1, 1)
+        geometry.rotateX(- Math.PI * 0.5)
+        const material = new THREE.MeshLambertNodeMaterial({ color: '#ffffff', wireframe: false })
+
+        const totalShadow = this.game.materials.getTotalShadow(material)
+
+        material.outputNode = Fn(() =>
+        {
+            const terrainUv = this.game.materials.terrainUvNode(positionWorld.xz)
+            const terrainData = this.game.materials.terrainDataNode(terrainUv)
+            
+            const baseRipple = terrainData.b.add(time.mul(0.01)).mul(10).toVar()
+            const rippleId = baseRipple.floor()
+            const noise = texture(this.game.resources.noisesTexture, positionWorld.xz.add(rippleId.div(0.345)).mul(0.1)).r
+            const ripple = baseRipple.mod(1).sub(terrainData.b.oneMinus()).add(noise)
+
+            ripple.greaterThan(-0.2).discard()
+            
+            return this.game.materials.lightOutputNodeBuilder(vec3(1), totalShadow, false, false)
+        })()
+
+
+        // const totalShadow = this.game.materials.getTotalShadow(material)
+
+        // material.outputNode = this.game.materials.lightOutputNodeBuilder(vec3(1), totalShadow)
+
+        this.waterSurface = new THREE.Mesh(geometry, material)
+        this.waterSurface.position.y = - 0.3
+        // this.waterSurface.position.y = 3
+        this.waterSurface.receiveShadow = true
+        this.game.scene.add(this.waterSurface)
+    }
+
     update()
     {
-        // // TODO: Mutualise formula as for grass
-        // const offset = new THREE.Vector3(this.game.view.spherical.offset.x, 0, this.game.view.spherical.offset.z).setLength(80 / 2).negate()
-        // this.ground.position.set(
-        //     this.game.view.position.x,
-        //     0,
-        //     this.game.view.position.z
-        // ).add(offset)
+        // TODO: Mutualise formula as for grass
+        const offset = new THREE.Vector3(this.game.view.spherical.offset.x, 0, this.game.view.spherical.offset.z).setLength(80 / 2).negate()
+        this.waterSurface.position.x = this.game.view.position.x + offset.x
+        this.waterSurface.position.z = this.game.view.position.z + offset.z
     }
 }

@@ -43,7 +43,7 @@ export class Cycles
         this.day = {}
         this.day.progress = 0
         this.day.speed = 0.01
-        this.day.auto = false
+        this.day.auto = true
 
         const presets = {
             day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColor: new THREE.Color('#b4fbff'), fogNear: 6, fogFar: 45 },

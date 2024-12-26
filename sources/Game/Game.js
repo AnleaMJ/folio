@@ -51,6 +51,11 @@ export class Game
                     { path: 'bricksWalls/bricksWalls.glb', type: 'gltf', name: 'bricksWalls' },
                     { path: 'terrain/terrain.png', type: 'texture', name: 'terrainTexture' },
                     { path: 'terrain/terrain.glb', type: 'gltf', name: 'terrainModel' },
+                    
+                    { path: 'christmas/christmasTreeVisual.glb', type: 'gltf', name: 'christmasTreeVisualModel' },
+                    { path: 'christmas/christmasTreePhysical.glb', type: 'gltf', name: 'christmasTreePhysicalModel' },
+                    { path: 'christmas/christmasGiftVisual.glb', type: 'gltf', name: 'christmasGiftVisualModel' },
+                    { path: 'christmas/christmasGiftInstances.glb', type: 'gltf', name: 'christmasGiftInstancesModel' },
                 ],
                 (resources) =>
                 {

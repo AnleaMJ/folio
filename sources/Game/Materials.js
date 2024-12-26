@@ -81,7 +81,7 @@ export class Materials
             const colorA = uniform(threeColorA)
             const colorB = uniform(threeColorB)
             const baseColor = mix(colorA, colorB, uv().y)
-            material.outputNode = this.lightOutputNode(baseColor, this.getTotalShadow(material))
+            material.outputNode = this.lightOutputNodeBuilder(baseColor, this.getTotalShadow(material))
             
             this.save(_name, material)
 
@@ -102,7 +102,7 @@ export class Materials
         // Pure white
         const pureWhite = new THREE.MeshLambertNodeMaterial()
         pureWhite.shadowSide = THREE.BackSide
-        pureWhite.outputNode = this.lightOutputNode(color('#ffffff'), this.getTotalShadow(pureWhite))
+        pureWhite.outputNode = this.lightOutputNodeBuilder(color('#ffffff'), this.getTotalShadow(pureWhite))
         this.save('pureWhite', pureWhite)
     
         // Emissive warn white
@@ -152,64 +152,82 @@ export class Materials
 
 
         // Light output
-        this.lightOutputNode = Fn(([inputColor, totalShadows]) =>
+        this.lightOutputNodeBuilder = function(inputColor, totalShadows, withBounce = true, withWater = true)
         {
-            const baseColor = inputColor.toVar()
+            return Fn(([inputColor, totalShadows]) =>
+            {
+                const baseColor = inputColor.toVar()
 
-            const terrainData = this.game.materials.terrainDataNode(positionWorld.xz.div(256).add(0.5))
+                if(withBounce)
+                {
+                    const terrainUv = this.game.materials.terrainUvNode(positionWorld.xz)
+                    const terrainData = this.terrainDataNode(terrainUv)
 
-            // Bounce color
-            const bounceOrientation = normalWorld.dot(vec3(0, - 1, 0)).smoothstep(this.lightBounceEdgeLow, this.lightBounceEdgeHigh)
-            const bounceDistance = this.lightBounceDistance.sub(positionWorld.y).div(this.lightBounceDistance).max(0).pow(2)
-            const bounceColor = this.terrainColorNode(terrainData)
-            baseColor.assign(mix(baseColor, bounceColor, bounceOrientation.mul(bounceDistance).mul(this.lightBounceMultiplier)))
+                    // Bounce color
+                    const bounceOrientation = normalWorld.dot(vec3(0, - 1, 0)).smoothstep(this.lightBounceEdgeLow, this.lightBounceEdgeHigh)
+                    const bounceDistance = this.lightBounceDistance.sub(positionWorld.y).div(this.lightBounceDistance).max(0).pow(2)
+                    // const bounceWater = positionWorld.y.step(-0.3).mul(0.9).add(1)
+                    const bounceColor = this.terrainColorNode(terrainData)
+                    baseColor.assign(mix(baseColor, bounceColor, bounceOrientation.mul(bounceDistance).mul(this.lightBounceMultiplier)))
+                }
 
-            // Light
-            const lightenColor = baseColor.mul(this.game.lighting.colorUniform.mul(this.game.lighting.intensityUniform))
+                // Water
+                if(withWater)
+                {
+                    const waterMix = positionWorld.y.remapClamp(- 0.3, -0.8, 1, 0).mul(positionWorld.y.step(-0.3)).pow(3).mul(1)
+                    baseColor.assign(mix(baseColor, color('#ffffff'), waterMix))
+                }
 
-            // Core shadow
-            const coreShadowMix = normalWorld.dot(this.game.lighting.directionUniform).smoothstep(this.coreShadowEdgeHigh, this.coreShadowEdgeLow)
-            
-            // Cast shadow
-            const castShadowMix = totalShadows.oneMinus()
+                // Light
+                const lightenColor = baseColor.mul(this.game.lighting.colorUniform.mul(this.game.lighting.intensityUniform))
 
-            // Combined shadows
-            const combinedShadowMix = max(coreShadowMix, castShadowMix).clamp(0, 1)
-            
-            const shadowColor = baseColor.rgb.mul(this.shadowColor).rgb
-            const shadedColor = mix(lightenColor, shadowColor, combinedShadowMix)
-            
-            // Fog
-            const foggedColor = this.game.fog.fogStrength.mix(shadedColor, this.game.fog.fogColor)
+                // Core shadow
+                const coreShadowMix = normalWorld.dot(this.game.lighting.directionUniform).smoothstep(this.coreShadowEdgeHigh, this.coreShadowEdgeLow)
+                
+                // Cast shadow
+                const castShadowMix = totalShadows.oneMinus()
 
-            return vec4(foggedColor.rgb, 1)
-        })
+                // Combined shadows
+                const combinedShadowMix = max(coreShadowMix, castShadowMix).clamp(0, 1)
+                
+                const shadowColor = baseColor.rgb.mul(this.shadowColor).rgb
+                const shadedColor = mix(lightenColor, shadowColor, combinedShadowMix)
+                
+                // Fog
+                const foggedColor = this.game.fog.fogStrength.mix(shadedColor, this.game.fog.fogColor)
+
+                return vec4(foggedColor.rgb, 1)
+            })([inputColor, totalShadows])
+        }
 
         // Terrain color
         this.grassColorUniform = uniform(color('#9eaf33'))
         this.dirtColorUniform = uniform(color('#ffb869'))
-        this.waterSurfaceColorUniform = uniform(color('#00ffea'))
-        this.waterDepthColorUniform = uniform(color('#1800b2'))
+        this.waterSurfaceColorUniform = uniform(color('#5dc278'))
+        this.waterDepthColorUniform = uniform(color('#1b3e52'))
+
+        this.terrainUvNode = Fn(([coordinate]) =>
+        {
+            const terrainUv = coordinate.div(256).add(0.5).toVar()
+            return terrainUv
+        })
 
         this.terrainDataNode = Fn(([coordinate]) =>
         {
-            return texture(this.game.resources.terrainTexture, coordinate).rgb
+            return texture(this.game.resources.terrainTexture, coordinate)
         })
         
         this.terrainColorNode = Fn(([terrainData]) =>
         {
-            /**
-            * Color
-            */
-            // Dirt color
-            let baseColor = color(this.dirtColorUniform)
+            // Dirt
+            const baseColor = color(this.dirtColorUniform).toVar()
 
             // Grass
-            baseColor = mix(baseColor, this.grassColorUniform, terrainData.g)
+            baseColor.assign(mix(baseColor, this.grassColorUniform, terrainData.g))
 
             // Water
-            baseColor = mix(baseColor, this.waterSurfaceColorUniform, smoothstep(terrainData.b, 0, 0.1))
-            baseColor = mix(baseColor, this.waterDepthColorUniform, smoothstep(0.1, 1, terrainData.b))
+            baseColor.assign(mix(baseColor, this.waterSurfaceColorUniform, smoothstep(0, 0.3, terrainData.b)))
+            baseColor.assign(mix(baseColor, this.waterDepthColorUniform, smoothstep(0.3, 1, terrainData.b)))
 
             return baseColor.rgb
         })
@@ -338,7 +356,7 @@ export class Materials
         {
             // Shadow
             material.shadowSide = THREE.BackSide
-            material.outputNode = this.lightOutputNode(baseMaterial.color, this.getTotalShadow(material))
+            material.outputNode = this.lightOutputNodeBuilder(baseMaterial.color, this.getTotalShadow(material))
         }
 
         return material

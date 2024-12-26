@@ -166,7 +166,7 @@ export class Flowers
                 this.colors.uniform.element(colorIndex.mul(3).add(2))
             ).add(float(instanceIndex).mod(5).div(6))
 
-            const lightOutputColor = this.game.materials.lightOutputNode(baseColor, totalShadows)
+            const lightOutputColor = this.game.materials.lightOutputNodeBuilder(baseColor, totalShadows, true, false)
 
             const emissiveColor = baseColor.div(luminance(baseColor)).mul(texture(this.game.resources.bushesLeaves, uv()).r.pow(2)).mul(10)
             return mix(lightOutputColor, emissiveColor, this.colors.emissiveIntensity)

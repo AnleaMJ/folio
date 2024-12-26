@@ -210,7 +210,7 @@ export class Bushes
         // Output
         const baseColor = uniform(color('#9eaf33').rgb)
 
-        this.material.outputNode = this.game.materials.lightOutputNode(baseColor, totalShadows)
+        this.material.outputNode = this.game.materials.lightOutputNodeBuilder(baseColor, totalShadows)
 
         // Bushes
         if(this.game.debug.active)
