@@ -15,7 +15,7 @@ export default Fn(([noisesTexture, position]) =>
     const noiseUv2 = remapedPosition.xy.mul(0.1).add(direction.mul(time.mul(0.02))).xy
     const noise2 = texture(noisesTexture, noiseUv2).r.sub(0.5)
 
-    const intensity = noise2.add(noise1)
+    const intensity = noise2.add(noise1).mul(0.5)
     
     return vec2(direction.mul(intensity))
 })

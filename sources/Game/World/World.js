@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { Bushes } from './Bushes.js'
+import { Foliage } from './Foliage.js'
 import { Flowers } from './Flowers.js'
 import { Terrain } from './Terrain.js'
 import { Grass } from './Grass.js'
@@ -9,6 +9,8 @@ import { Bricks } from './Bricks.js'
 import { Fn, instance, positionLocal } from 'three/tsl'
 import { Christmas } from './Christmas.js'
 import { InstancedGroup } from '../InstancedGroup.js'
+import { Trees } from './Trees.js'
+import Bushes from './Bushes.js'
 
 export class World
 {
@@ -19,6 +21,7 @@ export class World
         this.terrain = new Terrain()
         this.grass = new Grass()
         this.bushes = new Bushes()
+        this.trees = new Trees()
         this.flowers = new Flowers()
         // this.playground = new Playground()
         this.bricks = new Bricks()
