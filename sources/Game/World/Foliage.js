@@ -78,7 +78,7 @@ export class Foliage
     setMaterial()
     {
         this.material = new THREE.MeshLambertNodeMaterial({
-            alphaMap: this.game.resources.bushesLeaves,
+            alphaMap: this.game.resources.foliateTexture,
             alphaTest: 0.01
         })
     

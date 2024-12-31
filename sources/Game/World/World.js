@@ -43,7 +43,7 @@ export class World
         this.game.scene.add(floor)
 
         const material = new THREE.MeshLambertNodeMaterial({
-            alphaMap: this.game.resources.bushesLeaves,
+            alphaMap: this.game.resources.foliateTexture,
             transparent: true
         })
         material.positionNode = Fn( ( { object } ) =>
@@ -69,7 +69,7 @@ export class World
         const dummy = new THREE.Mesh(
             geometry,
             new THREE.MeshLambertNodeMaterial({
-                alphaMap: this.game.resources.bushesLeaves,
+                alphaMap: this.game.resources.foliateTexture,
                 transparent: true
             }),
         )

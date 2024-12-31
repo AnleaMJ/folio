@@ -42,7 +42,7 @@ export class Game
             this.resourcesLoader = new ResourcesLoader()
             this.resourcesLoader.load(
                 [
-                    { path: 'bushes/bushesLeaves.png', type: 'texture', name: 'bushesLeaves' },
+                    { path: 'foliage/foliage.png', type: 'texture', name: 'foliateTexture' },
                     { path: 'bushes/bushes.glb', type: 'gltf', name: 'bushes' },
                     { path: 'vehicle/default.glb', type: 'gltf', name: 'vehicle' },
                     { path: 'playground/playgroundVisual.glb', type: 'gltf', name: 'playgroundVisual' },

@@ -76,7 +76,7 @@ export class Trees
             }
         }
 
-        this.leavesColor = new THREE.Color('#ff9929')
+        this.leavesColor = new THREE.Color('#ff782b')
         this.leaves = new Foliage(references, this.leavesColor)
 
         // Debug

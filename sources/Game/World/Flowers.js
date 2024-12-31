@@ -133,7 +133,7 @@ export class Flowers
     {
         // this.material = new THREE.MeshLambertNodeMaterial({ wireframe: true })
         this.material = new THREE.MeshLambertNodeMaterial({
-            alphaMap: this.game.resources.bushesLeaves,
+            alphaMap: this.game.resources.foliateTexture,
             alphaTest: 0.1
         })
     
@@ -158,7 +158,7 @@ export class Flowers
         // Output
         this.material.outputNode = Fn(() =>
         {
-            const bushLeavesColor = texture(this.game.resources.bushesLeaves, uv())
+            const foliageColor = texture(this.game.resources.foliateTexture, uv())
 
             const colorIndex = instancedBufferAttribute(this.instanceColorIndex, 'float', 1)
             const baseColor = vec3(
@@ -169,11 +169,11 @@ export class Flowers
 
             const baseLuminance = luminance(baseColor)
 
-            baseColor.addAssign(bushLeavesColor.r.sub(0.5).mul(0.75).mul(baseLuminance))
+            baseColor.addAssign(foliageColor.r.sub(0.5).mul(0.75).mul(baseLuminance))
 
             const lightOutputColor = this.game.materials.lightOutputNodeBuilder(baseColor, totalShadows, true, false)
 
-            const emissiveColor = baseColor.div(baseLuminance).mul(bushLeavesColor.r.pow(2)).mul(10)
+            const emissiveColor = baseColor.div(baseLuminance).mul(foliageColor.r.pow(2)).mul(10)
             return mix(lightOutputColor, emissiveColor, this.colors.emissiveIntensity)
         })()
     }

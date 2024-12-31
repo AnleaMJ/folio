@@ -43,7 +43,7 @@ export class Cycles
             dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2,   shadowColor: new THREE.Color('#db4700'), fogColor: new THREE.Color('#ffa385'), fogNear: 6, fogFar: 45 },
         }
 
-        this.day.values = this.createInterpolated(
+        this.day.values = this.createKeyframes(
             [
                 { properties: presets.day, stop: 0.0 }, // day
                 { properties: presets.day, stop: 0.15 }, // day
@@ -91,7 +91,7 @@ export class Cycles
         }
     }
 
-    createInterpolated(steps, cycles, interpolation = 'linear')
+    createKeyframes(steps, cycles, interpolation = 'linear')
     {
         const interpolated = {}
         interpolated.steps = steps
