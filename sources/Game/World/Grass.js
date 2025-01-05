@@ -149,24 +149,10 @@ export class Grass
             return vertexPosition
         })()
 
-        // // Normal
-        // const normal = vec3(wind.y.mul(-10), 1, wind.y.mul(-10)).normalize()
-        // this.material.normalNode = transformNormalToView(normal)
-        // this.material.normalNode = transformNormalToView(mix(vec3(0, 1, 0), vec3(1, 1, 1), terrainDataGrass).normalize())
-
         // Shadow
         const totalShadows = this.game.materials.getTotalShadow(this.material)
 
-        // Output
-        // baseColor = baseColor.mix(colorA, colorB).rgb
-        //     .mul(tipness)
-        //     .varying()
-
         let baseColor = this.game.materials.terrainColorNode(terrainData)
-
-        // // Tipness
-        // baseColor = mix(baseColor, color('#9eaf33'), tipness).rgb
-        //     .varying()
 
         const normal = mix(vec3(0, 1, 0), vec3(1, 1, 1), terrainDataGrass.smoothstep(0.8, 1)).normalize()
         
@@ -193,8 +179,6 @@ export class Grass
                 expanded: false,
             })
 
-            // this.game.debug.addThreeColorBinding(debugPanel, colorA.value, 'colorA')
-            // this.game.debug.addThreeColorBinding(debugPanel, colorB.value, 'colorB')
             debugPanel.addBinding(bladeWidth, 'value', { label: 'bladeWidth', min: 0, max: 1, step: 0.001 })
             debugPanel.addBinding(bladeHeight, 'value', { label: 'bladeHeight', min: 0, max: 2, step: 0.001 })
             debugPanel.addBinding(bladeHeightRandomness, 'value', { label: 'bladeHeightRandomness', min: 0, max: 1, step: 0.001 })
