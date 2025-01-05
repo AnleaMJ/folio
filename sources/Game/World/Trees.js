@@ -47,6 +47,7 @@ export class Trees
     {
         this.game.materials.updateObject(this.modelParts.body)
         this.bodies = new THREE.InstancedMesh(this.modelParts.body.geometry, this.modelParts.body.material, this.baseReferences.length)
+        this.bodies.instanceMatrix.setUsage(THREE.StaticDrawUsage)
         this.bodies.castShadow = true
         this.bodies.receiveShadow = true
         

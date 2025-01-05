@@ -140,8 +140,8 @@ export class Foliage
         this.game.scene.add(this.mesh)
 
         this.instanceMatrix = new THREE.InstancedBufferAttribute(new Float32Array(this.mesh.count * 16), 16)
-        this.instanceMatrix.setUsage(THREE.DynamicDrawUsage)
-        
+        this.instanceMatrix.setUsage(THREE.StaticDrawUsage)
+
         let i = 0
         for(const _item of this.transformMatrices)
         {

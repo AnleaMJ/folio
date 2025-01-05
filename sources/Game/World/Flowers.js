@@ -161,6 +161,7 @@ export class Flowers
             const foliageColor = texture(this.game.resources.foliateTexture, uv())
 
             const colorIndex = instancedBufferAttribute(this.instanceColorIndex, 'float', 1)
+            colorIndex.setUsage(THREE.StaticDrawUsage)
             const baseColor = vec3(
                 this.colors.uniform.element(colorIndex.mul(3).add(0)),
                 this.colors.uniform.element(colorIndex.mul(3).add(1)),
