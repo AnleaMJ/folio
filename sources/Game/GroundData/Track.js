@@ -1,6 +1,6 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { screenUV, mul, cos, sin, sign, atan2, varying, float, uv, texture, Fn, vec2, vec3, vec4, positionGeometry } from 'three/tsl'
+import { screenUV, mul, cos, sin, sign, atan, varying, float, uv, texture, Fn, vec2, vec3, vec4, positionGeometry } from 'three/tsl'
 
 export class Track
 {
@@ -59,7 +59,7 @@ export class Track
             trackData.assign(texture(this.dataTexture, trackUV))
             const trackDataPrev = texture(this.dataTexture, trackUVPrev)
 
-            const angle = atan2(
+            const angle = atan(
                 trackData.z.sub(trackDataPrev.z),
                 trackData.x.sub(trackDataPrev.x),
             )
