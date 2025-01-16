@@ -12,6 +12,15 @@ export class Leaves
 
         this.count = 1024 * 2 * 2 * 2
 
+        // Debug
+        if(this.game.debug.active)
+        {
+            this.debugPanel = this.game.debug.panel.addFolder({
+                title: '🍃 Leaves',
+                expanded: true,
+            })
+        }
+
         this.setGeometry()
         this.setMaterial()
         this.setMesh()
@@ -39,11 +48,6 @@ export class Leaves
     setMaterial()
     {
         this.material = new THREE.MeshLambertNodeMaterial({ side: THREE.DoubleSide })
-
-        this.center = uniform(vec2())
-        this.vehicleVelocity = uniform(vec3())
-        this.vehiclePosition = uniform(vec3())
-        this.scale = uniform(0.25)
 
         // Buffers
         this.positionBuffer = instancedArray(this.count, 'vec3')
@@ -93,6 +97,22 @@ export class Leaves
         // Output color
         this.material.outputNode = this.game.lighting.lightOutputNodeBuilder(colorBuffer, this.game.lighting.addTotalShadowToMaterial(this.material))
 
+        // Uniforms
+        this.center = uniform(vec2())
+        this.vehicleVelocity = uniform(vec3())
+        this.vehiclePosition = uniform(vec3())
+        this.scale = uniform(0.25)
+        this.rotationFrequency = uniform(3)
+        this.rotationElevationMultiplier = uniform(1)
+        this.pushOutMultiplier = uniform(0.1)
+        this.pushMultiplier = uniform(0.5)
+        this.windFrequency = uniform(0.005)
+        this.windMultiplier = uniform(0.002)
+        this.upwardMultiplier = uniform(0.2)
+        this.defaultDamping = uniform(0.02)
+        this.waterDamping = uniform(0.005)
+        this.gravity = uniform(0.01)
+
         // Position
         this.material.positionNode = Fn(() =>
         {
@@ -104,10 +124,10 @@ export class Leaves
 
             const newPosition = positionGeometry.mul(scaleBuffer).mul(this.scale).toVar()
 
-            const rotationMultiplier = max(leavePosition.y, 0)
+            const rotationMultiplier = max(leavePosition.y.mul(this.rotationElevationMultiplier), 0)
             
-            const rotationZ = sin(leavePosition.x.mul(8)).mul(rotationMultiplier)
-            const rotationX = sin(leavePosition.z.mul(8)).mul(rotationMultiplier)
+            const rotationZ = sin(leavePosition.x.mul(this.rotationFrequency)).mul(rotationMultiplier)
+            const rotationX = sin(leavePosition.z.mul(this.rotationFrequency)).mul(rotationMultiplier)
             const rotationY = baseRotationBuffer
 
             newPosition.xy.assign(rotateUV(newPosition.xy, rotationZ, vec2(0)))
@@ -130,9 +150,6 @@ export class Leaves
                 0,
                 hash(instanceIndex.add(1)).sub(0.5).mul(this.size)
             ))
-            
-            // // Velocity
-            // const velocity = this.velocityBuffer.element(instanceIndex)
         })()
         const initCompute = init.compute(this.count)
 
@@ -149,38 +166,39 @@ export class Leaves
             const terrainUv = this.game.terrainData.worldPositionToUvNode(position.xz)
             const terrainData = this.game.terrainData.terrainDataNode(terrainUv)
             
-            // Vehicle
-            const vehicleDelta = position.sub(this.vehiclePosition)
+            // Push from vehicle
+            const vehicleDelta = position.sub(this.vehiclePosition).toVar()
+
+            const pushOut = vec3(vehicleDelta.x, 0, vehicleDelta.z).normalize().mul(this.pushOutMultiplier)
+
+            const pushVelocity = vec3(this.vehicleVelocity.x, 0, this.vehicleVelocity.z).mul(this.pushMultiplier)
+
             const distanceToVehicle = vehicleDelta.length()
             const distanceMultiplier = distanceToVehicle.remapClamp(0.5, 2, 1, 0)
             const speedMultiplier = this.vehicleVelocity.length()
-            const direction = vehicleDelta.normalize().mul(0.1)
-            const velocityFromVehicle = vec3(
-                this.vehicleVelocity.x.add(direction.x),
-                0,
-                this.vehicleVelocity.z.add(direction.z)
-            ).mul(speedMultiplier).mul(distanceMultiplier).mul(0.5)
+            const finalPush = pushVelocity.add(pushOut).mul(speedMultiplier).mul(distanceMultiplier)
 
-            velocity.addAssign(velocityFromVehicle)
+            velocity.addAssign(finalPush)
 
             // Wind
-            const noiseUv = position.xz.mul(0.005).add(this.game.wind.direction.mul(this.game.wind.localTime)).xy
+            const noiseUv = position.xz.mul(this.windFrequency).add(this.game.wind.direction.mul(this.game.wind.localTime)).xy
             const noise = smoothstep(0.4, 1, texture(this.game.noises.texture, noiseUv).r)
 
-            const windStrength = this.game.wind.strength.sub(float(weight)).max(0).mul(noise)
-            velocity.x.addAssign(this.game.wind.direction.x.mul(windStrength).mul(0.002))
-            velocity.z.addAssign(this.game.wind.direction.y.mul(windStrength).mul(0.002))
+            const windStrength = this.game.wind.strength.sub(float(weight)).max(0).mul(noise).mul(this.windMultiplier).toVar()
+            velocity.x.addAssign(this.game.wind.direction.x.mul(windStrength))
+            velocity.z.addAssign(this.game.wind.direction.y.mul(windStrength))
             
-            // Fly
-            velocity.y = velocity.xz.length().mul(0.2) // Upward
+            // Upward fly
+            velocity.y = velocity.xz.length().mul(this.upwardMultiplier)
 
             // Damping
-            const inTheAir = step(0.05, position.y)
-            const damping = max(terrainData.b.remapClamp(0.4, 0, 0.005, 0.02), inTheAir.mul(0.02))
+            const groundDamping = terrainData.b.remapClamp(0.4, 0, this.waterDamping, this.defaultDamping) // Low on water
+            const inTheAirDamping = step(0.05, position.y).mul(this.defaultDamping) // High in the air
+            const damping = max(groundDamping, inTheAirDamping)
             velocity.mulAssign(float(1).sub(damping))
 
             // Gravity
-            velocity.y = velocity.y.add(-0.01)
+            velocity.y = velocity.y.sub(this.gravity)
 
             // Apply velocity
             position.addAssign(velocity)
@@ -195,6 +213,22 @@ export class Leaves
             position.z.assign(mod(position.z.add(halfSize).sub(this.center.y), this.size).sub(halfSize).add(this.center.y))
         })()
         this.updateCompute = update.compute(this.count)
+
+        // Debug
+        if(this.game.debug.active)
+        {
+            this.debugPanel.addBinding(this.scale, 'value', { label: 'scale', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(this.rotationFrequency, 'value', { label: 'rotationFrequency', min: 0, max: 20, step: 0.001 })
+            this.debugPanel.addBinding(this.rotationElevationMultiplier, 'value', { label: 'rotationElevationMultiplier', min: 0, max: 2, step: 0.001 })
+            this.debugPanel.addBinding(this.pushOutMultiplier, 'value', { label: 'pushOutMultiplier', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(this.pushMultiplier, 'value', { label: 'pushMultiplier', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(this.windFrequency, 'value', { label: 'windFrequency', min: 0, max: 0.02, step: 0.00001 })
+            this.debugPanel.addBinding(this.windMultiplier, 'value', { label: 'windMultiplier', min: 0, max: 0.02, step: 0.00001 })
+            this.debugPanel.addBinding(this.upwardMultiplier, 'value', { label: 'upwardMultiplier', min: 0, max: 1, step: 0.00001 })
+            this.debugPanel.addBinding(this.defaultDamping, 'value', { label: 'defaultDamping', min: 0, max: 0.05, step: 0.00001 })
+            this.debugPanel.addBinding(this.waterDamping, 'value', { label: 'waterDamping', min: 0, max: 0.05, step: 0.00001 })
+            this.debugPanel.addBinding(this.gravity, 'value', { label: 'gravity', min: 0, max: 0.1, step: 0.00001 })
+        }
     }
 
     setMesh()
