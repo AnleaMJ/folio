@@ -10,7 +10,7 @@ export class Fog
         
         this.colorA = uniform(color('#ff0000'))
         this.colorB = uniform(color('#0000ff'))
-        this.radialCenter = uniform(vec2(0.2, 0))
+        this.radialCenter = uniform(vec2(0, 0))
         this.radialStart = uniform(0)
         this.radialEnd = uniform(1)
 
@@ -48,6 +48,5 @@ export class Fog
         this.colorB.value.copy(this.game.dayCycles.values.properties.fogColorB.value)
         this.near.value = this.game.view.optimalArea.nearDistance + this.game.dayCycles.values.properties.fogNearRatio.value * this.amplitude
         this.far.value = this.game.view.optimalArea.nearDistance + this.game.dayCycles.values.properties.fogFarRatio.value * this.amplitude
-        // this.far.value = this.game.dayCycles.values.properties.fogFar.value
     }
 }

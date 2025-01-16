@@ -24,7 +24,7 @@ export class Lighting
         this.shadowAmplitude = 20
         this.near = 1
         this.depth = 60
-        this.shadowBias = 0
+        this.shadowBias = -0.0002
         this.shadowNormalBias = 0
 
         if(this.game.debug.active)
@@ -59,7 +59,7 @@ export class Lighting
             this.debugPanel.addBinding(this, 'near', { min: 0.1, max: 50, step: 0.1 }).on('change', () => this.updateShadow())
             this.debugPanel.addBinding(this, 'depth', { min: 0.1, max: 100, step: 0.1 }).on('change', () => this.updateShadow())
             this.debugPanel.addBinding(this, 'shadowAmplitude', { min: 1, max: 50 }).on('change', () => this.updateShadow())
-            this.debugPanel.addBinding(this, 'shadowBias', { min: -0.1, max: 0.1 }).on('change', () => this.updateShadow())
+            this.debugPanel.addBinding(this, 'shadowBias', { min: -0.02, max: 0.02 }).on('change', () => this.updateShadow())
             this.debugPanel.addBinding(this, 'shadowNormalBias', { min: -0.1, max: 0.1 }).on('change', () => this.updateShadow())
 
             const mapSizes = {}

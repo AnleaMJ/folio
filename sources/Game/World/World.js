@@ -6,7 +6,7 @@ import { Floor } from './Floor.js'
 import { Grass } from './Grass.js'
 import { Playground } from './Playground.js'
 import { Bricks } from './Bricks.js'
-import { Fn, instance, positionLocal } from 'three/tsl'
+import { Fn, instance, materialNormal, normalGeometry, normalLocal, normalView, normalWorld, positionGeometry, positionLocal, vec3, vec4 } from 'three/tsl'
 import { Christmas } from './Christmas.js'
 import { InstancedGroup } from '../InstancedGroup.js'
 import { Trees } from './Trees.js'
@@ -23,24 +23,25 @@ export class World
     {
         this.game = Game.getInstance()
 
-        this.floor = new Floor('terrain')
-        this.scenery = new Scenery()
-        this.waterSurface = new WaterSurface()
-        this.grass = new Grass()
-        this.bushes = new Bushes()
-        this.birchTrees = new Trees('Birch Tree', this.game.resources.birchTreesVisualModel.scene, this.game.resources.birchTreesReferencesModel.scene.children, '#ff782b')
-        this.oakTrees = new Trees('Oak Tree', this.game.resources.oakTreesVisualModel.scene, this.game.resources.oakTreesReferencesModel.scene.children, '#c4c557')
-        this.cherryTrees = new Trees('Cherry Tree', this.game.resources.cherryTreesVisualModel.scene, this.game.resources.cherryTreesReferencesModel.scene.children, '#ff6da8')
-        this.flowers = new Flowers()
-        this.bricks = new Bricks()
-        this.windLines = new WindLines()
-        this.poleLights = new PoleLights()
+        this.floor = new Floor('grid')
+        // this.scenery = new Scenery()
+        // this.waterSurface = new WaterSurface()
+        // this.grass = new Grass()
+        // this.bushes = new Bushes()
+        // this.birchTrees = new Trees('Birch Tree', this.game.resources.birchTreesVisualModel.scene, this.game.resources.birchTreesReferencesModel.scene.children, '#ff782b')
+        // this.oakTrees = new Trees('Oak Tree', this.game.resources.oakTreesVisualModel.scene, this.game.resources.oakTreesReferencesModel.scene.children, '#c4c557')
+        // this.cherryTrees = new Trees('Cherry Tree', this.game.resources.cherryTreesVisualModel.scene, this.game.resources.cherryTreesReferencesModel.scene.children, '#ff6da8')
+        // this.flowers = new Flowers()
+        // this.bricks = new Bricks()
+        // this.windLines = new WindLines()
+        // this.poleLights = new PoleLights()
         this.leaves = new Leaves()
         // this.playground = new Playground()
         // this.christmas = new Christmas()
 
         // this.setAxesHelper()
         // this.setCollisionGroupsTest()
+        // this.setNormalTest()
     }
 
     setTestShadow()
@@ -144,4 +145,22 @@ export class World
         //     }
         // )
     }
+
+    // setNormalTest()
+    // {
+    //     const geometry = new THREE.IcosahedronGeometry(1, 2)
+
+    //     const material = new THREE.MeshLambertNodeMaterial()
+    //     material.positionNode = Fn(() =>
+    //     {
+    //         materialNormal.assign(vec3(0, 1, 0))
+    //         return positionGeometry
+    //     })()
+    //     material.outputNode = vec4(normalWorld, 1)
+
+    //     const mesh = new THREE.Mesh(geometry, material)
+    //     mesh.position.y = 2
+
+    //     this.game.scene.add(mesh)
+    // }
 }

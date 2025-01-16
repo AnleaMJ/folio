@@ -62,8 +62,7 @@ export class Floor
         // Material
         const material = new THREE.MeshBasicNodeMaterial({
             alphaMap: this.game.resources.floorKeysTexture,
-            alphaTest: 0.5,
-            transparent: true,
+            alphaTest: 0.5
         })
 
         // Mesh
@@ -97,7 +96,7 @@ export class Floor
         })
 
         // uvGridMaterial.outputNode = vec4(1)
-        // uvGridMaterial.outputNode = this.game.lighting.lightOutputNodeBuilder(uvGridMaterial.outputNode.rgb, this.game.lighting.addTotalShadowToMaterial(uvGridMaterial))
+        uvGridMaterial.outputNode = this.game.lighting.lightOutputNodeBuilder(uvGridMaterial.outputNode.rgb, this.game.lighting.addTotalShadowToMaterial(uvGridMaterial))
 
         const ground = new THREE.Mesh(
             new THREE.PlaneGeometry(1000, 1000),

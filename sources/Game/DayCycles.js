@@ -41,10 +41,10 @@ export class DayCycles
         this.auto = true
 
         const presets = {
-            day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColorA: new THREE.Color('#b4ffff'), fogColorB: new THREE.Color('#ffdf89'), fogNearRatio: 0.315, fogFarRatio: 1.25 },
-            dusk: { lightColor: new THREE.Color('#ff4141'), lightIntensity: 1.2, shadowColor: new THREE.Color('#840f85'), fogColorA: new THREE.Color('#3e53ff'), fogColorB: new THREE.Color('#ff4ce4'), fogNearRatio: 0, fogFarRatio: 1 },
-            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8, shadowColor: new THREE.Color('#0032db'), fogColorA: new THREE.Color('#041242'), fogColorB: new THREE.Color('#490a42'), fogNearRatio: -0.225, fogFarRatio: 0.75 },
-            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db4700'), fogColorA: new THREE.Color('#ee85ff'), fogColorB: new THREE.Color('#ff3939'), fogNearRatio: 0, fogFarRatio: 1 },
+            day: { lightColor: new THREE.Color('#ffffff'), lightIntensity: 1.2, shadowColor: new THREE.Color('#0085db'), fogColorA: new THREE.Color('#00ffff'), fogColorB: new THREE.Color('#ffdf89'), fogNearRatio: 0.315, fogFarRatio: 1.25 },
+            dusk: { lightColor: new THREE.Color('#ff4141'), lightIntensity: 1.2, shadowColor: new THREE.Color('#4e009c'), fogColorA: new THREE.Color('#3e53ff'), fogColorB: new THREE.Color('#ff4ce4'), fogNearRatio: 0, fogFarRatio: 1.25 },
+            night: { lightColor: new THREE.Color('#3240ff'), lightIntensity: 3.8, shadowColor: new THREE.Color('#2f00db'), fogColorA: new THREE.Color('#041242'), fogColorB: new THREE.Color('#490a42'), fogNearRatio: -0.225, fogFarRatio: 0.75 },
+            dawn: { lightColor: new THREE.Color('#ff9000'), lightIntensity: 1.2, shadowColor: new THREE.Color('#db004f'), fogColorA: new THREE.Color('#f885ff'), fogColorB: new THREE.Color('#ff7d24'), fogNearRatio: 0, fogFarRatio: 1.25 },
         }
 
         this.values = this.createKeyframes(
@@ -112,8 +112,8 @@ export class DayCycles
                 this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.shadowColor, 'shadowColor')
                 this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.fogColorA, 'fogColorA')
                 this.game.debug.addThreeColorBinding(presetsDebugPanel, preset.fogColorB, 'fogColorB')
-                presetsDebugPanel.addBinding(preset, 'fogNearRatio', { label: 'near', min: -1, max: 1, step: 0.001 })
-                presetsDebugPanel.addBinding(preset, 'fogFarRatio', { label: 'far', min: -1, max: 1, step: 0.001 })
+                presetsDebugPanel.addBinding(preset, 'fogNearRatio', { label: 'near', min: -2, max: 2, step: 0.001 })
+                presetsDebugPanel.addBinding(preset, 'fogFarRatio', { label: 'far', min: -2, max: 2, step: 0.001 })
             }
         }
     }

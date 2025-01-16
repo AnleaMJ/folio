@@ -32,6 +32,7 @@ export class Vehicle
         this.upward = new THREE.Vector3(0, 1, 0)
         this.forward = new THREE.Vector3(1, 0, 0)
         this.position = new THREE.Vector3()
+        this.velocity = new THREE.Vector3()
         this.direction = this.forward.clone()
         this.goingForward = false
         this.speed = 0
@@ -585,7 +586,8 @@ export class Vehicle
     {
         // Various measures
         const newPosition = new THREE.Vector3().copy(this.chassis.physical.body.translation())
-        this.direction = newPosition.clone().sub(this.position).normalize()
+        this.velocity = newPosition.clone().sub(this.position)
+        this.direction = this.velocity.clone().normalize()
         this.position.copy(newPosition)
         this.sideward.set(0, 0, 1).applyQuaternion(this.chassis.physical.body.rotation())
         this.upward.set(0, 1, 0).applyQuaternion(this.chassis.physical.body.rotation())
