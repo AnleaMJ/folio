@@ -18,6 +18,7 @@ import { PoleLights } from './PoleLights.js'
 import { Leaves } from './Leaves.js'
 import { Lightnings } from './Lightnings.js'
 import { RainSnow } from './RainSnow.js'
+import { Snow } from './Snow.js'
 
 export class World
 {
@@ -37,9 +38,10 @@ export class World
         this.bricks = new Bricks()
         this.windLines = new WindLines()
         this.poleLights = new PoleLights()
-        // this.leaves = new Leaves()
+        this.leaves = new Leaves()
         this.rainSnow = new RainSnow()
         this.lightnings = new Lightnings()
+        this.snow = new Snow()
         // this.playground = new Playground()
         // this.christmas = new Christmas()
 

@@ -42,7 +42,7 @@ export class RainSnow
         this.elevation = float(15)
 
         // Uniforms
-        this.visibleRatio = uniform(0.2)
+        this.visibleRatio = uniform(0)
         this.focusPoint = uniform(vec2())
         this.scale = uniform(0.03)
         this.windFrequency = uniform(0.005)

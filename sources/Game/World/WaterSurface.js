@@ -20,8 +20,8 @@ export class WaterSurface
         if(this.game.debug.active)
         {
             this.debugPanel = this.game.debug.panel.addFolder({
-                title: '🌊 Water',
-                expanded: true,
+                title: '🌊 Water surface',
+                expanded: false,
             })
 
             this.debugPanel.addBinding(this, 'timeFrequency', { min: 0, max: 0.1, step: 0.001 })
@@ -55,7 +55,7 @@ export class WaterSurface
         this.iceRatio = uniform(0)
         const iceNoiseFrequency = uniform(0.3)
 
-        this.splashesRatio = uniform(0.5)
+        this.splashesRatio = uniform(0)
         const splashesNoiseFrequency = uniform(0.33)
         const splashesTimeFrequency = uniform(10)
         const splashesThickness = uniform(0.4)
