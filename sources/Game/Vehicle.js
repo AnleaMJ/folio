@@ -43,6 +43,7 @@ export class Vehicle
 
         this.game.materials.createGradient('carRed', '#ff3a3a', '#721551', this.chassisDebugPanel)
         this.game.materials.createEmissive('emissiveWarnWhite', '#ff8641', 3, this.headlightsDebugPanel)
+        this.game.materials.createEmissive('emissiveOrange', '#ff3e00', 3, this.headlightsDebugPanel)
         this.game.materials.createEmissive('emissiveRed', '#ff3131', 3, this.headlightsDebugPanel)
 
         this.setParts()
@@ -91,9 +92,11 @@ export class Vehicle
 
         // Blinker left
         this.parts.blinkerLeft = this.parts.chassis.getObjectByName('blinkerLeft')
+        this.parts.blinkerLeft.visible = false
 
         // Blinker right
         this.parts.blinkerRight = this.parts.chassis.getObjectByName('blinkerRight')
+        this.parts.blinkerRight.visible = false
 
         // Stop lights
         this.parts.stopLights = this.parts.chassis.getObjectByName('stopLights')
@@ -477,25 +480,47 @@ export class Vehicle
 
     setBlinkers()
     {
-        setInterval(() =>
+        let running = false
+        let interval = null
+        let on = false
+        const start = () =>
         {
-            if(this.game.inputs.keys.left)
-                this.parts.blinkerLeft.visible = !this.parts.blinkerLeft.visible
+            if(running)
+                return
 
-            if(this.game.inputs.keys.right)
-                this.parts.blinkerRight.visible = !this.parts.blinkerRight.visible
-        }, 400)
+            running = true
+            on = true
+
+            this.parts.blinkerLeft.visible = this.game.inputs.keys.left ? on : false
+            this.parts.blinkerRight.visible = this.game.inputs.keys.right ? on : false
+
+            interval = setInterval(blink, 400)
+        }
+
+        const blink = () =>
+        {
+            on = !on
+
+            this.parts.blinkerLeft.visible = this.game.inputs.keys.left ? on : false
+            this.parts.blinkerRight.visible = this.game.inputs.keys.right ? on : false
+
+            if(!this.game.inputs.keys.left && !this.game.inputs.keys.right && !on)
+            {
+                clearInterval(interval)
+                running = false
+            }
+        }
 
         this.game.inputs.events.on('left', (event) =>
         {
-            if(!event.down)
-                this.parts.blinkerLeft.visible = true
+            if(event.down)
+                start()
         })
 
         this.game.inputs.events.on('right', (event) =>
         {
-            if(!event.down)
-                this.parts.blinkerRight.visible = true
+            if(event.down)
+                start()
         })
     }
 
