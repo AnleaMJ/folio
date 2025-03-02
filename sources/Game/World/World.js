@@ -11,6 +11,7 @@ import { Leaves } from './Leaves.js'
 import { Lightnings } from './Lightnings.js'
 import { Rain } from './Rain.js'
 import { Snow } from './Snow.js'
+import { Whispers } from './Whispers.js'
 
 export class World
 {
@@ -28,6 +29,7 @@ export class World
         this.lightnings = new Lightnings()
         this.snow = new Snow()
         this.scenery = new Scenery()
+        this.whispers = new Whispers()
 
         // this.setAxesHelper()
         // this.setCollisionGroupsTest()

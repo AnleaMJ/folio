@@ -43,7 +43,6 @@ export class Trails
         this.decay = 0.2
         this.items = []
 
-        this.setGradient()
         this.setGeometry()
         
         this.game.ticker.events.on('tick', () =>
@@ -58,58 +57,6 @@ export class Trails
             this.debugPanel.addBinding(this, 'decay', { min: 0, max: 1, step: 0.001 })
         }
     }
-
-    setGradient()
-    {
-        const height = 16
-
-        const canvas = document.createElement('canvas')
-        canvas.width = 1
-        canvas.height = height
-
-        this.gradientTexture = new THREE.Texture(canvas)
-        this.gradientTexture.colorSpace = THREE.SRGBColorSpace
-
-        const context = canvas.getContext('2d')
-
-        const colors = [
-            { stop: 0, value: '#ffb646' },
-            { stop: 0.5, value: '#ff347e' },
-            { stop: 1, value: '#0300ff' },
-        ]
-
-        const update = () =>
-        {
-            const gradient = context.createLinearGradient(0, 0, 0, height)
-            for(const color of colors)
-                gradient.addColorStop(color.stop, color.value)
-
-            context.fillStyle = gradient
-            context.fillRect(0, 0, 1, height)
-            this.gradientTexture.needsUpdate = true
-        }
-
-        update()
-
-        // // Debug
-        // canvas.style.position = 'fixed'
-        // canvas.style.zIndex = 999
-        // canvas.style.top = 0
-        // canvas.style.left = 0
-        // canvas.style.width = '128px'
-        // canvas.style.height = `256px`
-        // document.body.append(canvas)
-        
-        if(this.game.debug.active)
-        {
-            for(const color of colors)
-            {
-                this.debugPanel.addBinding(color, 'stop', { min: 0, max: 1, step: 0.001 }).on('change', update)
-                this.debugPanel.addBinding(color, 'value', { view: 'color' }).on('change', update)
-            }
-        }
-    }
-
 
     setGeometry()
     {
@@ -178,7 +125,7 @@ export class Trails
                 0.5,
                 ratio.oneMinus().sub(fresnel.oneMinus().mul(this.fresnelOffset))
             )
-            const baseColor = texture(this.gradientTexture, gradientUv).rgb.mul(this.emissiveMultiplier)
+            const baseColor = texture(this.game.materials.gradientTexture, gradientUv).rgb.mul(this.emissiveMultiplier)
             
             return vec4(vec3(baseColor), ratio.oneMinus().mul(alpha))
         })()

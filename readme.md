@@ -1,8 +1,10 @@
 # Folio 2025
 
 ## Setup
-Download [Node.js](https://nodejs.org/en/download/).
-Run this followed commands:
+
+Create `.env` file based on `.env.example`
+
+Download and install [Node.js](https://nodejs.org/en/download/) then run this followed commands:
 
 ``` bash
 # Install dependencies

@@ -24,8 +24,8 @@ import { Noises } from './Noises.js'
 import { Wind } from './Wind.js'
 import { TerrainData } from './TerrainData.js'
 import { Explosions } from './Explosions.js'
-import { Cycles } from './Cycles/Cycles.js'
 import { YearCycles } from './Cycles/YearCycles.js'
+import { Server } from './Server.js'
 
 export class Game
 {
@@ -75,6 +75,7 @@ export class Game
                     { path: 'scenery/sceneryStaticPhysical.glb', type: 'gltf', name: 'sceneryStaticPhysicalModel' },
                     { path: 'scenery/sceneryDynamic.glb', type: 'gltf', name: 'sceneryDynamicModel' },
                     { path: 'poleLights/poleLights.glb', type: 'gltf', name: 'poleLightsModel' },
+                    { path: 'whispers/whisperBeam.png', type: 'texture', name: 'whisperBeamTexture' },
                     
                     // { path: 'christmas/christmasTreeVisual.glb', type: 'gltf', name: 'christmasTreeVisualModel' },
                     // { path: 'christmas/christmasTreePhysical.glb', type: 'gltf', name: 'christmasTreePhysicalModel' },
@@ -102,6 +103,7 @@ export class Game
 
         this.scene = new THREE.Scene()
 
+        this.server = new Server()
         this.ticker = new Ticker()
         this.inputs = new Inputs([
             { name: 'forward', keys: [ 'ArrowUp', 'KeyW' ] },

@@ -1,5 +1,5 @@
 import * as THREE from 'three/webgpu'
-import { positionLocal, varying, uv, max, positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld, texture, vec2, time, smoothstep } from 'three/tsl'
+import { positionLocal, varying, uv, max, positionWorld, float, Fn, uniform, color, mix, vec3, vec4, normalWorld, texture, vec2, time, smoothstep, luminance } from 'three/tsl'
 import { Game } from './Game.js'
 
 export class Materials
@@ -17,14 +17,69 @@ export class Materials
             })
         }
 
+        this.setGradient()
         this.setLuminance()
         this.setPreviews()
 
-        this.createEmissiveGradient('emissiveGradientWarm', '#ff8641', '#ff3e00', 6, this.debugPanel.addFolder({ title: 'emissiveGradientWarm' }))
-        this.createGradient('carRed', '#ff3a3a', '#721551', this.debugPanel.addFolder({ title: 'carRed' }))
-        this.createEmissive('emissiveOrange', '#ff3e00', 3, this.debugPanel.addFolder({ title: 'emissiveOrange' }))
-        this.createEmissive('emissiveRed', '#ff3131', 3, this.debugPanel.addFolder({ title: 'emissiveRed' }))
+        this.createEmissiveGradient('emissiveGradientWarm', '#ff8641', '#ff3e00', 1.7, this.debugPanel?.addFolder({ title: 'emissiveGradientWarm' }))
+        this.createEmissive('emissiveOrange', '#ff3e00', 3, this.debugPanel?.addFolder({ title: 'emissiveOrange' }))
+        this.createEmissive('emissiveRed', '#ff3131', 3, this.debugPanel?.addFolder({ title: 'emissiveRed' }))
+        this.createGradient('carRed', '#ff3a3a', '#721551', this.debugPanel?.addFolder({ title: 'carRed' }))
     }
+
+    setGradient()
+    {
+        const height = 16
+
+        const canvas = document.createElement('canvas')
+        canvas.width = 1
+        canvas.height = height
+
+        this.gradientTexture = new THREE.Texture(canvas)
+        this.gradientTexture.colorSpace = THREE.SRGBColorSpace
+
+        const context = canvas.getContext('2d')
+
+        const colors = [
+            { stop: 0, value: '#ffb646' },
+            { stop: 0.5, value: '#ff347e' },
+            { stop: 1, value: '#01005f' },
+        ]
+
+        const update = () =>
+        {
+            const gradient = context.createLinearGradient(0, 0, 0, height)
+            for(const color of colors)
+                gradient.addColorStop(color.stop, color.value)
+
+            context.fillStyle = gradient
+            context.fillRect(0, 0, 1, height)
+            this.gradientTexture.needsUpdate = true
+        }
+
+        update()
+
+        // // Debug
+        // canvas.style.position = 'fixed'
+        // canvas.style.zIndex = 999
+        // canvas.style.top = 0
+        // canvas.style.left = 0
+        // canvas.style.width = '128px'
+        // canvas.style.height = `256px`
+        // document.body.append(canvas)
+        
+        if(this.game.debug.active)
+        {
+            const debugPanel = this.debugPanel.addFolder({ title: 'gradient' })
+
+            for(const color of colors)
+            {
+                debugPanel.addBinding(color, 'stop', { min: 0, max: 1, step: 0.001 }).on('change', update)
+                debugPanel.addBinding(color, 'value', { view: 'color' }).on('change', update)
+            }
+        }
+    }
+
 
     setLuminance()
     {
@@ -45,6 +100,7 @@ export class Materials
         const intensity = uniform(_intensity)
 
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
+        material.colorNode = baseColor.div(luminance(baseColor)).mul(intensity)
         material.fog = false
         this.save(_name, material)
   
@@ -64,7 +120,8 @@ export class Materials
         const intensity = uniform(_intensity)
 
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
-        material.colorNode = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).mul(intensity)
+        const mixedColor = mix(colorA, colorB, uv().sub(0.5).length().mul(2)).toVar()
+        material.colorNode = mixedColor.div(luminance(mixedColor)).mul(intensity)
         material.fog = false
         this.save(_name, material)
 
