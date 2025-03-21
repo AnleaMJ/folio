@@ -37,11 +37,9 @@ export class Scenery
         this.poleLights = new PoleLights()
 
         if(this.references.altar)
-            this.altar = new Altar(this.references.altar.position)
+            this.altar = new Altar(this.references.altar.position, this.references.altarCounter)
         // this.playground = new Playground()
         // this.christmas = new Christmas()
-
-        console.log(this.references.altar)
 
     }
 
@@ -68,6 +66,8 @@ export class Scenery
 
             if(_child.name === 'altar')
                 this.references.altar = _child
+            else if(_child.name === 'altarCounter')
+                this.references.altarCounter = _child
         })
 
         // Entities

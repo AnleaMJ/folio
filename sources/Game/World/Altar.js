@@ -4,7 +4,7 @@ import { clamp, color, float, Fn, luminance, max, mix, step, texture, uniform, u
 
 export class Altar
 {
-    constructor(position)
+    constructor(position, altarCounter)
     {
         this.game = Game.getInstance()
 
@@ -17,19 +17,30 @@ export class Altar
         }
 
         this.position = position.clone()
+        this.altarCounter = altarCounter
+
+        this.colorBottom = uniform(color('#ff544d'))
+        this.colorTop = uniform(color('#ff1141'))
+        this.emissiveBottom = uniform(8)
+        this.emissiveTop = uniform(2.7)
 
         this.setBeam()
+        this.setCounter()
+
+        // Debug
+        if(this.game.debug.active)
+        {
+            this.game.debug.addThreeColorBinding(this.debugPanel, this.colorBottom.value, 'colorBottom')
+            this.debugPanel.addBinding(this.emissiveBottom, 'value', { label: 'emissiveBottom', min: 0, max: 10, step: 0.1 })
+            this.game.debug.addThreeColorBinding(this.debugPanel, this.colorTop.value, 'colorTop')
+            this.debugPanel.addBinding(this.emissiveTop, 'value', { label: 'emissiveTop', min: 0, max: 10, step: 0.1 })
+        }
     }
 
     setBeam()
     {
         const radius = 2.5
         const height = 4
-
-        const colorBottom = uniform(color('#ff544d'))
-        const colorTop = uniform(color('#ff1141'))
-        const emissiveBottom = uniform(8)
-        const emissiveTop = uniform(2.7)
 
         // Cylinder
         const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, 32, 1, true)
@@ -46,7 +57,7 @@ export class Altar
             const emissiveNoise = texture(this.game.noises.others, emissiveUv).r
             emissiveNoise.addAssign(baseUv.y)
             const emissiveMask = step(1, emissiveNoise)
-            const emissiveColor = mix(colorBottom.mul(emissiveBottom), colorTop.mul(emissiveTop), baseUv.y)
+            const emissiveColor = mix(this.colorBottom.mul(this.emissiveBottom), this.colorTop.mul(this.emissiveTop), baseUv.y)
 
             // Goo
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
@@ -82,7 +93,7 @@ export class Altar
 
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
 
-            const emissiveColor = colorBottom.mul(emissiveBottom)
+            const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
             
             const finalColor = mix(gooColor, emissiveColor, satanStar)
 
@@ -93,14 +104,86 @@ export class Altar
         bottom.position.copy(this.position)
         bottom.rotation.x = - Math.PI * 0.5
         this.game.scene.add(bottom)
+    }
 
-        // Debug
-        if(this.game.debug.active)
+    setCounter()
+    {
+        this.counter = {}
+        this.counter.value = 0
+
+        // Canvas
+        const ratio = 1 / 4
+        const width = 256
+        const height = width * ratio
+        const font = `700 ${height}px "Amatic SC"`
+        
+        const canvas = document.createElement('canvas')
+        canvas.width = width
+        canvas.height = height
+
+        const textTexture = new THREE.Texture(canvas)
+        textTexture.colorSpace = THREE.SRGBColorSpace
+        textTexture.minFilter = THREE.NearestFilter
+        textTexture.magFilter = THREE.NearestFilter
+        textTexture.generateMipmaps = false
+
+        const context = canvas.getContext('2d')
+        context.font = font
+
+        // Mesh
+        const size = 3
+        const geometry = new THREE.PlaneGeometry(size, size * ratio, 1, 1)
+
+        const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
+        material.outputNode = Fn(() =>
         {
-            this.game.debug.addThreeColorBinding(this.debugPanel, colorBottom.value, 'colorBottom')
-            this.debugPanel.addBinding(emissiveBottom, 'value', { label: 'emissiveBottom', min: 0, max: 10, step: 0.1 })
-            this.game.debug.addThreeColorBinding(this.debugPanel, colorTop.value, 'colorTop')
-            this.debugPanel.addBinding(emissiveTop, 'value', { label: 'emissiveTop', min: 0, max: 10, step: 0.1 })
+            // const newUv = uv().sub(0.5).mul(1.7).add(0.5)
+            const textData = texture(textTexture, uv())
+
+            const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
+
+            const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
+            
+            const finalColor = mix(gooColor, emissiveColor, textData.g)
+
+            textData.r.add(textData.g).lessThan(0.5).discard()
+
+            return vec4(finalColor, 1)
+        })()
+
+        const mesh = new THREE.Mesh(geometry, material)
+        mesh.position.copy(this.altarCounter.position)
+        mesh.quaternion.copy(this.altarCounter.quaternion)
+        this.game.scene.add(mesh)
+        
+        // Update
+        this.counter.update = (value) =>
+        {
+            if(value !== this.counter.value)
+            {
+                const formatedValue = value.toLocaleString('en-US')
+                context.font = font
+
+                context.fillStyle = '#000000'
+                context.fillRect(0, 0, width, height)
+
+                context.font = font
+                context.textAlign = 'center'
+                context.textBaseline = 'middle'
+
+                context.strokeStyle = '#ff0000'
+                context.lineWidth = height * 0.15
+                context.strokeText(formatedValue, width * 0.5, height * 0.55)
+
+                context.fillStyle = '#00ff00'
+                context.fillText(formatedValue, width * 0.5, height * 0.55)
+
+                textTexture.needsUpdate = true
+
+                this.counter.value = value
+            }
         }
+
+        this.counter.update(1337)
     }
 }

@@ -37,8 +37,7 @@ export class Bubble
         this.canvas.texture.colorSpace = THREE.SRGBColorSpace
         this.canvas.texture.minFilter = THREE.NearestFilter
         this.canvas.texture.magFilter = THREE.NearestFilter
-        this.canvas.texture.generateMipmaps = THREE.NearestFilter
-        this.canvas.texture.anisotropy = 8
+        this.canvas.texture.generateMipmaps = false
 
         this.context = this.canvas.element.getContext('2d')
         this.context.font = this.font
@@ -163,12 +162,12 @@ export class Bubble
         this.textWidth = Math.min(Math.ceil(textSize.width) + this.textPaddingHorizontal * 2 + 2, this.width)
         this.textRatio.value = this.textWidth / this.width
 
-        this.context.font = `700 ${this.height}px "Amatic SC"`
+        this.context.font = this.font
 
         this.context.fillStyle = '#000000'
         this.context.fillRect(0, 0, this.width, this.height)
 
-        this.context.font = `700 ${this.height}px "Amatic SC"`
+        this.context.font = this.font
         this.context.fillStyle = '#ffffff'
         this.context.textAlign = 'start'
         this.context.textBaseline = 'middle'
