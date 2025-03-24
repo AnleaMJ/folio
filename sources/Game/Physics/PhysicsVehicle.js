@@ -1,7 +1,7 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { Events } from '../Events.js'
-import { remapClamp } from '../utilities/maths.js'
+import { remap, remapClamp } from '../utilities/maths.js'
 
 export class PhysicsVehicle
 {
@@ -63,6 +63,7 @@ export class PhysicsVehicle
         this.setStop()
         this.setUpsideDown()
         this.setExplosions()
+        this.setTornado()
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -285,6 +286,30 @@ export class PhysicsVehicle
         })
     }
 
+    setTornado()
+    {
+        this.tornado = {}
+        
+        this.tornado.apply = () =>
+        {
+            const toTornado = this.game.tornado.position.clone().sub(this.position)
+            const distanceDistance = toTornado.length()
+            
+            const strength = remapClamp(distanceDistance, 20, 2, 0, 1)
+
+            const force = toTornado.clone().normalize()
+
+            const sideAngleStrength = remapClamp(distanceDistance, 8, 2, 0, Math.PI * 0.25)
+            force.applyAxisAngle(new THREE.Vector3(0, 1, 0), -sideAngleStrength)
+
+            const flyForce = remapClamp(distanceDistance, 8, 2, 0, 1)
+            force.y = flyForce * 2
+
+            force.setLength(strength * this.game.ticker.deltaScaled * this.game.tornado.strength * 30)
+            this.chassis.physical.body.applyImpulse(force)
+        }
+    }
+
     moveTo(position, rotation = 0)
     {
         const quaternion = new THREE.Quaternion().setFromAxisAngle(new THREE.Vector3(0, 1, 0), rotation)
@@ -368,6 +393,9 @@ export class PhysicsVehicle
             this.controller.setWheelEngineForce(i, engineForce)
             this.controller.setWheelSuspensionRestLength(i, this.suspensionsHeights[this.game.player.suspensions[i]])
         }
+
+        // Tornado
+        this.tornado.apply()
         
         // Update controller
         this.controller.updateVehicle(this.game.ticker.delta)

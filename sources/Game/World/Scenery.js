@@ -37,7 +37,7 @@ export class Scenery
         this.poleLights = new PoleLights()
 
         if(this.references.altar)
-            this.altar = new Altar(this.references.altar.position, this.references.altarCounter)
+            this.altar = new Altar(this.references.altar.position, this.references.altarCounter, this.references.altarSkullEyes)
         // this.playground = new Playground()
         // this.christmas = new Christmas()
 
@@ -51,6 +51,9 @@ export class Scenery
 
         // Items
         this.references = {}
+        this.references.altar = null
+        this.references.altarCounter = null
+        this.references.altarSkullEyes = []
         
         // Materials
         this.game.materials.updateObject(visualModel)
@@ -68,6 +71,8 @@ export class Scenery
                 this.references.altar = _child
             else if(_child.name === 'altarCounter')
                 this.references.altarCounter = _child
+            else if(_child.name.match(/^skullEyes/))
+                this.references.altarSkullEyes.push(_child)
         })
 
         // Entities

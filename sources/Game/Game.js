@@ -31,6 +31,7 @@ import { PhysicsVehicle } from './Physics/PhysicsVehicle.js'
 import { PhysicsWireframe } from './Physics/PhysicsWireframe.js'
 import { Areas } from './Areas.js'
 import { Overlay } from './Overlay.js'
+import { Tornado } from './Tornado.js'
 
 export class Game
 {
@@ -160,6 +161,7 @@ export class Game
             this.materials = new Materials()
             this.entities = new Entities()
             this.explosions = new Explosions()
+            this.tornado = new Tornado()
             this.physics = new Physics()
             this.wireframe = new PhysicsWireframe()
             this.physicalVehicle = new PhysicsVehicle()

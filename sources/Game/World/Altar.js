@@ -5,7 +5,7 @@ import gsap from 'gsap'
 
 export class Altar
 {
-    constructor(position, altarCounter)
+    constructor(position, counter, skullEyes)
     {
         this.game = Game.getInstance()
 
@@ -19,7 +19,8 @@ export class Altar
 
         this.value = 0
         this.position = position.clone()
-        this.altarCounter = altarCounter
+        this.counter = counter
+        this.skullEyes = skullEyes
 
         this.colorBottom = uniform(color('#ff544d'))
         this.colorTop = uniform(color('#ff1141'))
@@ -30,8 +31,10 @@ export class Altar
         this.setBeamParticles()
         this.setCounter()
         this.setArea()
+        this.setSkullEyes()
 
         this.updateValue(1)
+        this.updateSkullEyes(0)
 
         // // Faker
         // setInterval(() =>
@@ -260,7 +263,7 @@ export class Altar
 
         // Mesh
         const mesh = new THREE.Mesh(geometry, material)
-        this.altarCounter.add(mesh)
+        this.counter.add(mesh)
         
         /**
          * Update
@@ -328,6 +331,25 @@ export class Altar
                 this.game.player.die()
             }
         })
+    }
+
+    setSkullEyes()
+    {
+        for(const skullEyes of this.skullEyes)
+        {
+            skullEyes.visible = false
+        }
+    }
+
+    updateSkullEyes(value)
+    {
+        let i = 0
+        for(const skullEyes of this.skullEyes)
+        {
+            skullEyes.visible = i < value
+
+            i++
+        }
     }
 
     updateValue(value)
