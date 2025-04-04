@@ -8,6 +8,7 @@ import { PoleLights } from './PoleLights.js'
 import { Playground } from './Playground.js'
 import { Christmas } from './Christmas.js'
 import { Altar } from './Altar.js'
+import { CookieStand } from './CookieStand.js'
 
 export class Scenery
 {
@@ -38,6 +39,9 @@ export class Scenery
 
         if(this.references.poleLightGlass && this.references.poleLights)
             this.poleLights = new PoleLights(this.references.poleLightGlass[0], this.references.poleLights)
+            
+        if(this.references.cookieBanner)
+            this.cookieStand = new CookieStand(this.references.cookieBanner[0])
             
         // this.playground = new Playground()
         // this.christmas = new Christmas()

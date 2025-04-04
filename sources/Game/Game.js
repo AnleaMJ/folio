@@ -84,7 +84,8 @@ export class Game
                     [ 'whisperBeamTexture',         'whispers/whisperBeam.png',              'texture' ],
                     [ 'satanStarTexture',           'scenery/satanStar.png',                 'texture' ],
                     [ 'tornadoPathModel',           'tornado/tornadoPath.glb',               'gltf'    ],
-                    [ 'overlayPatternTexture',      'overlay/overlayPattern.png',            'texture', (ressource) => { ressource.wrapS = THREE.RepeatWrapping; ressource.wrapT = THREE.RepeatWrapping } ],
+                    [ 'overlayPatternTexture',      'overlay/overlayPattern.png',            'texture', (resource) => { resource.wrapS = THREE.RepeatWrapping; resource.wrapT = THREE.RepeatWrapping } ],
+                    [ 'cookieBannerTexture',        'cookieStand/cookieBanner.png',          'texture', (resource) => { resource.colorSpace = THREE.SRGBColorSpace; resource.flipY = false } ],
                     
                     // [ 'christmasTreeVisualModel',     'christmas/christmasTreeVisual.glb',     'gltf' ],
                     // [ 'christmasTreePhysicalModel',   'christmas/christmasTreePhysical.glb',   'gltf' ],
@@ -169,7 +170,7 @@ export class Game
             this.player = new Player()
             this.world = new World()
             this.overlay = new Overlay()
-            this.monitoring = new Monitoring()
+            // this.monitoring = new Monitoring()
 
             this.rendering.renderer.setAnimationLoop((elapsedTime) => { this.ticker.update(elapsedTime) })
         })

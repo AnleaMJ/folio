@@ -24,7 +24,7 @@ export class Materials
         this.createEmissiveGradient('emissiveGradientWarm', '#ff8641', '#ff3e00', 1.7, this.debugPanel?.addFolder({ title: 'emissiveGradientWarm' }))
         this.createEmissive('emissiveOrange', '#ff3e00', 3, this.debugPanel?.addFolder({ title: 'emissiveOrange' }))
         this.createEmissive('emissiveRed', '#ff3131', 3, this.debugPanel?.addFolder({ title: 'emissiveRed' }))
-        this.createGradient('carRed', '#ff3a3a', '#721551', this.debugPanel?.addFolder({ title: 'carRed' }))
+        this.createGradient('carGradient', '#ff3a3a', '#721551', this.debugPanel?.addFolder({ title: 'carGradient' }))
     }
 
     setGradient()

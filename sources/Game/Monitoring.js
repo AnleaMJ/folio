@@ -29,11 +29,11 @@ export class Monitoring
         this.stats.init(this.game.rendering.renderer)
         document.body.append(this.stats.dom)
 
-        // Update
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.game.rendering.renderer.resolveTimestampsAsync()
-            this.stats.update()
-        }, 999)
+        // // Update
+        // this.game.ticker.events.on('tick', () =>
+        // {
+        //     this.game.rendering.renderer.resolveTimestampsAsync()
+        //     this.stats.update()
+        // }, 999)
     }
 }

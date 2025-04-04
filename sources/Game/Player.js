@@ -18,7 +18,7 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        this.basePosition = new THREE.Vector3(0, 4, 0)
+        this.basePosition = new THREE.Vector3(0, 4, -22)
         this.position = this.basePosition.clone()
         
         this.setInputs()

@@ -85,7 +85,13 @@ export class Rendering
 
     async render()
     {
-        // this.renderer.renderAsync(this.game.scene, this.game.view.camera)
-        this.postProcessing.renderAsync()
+        // await this.renderer.renderAsync(this.game.scene, this.game.view.camera)
+        await this.postProcessing.renderAsync()
+
+        if(this.game.monitoring?.stats)
+        {
+            this.game.rendering.renderer.resolveTimestampsAsync(THREE.TimestampQuery.RENDER)
+            this.game.monitoring.stats.update()
+        }
     }
 }
