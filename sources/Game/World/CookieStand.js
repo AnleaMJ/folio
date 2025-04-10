@@ -1,10 +1,12 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
 import { color, float, Fn, mix, normalWorld, step, storage, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { InstancedGroup } from '../InstancedGroup.js'
+import gsap from 'gsap'
 
 export class CookieStand
 {
-    constructor(banner, ovenHeat, blower, chimneyPosition)
+    constructor(cookie, banner, ovenHeat, blower, chimneyPosition, spawnerPosition)
     {
         this.game = Game.getInstance()
 
@@ -16,18 +18,27 @@ export class CookieStand
             })
         }
 
+        this.cookie = cookie
         this.banner = banner
         this.ovenHeat = ovenHeat
         this.blower = blower
         this.chimneyPosition = chimneyPosition
+        this.spawnerPosition = spawnerPosition
 
         this.setBanner()
         this.setParticles()
         this.setOvenHeat()
+        this.setCookies()
+        this.setActualCookies()
 
         this.game.ticker.events.on('tick', () =>
         {
             this.update()
+        })
+
+        this.game.inputs.events.on('cookie', () =>
+        {
+            this.accept()
         })
     }
 
@@ -127,6 +138,103 @@ export class CookieStand
 
         this.ovenHeat.material = material
         this.ovenHeat.castShadow = false
+    }
+
+    setCookies()
+    {
+        this.cookie.removeFromParent()
+
+        this.cookie.traverse((child) =>
+        {
+            if(child.isMesh)
+                child.frustumCulled = false
+        })
+
+        this.cookies = {}
+        this.cookies.count = 100
+        this.cookies.currentIndex = 0
+        this.cookies.mass = 0.02
+        this.cookies.entities = []
+
+        const references = []
+
+        for(let i = 0; i < this.cookies.count; i++)
+        {
+            // Reference
+            const reference = new THREE.Object3D()
+            reference.position.copy(this.spawnerPosition)
+            reference.position.y -= 4
+            references.push(reference)
+            
+            // Entity
+            const entity = this.game.entities.add(
+                {
+                    model: reference,
+                    updateMaterials: false,
+                    castShadow: false,
+                    receiveShadow: false,
+                    parent: null,
+                },
+                {
+                    type: 'dynamic',
+                    position: reference.position,
+                    rotation: reference.quaternion,
+                    friction: 0.7,
+                    sleeping: true,
+                    enabled: false,
+                    colliders: [ { shape: 'cylinder', parameters: [ 0.35 / 2, 1.25 / 2 ], mass: this.cookies.mass, category: 'object' } ],
+                    waterGravityMultiplier: - 1
+                },
+            )
+
+            this.cookies.entities.push(entity)
+        }
+
+        const instancedGroup = new InstancedGroup(references, this.cookie, true)
+    }
+
+    setActualCookies()
+    {
+        this.actualCookies = {}
+        this.actualCookies.count = 0
+
+        const cookies = document.cookie.split('; ')
+        for(const cookie of cookies)
+        {
+            const match = cookie.match('^acceptedCookies=([0-9]+)')
+
+            if(match)
+                this.actualCookies.count = parseInt(match[1])
+        }
+    }
+
+    accept()
+    {
+        // Cookies
+        const entity = this.cookies.entities[this.cookies.currentIndex]
+
+        const spawnPosition = this.spawnerPosition.clone()
+        spawnPosition.z += Math.random() - 0.5
+        entity.physical.body.setTranslation(spawnPosition)
+        entity.physical.body.setEnabled(true)
+        window.requestAnimationFrame(() =>
+        {
+            entity.physical.body.applyImpulse({
+                x: (Math.random() - 0.5) * this.cookies.mass * 2,
+                y: Math.random() * this.cookies.mass * 3,
+                z: this.cookies.mass * 7
+            }, true)
+            entity.physical.body.applyTorqueImpulse({ x: 0, y: 0, z: 0 }, true)
+        })
+
+        this.cookies.currentIndex = (this.cookies.currentIndex + 1) % this.cookies.count
+
+        // Oven heat
+        this.ovenHeat.scale.z = 2
+        gsap.to(this.ovenHeat.scale, { z: 1, overwrite: true, duration: 2, delay: 0.2, ease: 'power1.inOut' })
+
+        // Actual cookie
+        document.cookie = `acceptedCookies=${++this.actualCookies.count}`
     }
 
     update()

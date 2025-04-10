@@ -95,6 +95,9 @@ export class Physics
         if(typeof _physicalDescription.sleeping !== 'undefined')
             rigidBodyDesc.setSleeping(_physicalDescription.sleeping)
 
+        if(typeof _physicalDescription.enabled !== 'undefined')
+            rigidBodyDesc.setEnabled(_physicalDescription.enabled)
+
         physical.body = this.world.createRigidBody(rigidBodyDesc)
 
         // Colliders

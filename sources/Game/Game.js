@@ -117,13 +117,13 @@ export class Game
         this.ticker = new Ticker()
         this.inputs = new Inputs([
             // Vehicle
-            { name: 'forward',              category: 'vehicle', keys: [ 'ArrowUp', 'KeyW' ] },
-            { name: 'right',                category: 'vehicle', keys: [ 'ArrowRight', 'KeyD' ] },
-            { name: 'backward',             category: 'vehicle', keys: [ 'ArrowDown', 'KeyS' ] },
-            { name: 'left',                 category: 'vehicle', keys: [ 'ArrowLeft', 'KeyA' ] },
-            { name: 'boost',                category: 'vehicle', keys: [ 'ShiftLeft', 'ShiftRight' ] },
-            { name: 'brake',                category: 'vehicle', keys: [ 'KeyB' ] },
-            { name: 'reset',                category: 'vehicle', keys: [ 'KeyR' ] },
+            { name: 'forward',               category: 'vehicle', keys: [ 'ArrowUp', 'KeyW' ] },
+            { name: 'right',                 category: 'vehicle', keys: [ 'ArrowRight', 'KeyD' ] },
+            { name: 'backward',              category: 'vehicle', keys: [ 'ArrowDown', 'KeyS' ] },
+            { name: 'left',                  category: 'vehicle', keys: [ 'ArrowLeft', 'KeyA' ] },
+            { name: 'boost',                 category: 'vehicle', keys: [ 'ShiftLeft', 'ShiftRight' ] },
+            { name: 'brake',                 category: 'vehicle', keys: [ 'KeyB' ] },
+            { name: 'reset',                 category: 'vehicle', keys: [ 'KeyR' ] },
             { name: 'suspensions',           category: 'vehicle', keys: [ 'Numpad5', 'Space' ] },
             { name: 'suspensionsFront',      category: 'vehicle', keys: [ 'Numpad8' ] },
             { name: 'suspensionsBack',       category: 'vehicle', keys: [ 'Numpad2' ] },
@@ -133,7 +133,8 @@ export class Game
             { name: 'suspensionsFrontRight', category: 'vehicle', keys: [ 'Numpad9' ] },
             { name: 'suspensionsBackRight',  category: 'vehicle', keys: [ 'Numpad3' ] },
             { name: 'suspensionsBackLeft',   category: 'vehicle', keys: [ 'Numpad1' ] },
-            { name: 'whisper',              category: 'vehicle', keys: [ 'KeyT' ] },
+            { name: 'whisper',               category: 'vehicle', keys: [ 'KeyT' ] },
+            { name: 'cookie',                category: 'vehicle', keys: [ 'KeyC' ] },
 
             // UI
             { name: 'close',                category: 'ui', keys: [ 'Escape' ] },

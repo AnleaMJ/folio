@@ -73,10 +73,10 @@ export class Entities
         this.key++
         this.list.set(this.key, entity)
 
-        // If sleeping or fixed apply transform directly
+        // If sleeping, not enabled or fixed apply transform directly
         if(entity.visual && entity.physical)
         {
-            if(_physicalDescription.sleeping || _physicalDescription.type === 'fixed')
+            if(_physicalDescription.sleeping || !_physicalDescription.enabled || _physicalDescription.type === 'fixed')
             {
                 entity.visual.position.copy(entity.physical.body.translation())
                 entity.visual.quaternion.copy(entity.physical.body.rotation())
