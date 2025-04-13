@@ -9,6 +9,7 @@ import { Playground } from './Playground.js'
 import { Christmas } from './Christmas.js'
 import { Altar } from './Altar.js'
 import { CookieStand } from './CookieStand.js'
+import { Bonfire } from './Bonfire.js'
 
 export class Scenery
 {
@@ -57,6 +58,13 @@ export class Scenery
                 this.references.cookieSpawner[0].position,
                 this.references.cookieInteractiveArea[0].position,
                 this.references.cookieTable[0].position
+            )
+            
+        if(this.references.bonfire && this.references.bonfireInteractiveArea && this.references.bonfireHashes)
+            this.poleLights = new Bonfire(
+                this.references.bonfire[0].position,
+                this.references.bonfireInteractiveArea[0].position,
+                this.references.bonfireHashes[0]
             )
             
         // this.playground = new Playground()

@@ -250,16 +250,6 @@ export class CookieStand
                 this.accept()
             }
         )
-
-        // this.game.interactiveAreas.create(
-        //     this.interactiveAreaPosition.clone().add(new THREE.Vector3(-6, 0, 3)),
-        //     'Test',
-        //     InteractiveAreas.ALIGN_RIGHT,
-        //     () =>
-        //     {
-        //         // this.accept()
-        //     }
-        // )
     }
 
     accept()

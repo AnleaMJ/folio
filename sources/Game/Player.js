@@ -17,7 +17,7 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        const respawn = this.game.respawns.getByName('cookieBanner')
+        const respawn = this.game.respawns.getByName('bonfire')
 
         this.position = respawn.position.clone()
         
@@ -105,13 +105,14 @@ export class Player
         })
     }
 
-    respawn()
+    respawn(respawnName = null)
     {
         this.game.overlay.show()
 
         gsap.delayedCall(2, () =>
         {
-            const respawn = this.game.respawns.getClosest(this.position)
+            let respawn = respawnName ? this.game.respawns.getByName(respawnName) : this.game.respawns.getClosest(this.position)
+
             this.game.physicalVehicle.moveTo(
                 respawn.position,
                 respawn.rotation
