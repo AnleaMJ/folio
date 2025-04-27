@@ -5,6 +5,9 @@ import gsap from 'gsap'
 
 export class InteractiveAreas
 {
+    static ALIGN_LEFT = 1
+    static ALIGN_RIGHT = 2
+
     constructor()
     {
         this.game = Game.getInstance()
@@ -22,7 +25,6 @@ export class InteractiveAreas
 
         this.setGeometries()
         this.setMaterials()
-        this.setCanvas()
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -34,34 +36,22 @@ export class InteractiveAreas
             if(event.down && this.activeItem)
             {
                 this.activeItem.callback()
-
-                // gsap.to(this.activeItem.scale, { z: 1, overwrite: true, duration: 2, delay: 0.2, ease: 'power1.inOut' })
-                gsap.to(this.activeItem.outer.position, { y: 0.3, ease: 'power2.out', duration: 0.1, overwrite: true, onComplete: () =>
-                {
-                    gsap.to(this.activeItem.outer.position, { y: 0.75, ease: 'elastic.out(1.3,0.4)', duration: 1.5, overwrite: true })
-                } })
+                this.activeItem.interact()
             }
         })
     }
 
     setGeometries()
     {
-        const size = 2.25
+        // const size = 2.25
         this.geometries = {}
 
         // Bottom
-        this.geometries.bottom = new THREE.RingGeometry(size - 0.12, size, 4, 1, Math.PI * 0.25)
-        this.geometries.bottom.rotateX(- Math.PI * 0.5)
-
-        // Outer
-        this.geometries.outer = new THREE.CylinderGeometry(size, size, 0.6, 4, 1, true)
-        this.geometries.outer.rotateY(- Math.PI * 0.25)
-        this.geometries.outer = this.geometries.outer.toNonIndexed()
-        this.geometries.outer.computeVertexNormals()
+        this.geometries.plane = new THREE.PlaneGeometry(2, 2)
 
         // Label
         this.geometries.label = new THREE.PlaneGeometry(1, 1, 1, 1)
-        this.geometries.label.rotateX(- Math.PI * 0.5)
+        this.geometries.label.translate(0.5, 0, 0)
     }
 
     setMaterials()
@@ -69,164 +59,235 @@ export class InteractiveAreas
         this.materials = {}
 
         // Uniforms
-        this.baseColor = uniform(color('#ffffff'))
-        this.mixColor = uniform(0.2)
         this.playerPosition = uniform(vec2())
-
-        // Plain
-        this.materials.plain = new THREE.MeshLambertNodeMaterial({ side: THREE.DoubleSide, transparent: true })
-
-        this.materials.plain.outputNode = Fn(() =>
-        {
-            const lightOutput = this.game.lighting.lightOutputNodeBuilder(this.baseColor, vec3(0, 1, 0), float(1), true, false)
-            return vec4(mix(lightOutput.rgb, this.baseColor.rgb, this.mixColor), 0.7)
-        })()
-
-        // Outer
-        this.materials.outer = new THREE.MeshLambertNodeMaterial({ side: THREE.DoubleSide, transparent: true })
-
-        this.materials.outer.outputNode = Fn(() =>
-        {
-            // Alpha
-            const stripes = uv().x.sub(this.game.ticker.elapsedUniform.mul(0.02)).mul(20).sub(uv().y).fract().step(0.5).mul(0.5)
-            const borders = step(0.4, uv().y.sub(0.5).abs())
-            
-            const playerDistance = this.playerPosition.distance(positionWorld.xz)
-            const playerLow = step(1.6, playerDistance)
-            const playerHigh = step(playerDistance, 1.7)
-            const player = playerLow.mul(playerHigh)
-
-            const alpha = max(stripes, borders, player).mul(playerLow)
-
-            // Discard
-            alpha.lessThan(0.1).discard()
-
-            // Light
-            const lightOutput = this.game.lighting.lightOutputNodeBuilder(this.baseColor, vec3(0, 1, 0), float(1), true, false)
-            return vec4(mix(lightOutput.rgb, this.baseColor.rgb, this.mixColor), alpha.mul(0.7))
-        })()
+        this.backColor = uniform(color('#251f2b'))
+        this.frontColor = uniform(color('#ffffff'))
 
         // Debug
         if(this.game.debug.active)
         {
-            this.game.debug.addThreeColorBinding(this.debugPanel, this.baseColor.value, 'this.baseColor')
-            this.debugPanel.addBinding(this.mixColor, 'value', { label: 'this.mixColor', min: 0, max: 1, step: 0.001 })
+            this.game.debug.addThreeColorBinding(this.debugPanel, this.backColor.value, 'backColor')
+            this.game.debug.addThreeColorBinding(this.debugPanel, this.frontColor.value, 'lineColor')
         }
     }
 
-    setCanvas()
-    {
-        const text = 'Accept\nCookie'
-        const textParts = text.split('\n')
-        
-        const width = 64 * 16
-        const lineHeight = 64
-        const height = lineHeight * textParts.length
-        this.textOffsetVertical = 2
-
-        this.font = `700 ${lineHeight}px "Amatic SC"`
-
-        this.canvas = {}
-        this.canvas.element = document.createElement('canvas')
-
-        this.context = this.canvas.element.getContext('2d')
-        this.context.font = this.font
-        this.context.letterSpacing = '10px'
-
-        // Canvas debug
-        this.canvas.element.style.position = 'fixed'
-        this.canvas.element.style.zIndex = 999
-        this.canvas.element.style.top = 0
-        this.canvas.element.style.left = 0
-        this.canvas.element.style.letterSpacing = '-3px'
-        // document.body.append(this.canvas.element)
-
-        // Text
-        let textWidth = 0
-
-        for(const textPart of textParts)
-        {
-            const textPartSize = this.context.measureText(textPart)
-
-            if(textPartSize.width > textWidth)
-            {
-                textWidth = textPartSize.width
-            }
-        }
-        textWidth = Math.ceil(textWidth) + 2
-
-        this.textWidth = textWidth
-        this.canvas.element.width = textWidth
-        this.canvas.element.height = height
-
-        this.context.fillStyle = '#000000'
-        this.context.fillRect(0, 0, width, height)
-
-        this.context.font = this.font
-        this.context.fillStyle = '#ffffff'
-        this.context.textAlign = 'center'
-        this.context.textBaseline = 'middle'
-
-        let i = 0
-        for(const textPart of textParts)
-        {
-            this.context.fillText(textPart, textWidth * 0.5, (i + 0.5) * lineHeight + this.textOffsetVertical)
-            i++
-        }
-
-        this.canvas.texture = new THREE.Texture(this.canvas.element)
-        this.canvas.texture.colorSpace = THREE.SRGBColorSpace
-        this.canvas.texture.minFilter = THREE.NearestFilter
-        this.canvas.texture.magFilter = THREE.NearestFilter
-        this.canvas.texture.generateMipmaps = false
-        this.canvas.texture.needsUpdate = true
-    }
-
-    create(position, callback)
+    create(position, text = '', align = InteractiveAreas.ALIGN_LEFT, callback)
     {
         const newPosition = position.clone()
-        newPosition.y = 0.01
+        newPosition.y = 2.25
 
-        // Bottom
-        const bottom = new THREE.Mesh(
-            this.geometries.bottom,
-            this.materials.plain
-        )
-        bottom.position.copy(newPosition)
-        this.game.scene.add(bottom)
+        /**
+         * Group
+         */
+        const group = new THREE.Group()
+        group.rotation.reorder('YXZ')
+        group.rotation.x = - Math.PI * 0.15
+        group.rotation.y = Math.PI * 0.25
+        group.position.copy(newPosition)
+        group.scale.setScalar(0.85)
+        this.game.scene.add(group)
 
-        // Outer
-        const outer = new THREE.Mesh(
-            this.geometries.outer,
-            this.materials.outer
-        )
-        outer.position.copy(newPosition)
-        outer.position.y -= 0.3
-        this.game.scene.add(outer)
+        /**
+         * Diamond
+         */
+        // Material
+        const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true })
 
-        // Label
-        const labelMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true })
-        labelMaterial.outputNode = Fn(() =>
+        const threshold = uniform(0.250)
+        const lineThickness = uniform(0.150)
+        const lineOffset = uniform(0.175)
+
+        diamondMaterial.outputNode = Fn(() =>
         {
-            const alpha = texture(this.canvas.texture, uv()).r
-            const lightOutput = this.game.lighting.lightOutputNodeBuilder(color('#ffffff'), vec3(0, 1, 0), float(1), true, false)
-            return vec4(mix(lightOutput.rgb, this.baseColor.rgb, this.mixColor), alpha)
+            const _uv = uv().toVar()
+            const distance = max(_uv.x.sub(0.5).abs(), _uv.y.sub(0.5).abs()).mul(2).toVar()
+
+            // Line
+            const lineDistance = threshold.sub(distance).sub(lineOffset).abs()
+            const line = step(lineDistance, lineThickness.mul(0.5))
+
+            // Discard
+            distance.greaterThan(threshold).discard()
+
+            // Fogged back color
+            const foggedBackColor = this.game.fog.strength.mix(this.backColor, this.game.fog.color)
+
+            // Final color
+            const finalColor = mix(foggedBackColor, this.frontColor, line)
+            return vec4(vec3(finalColor), 1)
         })()
 
-        const label = new THREE.Mesh(this.geometries.label, labelMaterial)
-        label.scale.x = 1.1 * this.textWidth / 60
-        label.scale.z = 1.1
-        label.position.copy(newPosition)
-        this.game.scene.add(label)
+        // Mesh
+        const diamond = new THREE.Mesh(
+            this.geometries.plane,
+            diamondMaterial
+        )
+        diamond.rotation.z = Math.PI * 0.25
+        group.add(diamond)
 
-        // Save
+        /**
+         * Key
+         */
+        // Material
+        const keyMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true })
+
+        keyMaterial.outputNode = Fn(() =>
+        {
+            const key = texture(this.game.resources.interactiveAreasKeyIconTexture, uv()).r
+            
+            // Discard
+            key.lessThan(0.5).discard()
+
+            return vec4(vec3(this.frontColor), 1)
+        })()
+
+        // Mesh
+        const key = new THREE.Mesh(
+            this.geometries.plane,
+            keyMaterial
+        )
+        key.scale.setScalar(0)
+        key.position.z = 0.01
+        key.visible = false
+        group.add(key)
+
+        /**
+         * Label
+         */
+        // Canvas
+        const height = 64
+        const textPaddingLeft = align === InteractiveAreas.ALIGN_LEFT ? 60 : 12
+        const textPaddingRight = align === InteractiveAreas.ALIGN_LEFT ? 12 : 60
+        const textOffsetVertical = 2
+        const font = `700 ${height}px "Amatic SC"`
+
+        const canvas = document.createElement('canvas')
+        canvas.style.position = 'fixed'
+        canvas.style.zIndex = 999
+        canvas.style.top = 0
+        canvas.style.left = 0
+        // document.body.append(canvas)
+
+        const context = canvas.getContext('2d')
+        context.font = font
+
+        const textSize = context.measureText(text)
+        const width = Math.ceil(textSize.width) + textPaddingLeft + textPaddingRight + 2
+        canvas.width = width
+        canvas.height = height
+
+        context.fillStyle = '#000000'
+        context.fillRect(0, 0, width, height)
+
+        context.font = font
+        context.fillStyle = '#ffffff'
+        context.textAlign = 'start'
+        context.textBaseline = 'middle'
+        context.fillText(text, textPaddingLeft + 1, height * 0.5 + textOffsetVertical)
+
+        const labelTexture = new THREE.Texture(canvas)
+        labelTexture.minFilter = THREE.NearestFilter
+        labelTexture.magFilter = THREE.NearestFilter
+        labelTexture.generateMipmaps = false
+
+        labelTexture.needsUpdate = true
+
+        // Material
+        const labelMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true })
+
+        const labelOffset = uniform(1)
+        labelMaterial.outputNode = Fn(() =>
+        {
+            // const _uv = uv().add(vec2(labelOffset, 0)).toVar()
+            const _uv = vec2(
+                uv().x.sub(labelOffset),
+                uv().y
+            ).toVar()
+
+            const text = texture(labelTexture, _uv).r
+            
+            // Discard
+            _uv.x.greaterThan(1).discard()
+            _uv.x.lessThan(0).discard()
+
+            // Fogged back color
+            const foggedBackColor = this.game.fog.strength.mix(this.backColor, this.game.fog.color)
+
+            // Final color
+            const finalColor = mix(foggedBackColor, this.frontColor, text)
+            return vec4(vec3(finalColor), 1)
+        })()
+
+        // Mesh
+        const label = new THREE.Mesh(
+            this.geometries.label,
+            labelMaterial
+        )
+        label.scale.x = 0.75 * width / height
+        label.scale.y = 0.75
+        label.position.z = -0.01
+
+        label.position.x = align === InteractiveAreas.ALIGN_LEFT ? 0 : - label.scale.x
+        label.visible = false
+        group.add(label)
+
+        /**
+         * Save
+         */
         const item = {}
-        item.outer = outer
         item.position = new THREE.Vector2(position.x, position.z)
         item.callback = callback
         item.isIn = false
 
+        // Open
+        item.open = () =>
+        {
+            key.visible = true
+            label.visible = true
+
+            gsap.to(threshold, { value: 0.5, ease: 'elastic.out(1.3,0.4)', duration: 1.5, overwrite: true })
+            gsap.to(lineThickness, { value: 0.075, ease: 'elastic.out(1.3,0.4)', duration: 1.5, overwrite: true })
+            gsap.to(lineOffset, { value: 0.150, ease: 'elastic.out(1.3,0.4)', duration: 1.5, overwrite: true })
+            
+            gsap.to(key.scale, { x: 0.25, y: 0.25, z: 0.25, ease: 'elastic.out(1.3,0.8)', duration: 1.5, delay: 0.6, overwrite: true })
+
+            gsap.to(labelOffset, { value: 0, ease: 'power2.out', duration: 0.6, delay: 0.2, overwrite: true })
+        }
+
+        item.close = () =>
+        {
+            gsap.to(threshold, { value: 0.250, ease: 'back.in(4.5)', duration: 0.6, delay: 0.2, overwrite: true })
+            gsap.to(lineThickness, { value: 0.150, ease: 'back.in(4.5)', duration: 0.6, delay: 0.2, overwrite: true })
+            gsap.to(lineOffset, { value: 0.175, ease: 'back.in(4.5)', duration: 0.6, delay: 0.2, overwrite: true, onComplete: () =>
+            {
+                key.visible = false
+                label.visible = false
+            } })
+
+            gsap.to(key.scale, { x: 0, y: 0, z: 0, ease: 'power2.in', duration: 0.6, overwrite: true })
+
+            gsap.to(labelOffset, { value: 1, ease: 'power2.in', duration: 0.6, overwrite: true })
+        }
+
+        item.interact = () =>
+        {
+            gsap.to(threshold, { value: 0.6, ease: 'power2.out', duration: 0.1, overwrite: true, onComplete: () =>
+            {
+                gsap.to(threshold, { value: 0.5, ease: 'elastic.out(1.3,0.6)', duration: 1.5, overwrite: true })
+            } })
+        }
+
         this.items.push(item)
+
+        // Debug
+        if(this.game.debug.active)
+        {
+            // this.game.debug.addThreeColorBinding(this.debugPanel, this.baseColor.value, 'this.baseColor')
+            this.debugPanel.addBinding(threshold, 'value', { label: 'threshold', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(lineThickness, 'value', { label: 'lineThickness', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(lineOffset, 'value', { label: 'lineOffset', min: 0, max: 1, step: 0.001 })
+            this.debugPanel.addBinding(labelOffset, 'value', { label: 'labelOffset', min: 0, max: 1, step: 0.001 })
+        }
     }
 
     update()
@@ -246,13 +307,13 @@ export class InteractiveAreas
                 {
                     this.activeItem = item
 
-                    gsap.to(item.outer.position, { y: 0.75, ease: 'elastic.out(1.3,0.4)', duration: 1.5, overwrite: true })
+                    item.open()
                 }
                 else
                 {
                     this.activeItem = null
 
-                    gsap.to(item.outer.position, { y: -0.3, ease: 'back.in(4.5)', duration: 0.6, overwrite: true })
+                    item.close()
                 }
             }
         }

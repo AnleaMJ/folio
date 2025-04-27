@@ -3,7 +3,7 @@ import { Game } from '../Game.js'
 import { color, float, Fn, mix, normalWorld, positionGeometry, step, storage, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { InstancedGroup } from '../InstancedGroup.js'
 import gsap from 'gsap'
-import { InteractiveAreas } from '../InteractiveAreas2.js'
+import { InteractiveAreas } from '../InteractiveAreas.js'
 
 export class CookieStand
 {

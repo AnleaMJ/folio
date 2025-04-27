@@ -32,7 +32,7 @@ import { PhysicsWireframe } from './Physics/PhysicsWireframe.js'
 import { Areas } from './Areas.js'
 import { Overlay } from './Overlay.js'
 import { Tornado } from './Tornado.js'
-import { InteractiveAreas } from './InteractiveAreas2.js'
+import { InteractiveAreas } from './InteractiveAreas.js'
 import { Respawns } from './Respawns.js'
 import { Audio } from './Audio.js'
 

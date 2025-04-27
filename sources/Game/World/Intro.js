@@ -1,5 +1,5 @@
 import { Game } from '../Game.js'
-import { InteractiveAreas } from '../InteractiveAreas2.js'
+import { InteractiveAreas } from '../InteractiveAreas.js'
 
 export class Intro
 {
