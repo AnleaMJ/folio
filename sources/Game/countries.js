@@ -248,4 +248,11 @@ export default [
     [ 'South Africa', 'Nanz Feih', 'za' ],
     [ 'Zambia', 'Zambia', 'zm' ],
     [ 'Zimbabwe', 'Zimbabwe', 'zw' ],
+
+
+    [ 'Luffy', 'Luffy', 'lf' ],
+    [ 'Hyrule', 'Hyrule', 'hy' ],
+    [ 'Umbrella Corp.', 'Umbrella Corporation', 'ub' ],
+    [ 'Kojima Production', 'Kojima Production', 'kj' ],
+    [ 'Nerv', 'Nerv', 'nv' ],
 ]

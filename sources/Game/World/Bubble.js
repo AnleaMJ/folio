@@ -264,6 +264,7 @@ export class Bubble
 
     updateImage(url = null)
     {
+        console.log(url)
         // Has URL => Change image texture, show
         if(url)
         {

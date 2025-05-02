@@ -174,7 +174,6 @@ export class Whispers
                         }
                     }
                 )
-
             }
 
             // Insert
@@ -433,8 +432,7 @@ export class Whispers
                 <img class="js-flag flag" src="${imageUrl}">
                 <span class="label">${_country[0]} (${_country[2]})</span>
             `
-            this.modal.flagScroller.appendChild(element)
-            
+
             const country = {}
             country.element = element
             country.terms = `${_country[0]} ${_country[1]} ${_country[2]}`
@@ -447,6 +445,18 @@ export class Whispers
             })
 
             this.countries.set(country.code, country)
+        }
+
+        // Add to DOM
+        let flagsDOMAdded = false
+        const flagsAddDOM = () =>
+        {
+            this.countries.forEach(_country =>
+            {
+                this.modal.flagScroller.appendChild(_country.element)
+            })
+            
+            flagsDOMAdded = true
         }
 
         // Search
@@ -497,6 +507,9 @@ export class Whispers
         // Open
         const openFlagSelect = () =>
         {
+            if(!flagsDOMAdded)
+                flagsAddDOM()
+
             this.modal.flagsSelectOpen = true
             this.modal.flagSelect.classList.add('is-visible')
             this.modal.flagSearch.focus()
@@ -610,6 +623,9 @@ export class Whispers
                 if(closestWhisper.countryCode)
                 {
                     const country = this.countries.get(closestWhisper.countryCode)
+
+                    console.log(country)
+                    console.log(country.imageUrl)
 
                     if(country)
                         imageUrl = country.imageUrl
