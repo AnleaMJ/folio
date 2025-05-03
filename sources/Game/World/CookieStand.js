@@ -7,7 +7,18 @@ import { InteractiveAreas } from '../InteractiveAreas.js'
 
 export class CookieStand
 {
-    constructor(cookie, banner, ovenHeat, blower, chimneyPosition, spawnerPosition, interactiveAreaPosition, tablePosition)
+    constructor(
+        cookie,
+        banner,
+        ovenHeat,
+        blower,
+        chimneyPosition,
+        spawnerPosition,
+        interactiveAreaPosition,
+        tablePosition,
+        counterPanel,
+        counterLabel
+    )
     {
         this.game = Game.getInstance()
 
@@ -27,6 +38,8 @@ export class CookieStand
         this.spawnerPosition = spawnerPosition
         this.interactiveAreaPosition = interactiveAreaPosition
         this.tablePosition = tablePosition
+        this.counterPanel = counterPanel
+        this.counterLabel = counterLabel
 
         this.setBanner()
         this.setParticles()
@@ -34,6 +47,7 @@ export class CookieStand
         this.setCookies()
         this.setActualCookies()
         this.setInteractiveArea()
+        this.setCounter()
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -252,6 +266,163 @@ export class CookieStand
         )
     }
 
+    setCounter()
+    {
+        this.counter = {}
+        this.counter.value = 11
+        this.counter.panel = this.counterPanel
+        this.counter.texture = null
+        this.counter.initialised = false
+
+        /**
+         * Canvas
+         */
+        const height = 64
+        const textOffsetVertical = 2
+        const font = `700 ${height}px "Amatic SC"`
+
+        const canvas = document.createElement('canvas')
+        canvas.style.position = 'fixed'
+        canvas.style.zIndex = 999
+        canvas.style.top = 0
+        canvas.style.left = 0
+        // document.body.append(canvas)
+
+        const context = canvas.getContext('2d')
+        context.font = font
+
+        /**
+         * Functions
+         */
+        this.counter.init = () =>
+        {
+            // Already
+            if(this.counter.initialised)
+                return
+
+            this.counter.initialised = true
+
+            // Format value
+            const formatedValue = this.counter.value.toLocaleString("en-US")
+            
+            // Texture
+            const textSize = context.measureText(`${formatedValue}00`)
+            const width = Math.ceil(textSize.width) + 2
+            canvas.width = width
+            canvas.height = height
+
+            this.counter.texture = new THREE.Texture(canvas)
+            this.counter.texture.minFilter = THREE.NearestFilter
+            this.counter.texture.magFilter = THREE.NearestFilter
+            this.counter.texture.generateMipmaps = false
+
+            // Geometry
+            const geometry = new THREE.PlaneGeometry(1, 1)
+
+            // Material
+            const material = new THREE.MeshLambertNodeMaterial({
+                alphaMap: this.counter.texture,
+                alphaTest: 0.01
+            })
+        
+            const totalShadows = this.game.lighting.addTotalShadowToMaterial(material)
+
+            material.outputNode = this.game.lighting.lightOutputNodeBuilder(color('#ffffff'), normalWorld, totalShadows)
+
+            // Mesh
+            const mesh = new THREE.Mesh(geometry, material)
+            mesh.position.copy(this.counterLabel.position)
+            mesh.quaternion.copy(this.counterLabel.quaternion)
+            mesh.receiveShadow = true
+            mesh.scale.y = 0.75
+            mesh.scale.x = 0.75 * width / height
+            this.game.scene.add(mesh)
+
+            // Panel
+            this.counter.panel.scale.x = width / 105
+
+            // First update
+            this.counter.update()
+        }
+
+        this.counter.add = () =>
+        {
+            this.counter.value++
+            this.throttleAmount++
+            this.counter.update()
+        }
+
+        this.counter.update = () =>
+        {
+            if(!this.counter.initialised)
+                return
+
+            const formatedValue = this.counter.value.toLocaleString("en-US")
+            
+            // Canvas
+            context.fillStyle = '#000000'
+            context.fillRect(0, 0, canvas.width, canvas.height)
+
+            context.font = font
+            context.fillStyle = '#ffffff'
+            context.textAlign = 'center'
+            context.textBaseline = 'middle'
+            context.fillText(formatedValue, canvas.width / 2, canvas.height * 0.5 + textOffsetVertical)
+
+            this.counter.texture.needsUpdate = true
+        }
+
+        /**
+         * Server
+         */
+        this.throttleAmount = 0
+        this.counter.throttleUpdate = () =>
+        {
+            if(this.throttleAmount > 0)
+            {
+                this.game.server.send({
+                    type: 'cookiesInsert',
+                    amount: this.throttleAmount
+                })
+                this.throttleAmount = 0
+            }
+        }
+        
+        setInterval(() =>
+        {
+            this.counter.throttleUpdate()
+        }, 1000)
+
+        // Server message event
+        this.game.server.events.on('message', (data) =>
+        {
+            // Init and insert
+            if(data.type === 'init' || data.type === 'cookiesUpdate')
+            {
+                if(data.cookiesCount > this.counter.value)
+                {
+                    this.counter.value = data.cookiesCount
+                    this.counter.update()
+                }
+            }
+        })
+
+        // Message already received
+        if(this.game.server.initData)
+        {
+            this.counter.value = this.game.server.initData.cookiesCount
+        }
+
+        // Server connect / disconnect
+        if(this.game.server.connected)
+            this.counter.init()
+            
+        this.game.server.events.on('connected', () =>
+        {
+            this.counter.init()
+        })
+    }
+
     accept()
     {
         // Cookies
@@ -261,7 +432,7 @@ export class CookieStand
         spawnPosition.z += Math.random() - 0.5
         entity.physical.body.setTranslation(spawnPosition)
         entity.physical.body.setEnabled(true)
-        window.requestAnimationFrame(() =>
+        requestAnimationFrame(() =>
         {
             entity.physical.body.applyImpulse({
                 x: (Math.random() - 0.5) * this.cookies.mass * 2,
@@ -276,6 +447,9 @@ export class CookieStand
         // Oven heat
         this.ovenHeat.scale.z = 2
         gsap.to(this.ovenHeat.scale, { z: 1, overwrite: true, duration: 2, delay: 0.2, ease: 'power1.inOut' })
+
+        // Counter
+        this.counter.add()
 
         // Actual cookie
         document.cookie = `acceptedCookies=${++this.actualCookies.count}`

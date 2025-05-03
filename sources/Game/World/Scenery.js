@@ -50,7 +50,7 @@ export class Scenery
                 this.references.poleLights
             )
             
-        if(this.references.cookie && this.references.cookieBanner && this.references.cookieOvenHeat && this.references.cookieBlower && this.references.cookieChimney && this.references.cookieSpawner && this.references.cookieInteractiveArea && this.references.cookieTable)
+        if(this.references.cookie && this.references.cookieBanner && this.references.cookieOvenHeat && this.references.cookieBlower && this.references.cookieChimney && this.references.cookieSpawner && this.references.cookieInteractiveArea && this.references.cookieTable && this.references.cookieCounterPanel && this.references.cookieCounterLabel)
             this.cookieStand = new CookieStand(
                 this.references.cookie[0],
                 this.references.cookieBanner[0],
@@ -59,7 +59,9 @@ export class Scenery
                 this.references.cookieChimney[0].position,
                 this.references.cookieSpawner[0].position,
                 this.references.cookieInteractiveArea[0].position,
-                this.references.cookieTable[0].position
+                this.references.cookieTable[0].position,
+                this.references.cookieCounterPanel[0],
+                this.references.cookieCounterLabel[0],
             )
             
         if(this.references.bonfire && this.references.bonfireInteractiveArea && this.references.bonfireHashes)
