@@ -17,7 +17,6 @@
     "emoji-regex": "^10.4.0",
     "gsap": "^3.12.5",
     "howler": "^2.2.4",
-    "js-user-country": "^1.0.1",
     "moment-timezone": "^0.5.48",
     "msgpack-lite": "^0.1.26",
     "normalize-wheel": "^1.0.1",

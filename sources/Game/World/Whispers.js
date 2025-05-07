@@ -5,7 +5,7 @@ import { hash } from 'three/tsl'
 import gsap from 'gsap'
 import { Bubble } from './Bubble.js'
 import emojiRegex from 'emoji-regex'
-import countries from '../countries.js'
+import countries from '../../data/countries.js'
 
 export class Whispers
 {

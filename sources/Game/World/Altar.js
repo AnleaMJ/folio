@@ -32,14 +32,14 @@ export class Altar
         this.setSkullEyes()
         this.setData()
 
-        this.updateSkullEyes(0)
-
-        // // Faker
-        // setInterval(() =>
-        // {
-        //     this.updateValue(this.value + 1)
-        // }, 2000)
-        // this.updateValue(Math.floor(Math.pow(Math.random(), 2) * 999999))
+        // Offline counter
+        if(!this.game.server.connected)
+            this.updateValue('...')
+            
+        this.game.server.events.on('disconnected', () =>
+        {
+            this.updateValue('...')
+        })
 
         // Debug
         if(this.game.debug.active)
@@ -52,12 +52,12 @@ export class Altar
     setBeam()
     {
         const radius = 2.5
-        const height = 6
+        this.height = 6
         this.beamAttenuation = uniform(1)
 
         // Cylinder
-        const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, height, 32, 1, true)
-        cylinderGeometry.translate(0, height * 0.5, 0)
+        const cylinderGeometry = new THREE.CylinderGeometry(radius, radius, this.height, 32, 1, true)
+        cylinderGeometry.translate(0, this.height * 0.5, 0)
         
         const cylinderMaterial = new THREE.MeshBasicNodeMaterial({ side: THREE.DoubleSide })
 
@@ -222,22 +222,22 @@ export class Altar
 
         // Canvas
         const ratio = 1 / 4
-        const width = 256
-        const height = width * ratio
-        const font = `700 ${height}px "Amatic SC"`
+        this.width = 256
+        this.height = this.width * ratio
+        this.font = `700 ${this.height}px "Amatic SC"`
         
         const canvas = document.createElement('canvas')
-        canvas.width = width
-        canvas.height = height
+        canvas.width = this.width
+        canvas.height = this.height
 
-        const textTexture = new THREE.Texture(canvas)
-        textTexture.colorSpace = THREE.SRGBColorSpace
-        textTexture.minFilter = THREE.NearestFilter
-        textTexture.magFilter = THREE.NearestFilter
-        textTexture.generateMipmaps = false
+        this.textTexture = new THREE.Texture(canvas)
+        this.textTexture.colorSpace = THREE.SRGBColorSpace
+        this.textTexture.minFilter = THREE.NearestFilter
+        this.textTexture.magFilter = THREE.NearestFilter
+        this.textTexture.generateMipmaps = false
 
-        const context = canvas.getContext('2d')
-        context.font = font
+        this.context = canvas.getContext('2d')
+        this.context.font = this.font
 
         // Geometry
         const geometry = new THREE.PlaneGeometry(size, size * ratio, 1, 1)
@@ -246,7 +246,7 @@ export class Altar
         const material = new THREE.MeshBasicNodeMaterial({ transparent: true })
         material.outputNode = Fn(() =>
         {
-            const textData = texture(textTexture, uv())
+            const textData = texture(this.textTexture, uv())
             const gooColor = this.game.fog.strength.mix(vec3(0), this.game.fog.color) // Fog
             const emissiveColor = this.colorBottom.mul(this.emissiveBottom)
             const finalColor = mix(gooColor, emissiveColor, textData.g)
@@ -258,56 +258,8 @@ export class Altar
         })()
 
         // Mesh
-        const mesh = new THREE.Mesh(geometry, material)
-        this.counter.add(mesh)
-        
-        /**
-         * Update
-         */
-        this.updateCounter = (value) =>
-        {
-            const formatedValue = value.toLocaleString('en-US')
-            context.font = font
-
-            context.fillStyle = '#000000'
-            context.fillRect(0, 0, width, height)
-
-            context.font = font
-            context.textAlign = 'center'
-            context.textBaseline = 'middle'
-
-            context.strokeStyle = '#ff0000'
-            context.lineWidth = height * 0.15
-            context.strokeText(formatedValue, width * 0.5, height * 0.55)
-
-            context.fillStyle = '#00ff00'
-            context.fillText(formatedValue, width * 0.5, height * 0.55)
-
-            textTexture.needsUpdate = true
-
-            gsap.to(
-                mesh.scale,
-                {
-                    x: 1.5,
-                    y: 1.5,
-                    duration: 0.3,
-                    overwrite: true,
-                    onComplete: () =>
-                    {
-                        gsap.to(
-                            mesh.scale,
-                            {
-                                x: 1,
-                                y: 1,
-                                duration: 2,
-                                ease: 'elastic.out(1,0.3)',
-                                overwrite: true
-                            }
-                        )
-                    }
-                }
-            )
-        }
+        this.mesh = new THREE.Mesh(geometry, material)
+        this.counter.add(this.mesh)
     }
 
     setArea()
@@ -380,11 +332,52 @@ export class Altar
 
     updateValue(value)
     {
-        if(value !== this.value)
-        {
-            this.updateCounter(value)
+        let formatedValue = null
 
-            this.value = value
-        }
+        if(typeof value === 'number')
+            formatedValue = value.toLocaleString('en-US')
+        else
+            formatedValue = value
+
+        this.context.font = this.font
+
+        this.context.fillStyle = '#000000'
+        this.context.fillRect(0, 0, this.width, this.height)
+
+        this.context.font = this.font
+        this.context.textAlign = 'center'
+        this.context.textBaseline = 'middle'
+
+        this.context.strokeStyle = '#ff0000'
+        this.context.lineWidth = this.height * 0.15
+        this.context.strokeText(formatedValue, this.width * 0.5, this.height * 0.55)
+
+        this.context.fillStyle = '#00ff00'
+        this.context.fillText(formatedValue, this.width * 0.5, this.height * 0.55)
+
+        this.textTexture.needsUpdate = true
+
+        gsap.to(
+            this.mesh.scale,
+            {
+                x: 1.5,
+                y: 1.5,
+                duration: 0.3,
+                overwrite: true,
+                onComplete: () =>
+                {
+                    gsap.to(
+                        this.mesh.scale,
+                        {
+                            x: 1,
+                            y: 1,
+                            duration: 2,
+                            ease: 'elastic.out(1,0.3)',
+                            overwrite: true
+                        }
+                    )
+                }
+            }
+        )
     }
 }

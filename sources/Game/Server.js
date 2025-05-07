@@ -61,7 +61,8 @@ export class Server
     {
         const data = this.decode(message.data)
     
-        if(data.type === 'init' && this.initData === null)
+    
+        if(this.initData === null)
             this.initData = data
 
         this.events.trigger('message', [ data ])
@@ -69,6 +70,9 @@ export class Server
 
     send(message)
     {
+        if(!this.connected)
+            return false
+
         this.socket.send(this.encode({ uuid: this.uuid, ...message }))
     }
 
