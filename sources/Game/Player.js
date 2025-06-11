@@ -17,7 +17,7 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        const respawn = this.game.respawns.getByName('bonfire')
+        const respawn = this.game.respawns.getByName('landing')
 
         this.position = respawn.position.clone()
         

@@ -84,6 +84,7 @@ export class Game
                     [ 'cherryTreesVisualModel',         'cherryTrees/cherryTreesVisual.glb',            'gltf'    ],
                     [ 'cherryTreesReferencesModel',     'cherryTrees/cherryTreesReferences.glb',        'gltf'    ],
                     [ 'sceneryStaticModel',             'scenery/sceneryStatic.glb',                    'gltf'    ],
+                    // [ 'sceneryStaticModel',             'scenery/sceneryStaticOptimized.glb',           'gltf'    ],
                     [ 'sceneryDynamicModel',            'scenery/sceneryDynamic.glb',                   'gltf'    ],
                     [ 'poleLightsVisualModel',          'poleLights/poleLightsVisual.glb',              'gltf'    ],
                     [ 'poleLightsPhysicalModel',        'poleLights/poleLightsPhysical.glb',            'gltf'    ],

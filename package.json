@@ -2,6 +2,7 @@
   "name": "bruno-simon-folio-2025",
   "version": "0.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build"
@@ -11,12 +12,18 @@
   "description": "",
   "dependencies": {
     "@dimforge/rapier3d-simd-compat": "^0.16.1",
+    "@gltf-transform/cli": "^4.1.0",
+    "@gltf-transform/core": "^4.1.0",
+    "@gltf-transform/extensions": "^4.1.0",
+    "@gltf-transform/functions": "^4.1.0",
     "@tweakpane/plugin-camerakit": "^0.3.0",
     "@tweakpane/plugin-essentials": "^0.2.1",
     "camera-controls": "^2.9.0",
+    "draco3d": "^1.5.7",
     "emoji-regex": "^10.4.0",
     "gsap": "^3.12.5",
     "howler": "^2.2.4",
+    "meshoptimizer": "^0.23.0",
     "moment-timezone": "^0.5.48",
     "msgpack-lite": "^0.1.26",
     "normalize-wheel": "^1.0.1",

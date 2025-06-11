@@ -31,6 +31,7 @@ export class Scenery
         this.setReferences()
         this.setStaticObjects()
         this.setDynamicsObjects()
+        // this.setTest()
 
         this.bushes = new Bushes()
         this.birchTrees = new Trees('Birch Tree', this.game.resources.birchTreesVisualModel.scene, this.game.resources.birchTreesReferencesModel.scene.children, '#ff782b')
@@ -118,8 +119,40 @@ export class Scenery
 
     setStaticObjects()
     {
+        let meshesCount = 0
+        const inspectChildren = (model, indent = '') =>
+        {
+            let children =[...model.children]
+
+            for(const child of children)
+            {
+                let material = ''
+                
+                if(child.isMesh)
+                {
+                    meshesCount++
+                    material = `(${child.material ? child.material.name : 'no material'})`
+                }
+                
+                let color = '#ffffff'
+
+                if(child.isMesh)
+                    color = 'cyan'
+
+                console.log(`%c${indent}${child.name} ${material}`, `color: ${color}; font-weight: bold;`)
+
+                if(child.name === 'hull012')
+                    console.log(child)
+
+                if(child.children?.length)
+                    inspectChildren(child, indent + '    ')
+            }
+        }
+
         // Models
         const model = this.game.resources.sceneryStaticModel.scene
+        inspectChildren(model)
+        console.log('Meshes count:', meshesCount)
         
         // References
         this.references.parse(model)
@@ -160,5 +193,25 @@ export class Scenery
                 }
             )
         }
+    }
+
+    setTest()
+    {
+        // Models
+        const model = this.game.resources.sceneryTestModel.scene
+        console.log(model.children)
+        
+        // References
+        this.references.parse(model)
+
+        // Entities
+        this.game.entities.addFromModel(
+            model,
+            null,
+            {
+                type: 'fixed',
+                friction: 0,
+            }
+        )
     }
 }

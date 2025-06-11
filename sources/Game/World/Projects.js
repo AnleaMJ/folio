@@ -504,6 +504,8 @@ export class Projects
 
         // Adjacents
         const intersectPrevious = this.references.get('intersectPreviousImage')[0]
+        const intersectPreviousPosition = new THREE.Vector3()
+        intersectPrevious.getWorldPosition(intersectPreviousPosition)
         const arrowPrevious = this.references.get('arrowPreviousImage')[0]
         arrowPrevious.material = this.hover.inactiveMaterial
  
@@ -511,7 +513,7 @@ export class Projects
             active: false,
             shapes:
             [
-                new THREE.Sphere(intersectPrevious.position, intersectPrevious.scale.x)
+                new THREE.Sphere(intersectPreviousPosition, intersectPrevious.scale.x)
             ],
             onClick: () =>
             {
@@ -528,13 +530,15 @@ export class Projects
         })
 
         const intersectNext = this.references.get('intersectNextImage')[0]
+        const intersectNextPosition = new THREE.Vector3()
+        intersectNext.getWorldPosition(intersectNextPosition)
         const arrowNext = this.references.get('arrowNextImage')[0]
         arrowNext.material = this.hover.inactiveMaterial
         this.pagination.nextIntersect = this.game.cursor.addIntersects({
             active: false,
             shapes:
             [
-                new THREE.Sphere(intersectNext.position, intersectNext.scale.x)
+                new THREE.Sphere(intersectNextPosition, intersectNext.scale.x)
             ],
             onClick: () =>
             {
@@ -702,11 +706,14 @@ export class Projects
         
         // Intersect
         const intersectPrevious = this.references.get('intersectPreviousProject')[0]
+        const intersectPreviousPosition = new THREE.Vector3()
+        intersectPrevious.getWorldPosition(intersectPreviousPosition)
+
         this.adjacents.previous.intersect = this.game.cursor.addIntersects({
             active: false,
             shapes:
             [
-                new THREE.Sphere(intersectPrevious.position, intersectPrevious.scale.x)
+                new THREE.Sphere(intersectPreviousPosition, intersectPrevious.scale.x)
             ],
             onClick: () =>
             {
@@ -750,11 +757,14 @@ export class Projects
         // Intersect
         const intersectNext = this.references.get('intersectNextProject')[0]
 
+        const intersectNextPosition = new THREE.Vector3()
+        intersectNext.getWorldPosition(intersectNextPosition)
+
         this.adjacents.next.intersect = this.game.cursor.addIntersects({
             active: false,
             shapes:
             [
-                new THREE.Sphere(intersectNext.position, intersectNext.scale.x)
+                new THREE.Sphere(intersectNextPosition, intersectNext.scale.x)
             ],
             onClick: () =>
             {
