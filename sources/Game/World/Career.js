@@ -22,7 +22,7 @@ export class Career
         }
 
         this.setLines()
-        this.updateDigits()
+        this.setYears()
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -57,12 +57,12 @@ export class Career
             item.stone = item.group.children.find(child => child.name.startsWith('stone'))
             item.stone.position.y = 0
             
-            item.origin = new THREE.Vector2(item.group.position.x, item.group.position.z)
+            item.originZ = item.group.position.z
             
             item.isIn = false
             item.elevationTarget = 0
             item.offsetTarget = 0
-            item.reveal = uniform(0)
+            item.labelReveal = uniform(0)
 
             {
                 item.textMesh = item.stone.children.find(child => child.name.startsWith('careerText'))
@@ -83,7 +83,7 @@ export class Career
                 {
                     const baseUv = uv().toVar()
 
-                    baseUv.x.step(item.reveal).lessThan(0.5).discard()
+                    baseUv.x.step(item.labelReveal).lessThan(0.5).discard()
 
                     const textureColor = texture(baseTexture, baseUv)
 
@@ -116,11 +116,11 @@ export class Career
         }
     }
 
-    updateDigits()
+    setYears()
     {
         this.year = {}
         this.year.group = this.references.get('year')[0]
-        this.year.origin = new THREE.Vector2(this.year.group.position.x, this.year.group.position.z)
+        this.year.originZ = this.year.group.position.z
         this.year.size = 17
         this.year.offsetTarget = 0
         this.year.start = 2008
@@ -165,6 +165,7 @@ export class Career
             THREE.NearestFilter,
             THREE.NearestFilter
         )
+        this.year.digitsTexture.generateMipmaps = false
         this.year.digitsTexture.needsUpdate = true
 
         this.year.digits = []
@@ -226,79 +227,79 @@ export class Career
 
     update()
     {
-        const playerPosition = new THREE.Vector2(this.game.player.position.x, this.game.player.position.z)
-
         // Lines
-        for(const item of this.lines.items)
+        for(const line of this.lines.items)
         {
-            const delta = item.origin.clone().sub(playerPosition)
+            const delta = line.originZ - this.game.player.position.z
 
             // Is in
-            if(delta.y > - this.lines.padding && delta.y < item.size + this.lines.padding * 2)
+            if(delta > - this.lines.padding && delta < line.size + this.lines.padding * 2)
             {
-                if(!item.isIn)
+                if(!line.isIn)
                 {
-                    item.isIn = true
-                    gsap.to(item.reveal, { value: 1, duration: 1, delay: 0.3, overwrite: true, ease: 'power2.inOut' })
+                    line.isIn = true
+                    gsap.to(line.labelReveal, { value: 1, duration: 1, delay: 0.3, overwrite: true, ease: 'power2.inOut' })
                 }
             }
+
+            // Is out
             else
             {
-                if(item.isIn)
+                if(line.isIn)
                 {
-                    item.isIn = false
-                    gsap.to(item.reveal, { value: 0, duration: 1, overwrite: true, ease: 'power2.inOut' })
+                    line.isIn = false
+                    gsap.to(line.labelReveal, { value: 0, duration: 1, overwrite: true, ease: 'power2.inOut' })
                 }
             }
 
             // Elevation
-            if(item.isIn)
+            if(line.isIn)
             {
-                item.elevationTarget = this.lines.activeElevation
+                line.elevationTarget = this.lines.activeElevation
             }
             else
             {
-                if(delta.y > item.size)
+                if(delta > line.size)
                 {
-                    if(item.hasEnd)
-                        item.elevationTarget = 0
+                    if(line.hasEnd)
+                        line.elevationTarget = 0
                 }
                 else
-                    item.elevationTarget = 0
+                    line.elevationTarget = 0
             }
 
-            item.stone.position.y += (item.elevationTarget - item.stone.position.y) * this.game.ticker.deltaScaled * 3
+            line.stone.position.y += (line.elevationTarget - line.stone.position.y) * this.game.ticker.deltaScaled * 3
 
-            // Offset
-            if(item.isIn)
+            // Position
+            if(line.isIn)
             {
-                if(item.stone.position.y > 1)
-                    item.offsetTarget = - clamp(delta.y, 0, item.size)
+                if(line.stone.position.y > 1)
+                    line.offsetTarget = - clamp(delta, 0, line.size)
             }
             else
             {
                 // End
-                if(delta.y > item.size)
-                    item.offsetTarget = - item.size
+                if(delta > line.size)
+                    line.offsetTarget = - line.size
                 // Start
                 else
-                    item.offsetTarget = 0
+                    line.offsetTarget = 0
             }
 
-            item.stone.position.z += (item.offsetTarget - item.stone.position.z) * this.game.ticker.deltaScaled * 10
+            line.stone.position.z += (line.offsetTarget - line.stone.position.z) * this.game.ticker.deltaScaled * 10
         }
 
         // Year
-        const delta = this.year.origin.clone().sub(playerPosition)
+        const delta = this.year.originZ - this.game.player.position.z
 
-        if(delta.y > this.year.size)
+        if(delta > this.year.size)
             this.year.offsetTarget = this.year.size
-        else if(delta.y < 0)
+        else if(delta < 0)
             this.year.offsetTarget = 0
         else
-            this.year.offsetTarget = delta.y
+            this.year.offsetTarget = delta
 
-        const finalPositionZ = this.year.origin.y - this.year.offsetTarget
+        const finalPositionZ = this.year.originZ - this.year.offsetTarget
         this.year.group.position.z += (finalPositionZ - this.year.group.position.z) * this.game.ticker.deltaScaled * 10
 
         const yearCurrent = this.year.start + Math.floor(this.year.offsetTarget)
