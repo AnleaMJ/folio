@@ -529,7 +529,7 @@ export class Whispers
     setInputs()
     {
         this.game.inputs.addMap([
-            { name: 'whisper', categories: [ 'playing' ], keys: [ 'KeyT' ] },
+            { name: 'whisper', categories: [ 'playing' ], keys: [ 'Keyboard.KeyT' ] },
         ])
 
         this.game.inputs.events.on('whisper', (event) =>

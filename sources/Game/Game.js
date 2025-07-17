@@ -2,7 +2,7 @@ import RAPIER from '@dimforge/rapier3d-simd-compat'
 import * as THREE from 'three/webgpu'
 
 import { Debug } from './Debug.js'
-import { Inputs } from './Inputs.js'
+import { Inputs } from './Inputs/Inputs.js'
 import { Physics } from './Physics/Physics.js'
 import { Rendering } from './Rendering.js'
 import { ResourcesLoader } from './ResourcesLoader.js'

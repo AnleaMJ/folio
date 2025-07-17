@@ -40,23 +40,23 @@ export class Player
     setInputs()
     {
         this.game.inputs.addMap([
-            { name: 'forward',               categories: [ 'playing'              ], keys: [ 'ArrowUp', 'KeyW' ] },
-            { name: 'right',                 categories: [ 'playing', 'cinematic' ], keys: [ 'ArrowRight', 'KeyD' ] },
-            { name: 'backward',              categories: [ 'playing', 'cinematic' ], keys: [ 'ArrowDown', 'KeyS' ] },
-            { name: 'left',                  categories: [ 'playing', 'cinematic' ], keys: [ 'ArrowLeft', 'KeyA' ] },
-            { name: 'boost',                 categories: [ 'playing'              ], keys: [ 'ShiftLeft', 'ShiftRight' ] },
-            { name: 'brake',                 categories: [ 'playing'              ], keys: [ 'KeyB' ] },
-            { name: 'respawn',               categories: [ 'playing'              ], keys: [ 'KeyR' ] },
-            { name: 'suspensions',           categories: [ 'playing'              ], keys: [ 'Numpad5', 'Space' ] },
-            { name: 'suspensionsFront',      categories: [ 'playing'              ], keys: [ 'Numpad8' ] },
-            { name: 'suspensionsBack',       categories: [ 'playing'              ], keys: [ 'Numpad2' ] },
-            { name: 'suspensionsRight',      categories: [ 'playing'              ], keys: [ 'Numpad6' ] },
-            { name: 'suspensionsLeft',       categories: [ 'playing'              ], keys: [ 'Numpad4' ] },
-            { name: 'suspensionsFrontLeft',  categories: [ 'playing'              ], keys: [ 'Numpad7' ] },
-            { name: 'suspensionsFrontRight', categories: [ 'playing'              ], keys: [ 'Numpad9' ] },
-            { name: 'suspensionsBackRight',  categories: [ 'playing'              ], keys: [ 'Numpad3' ] },
-            { name: 'suspensionsBackLeft',   categories: [ 'playing'              ], keys: [ 'Numpad1' ] },
-            { name: 'interact',              categories: [ 'playing', 'cinematic' ], keys: [ 'Enter' ] },
+            { name: 'forward',               categories: [ 'playing'              ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
+            { name: 'right',                 categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
+            { name: 'backward',              categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowDown', 'Keyboard.KeyS', 'Gamepad.down', 'Gamepad.l2' ] },
+            { name: 'left',                  categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowLeft', 'Keyboard.KeyA', 'Gamepad.left' ] },
+            { name: 'boost',                 categories: [ 'playing'              ], keys: [ 'Keyboard.ShiftLeft', 'Keyboard.ShiftRight', 'Gamepad.circle' ] },
+            { name: 'brake',                 categories: [ 'playing'              ], keys: [ 'Keyboard.KeyB', 'Gamepad.square' ] },
+            { name: 'respawn',               categories: [ 'playing'              ], keys: [ 'Keyboard.KeyR', 'Gamepad.select' ] },
+            { name: 'suspensions',           categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad5', 'Keyboard.Space', 'Gamepad.cross' ] },
+            { name: 'suspensionsFront',      categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad8' ] },
+            { name: 'suspensionsBack',       categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad2' ] },
+            { name: 'suspensionsRight',      categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad6', 'Gamepad.r1' ] },
+            { name: 'suspensionsLeft',       categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad4', 'Gamepad.l1' ] },
+            { name: 'suspensionsFrontLeft',  categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad7' ] },
+            { name: 'suspensionsFrontRight', categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad9' ] },
+            { name: 'suspensionsBackRight',  categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad3' ] },
+            { name: 'suspensionsBackLeft',   categories: [ 'playing'              ], keys: [ 'Keyboard.Numpad1' ] },
+            { name: 'interact',              categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.Enter', 'Gamepad.circle' ] },
         ])
 
         // Reset
@@ -172,10 +172,13 @@ export class Player
 
         // Accelerating (forward and backward)
         if(this.game.inputs.keys.forward)
-            this.accelerating += 1
+        {
+            this.accelerating += this.game.inputs.keys.forward
+            // console.log(this.game.inputs.keys.forward)
+        }
 
         if(this.game.inputs.keys.backward)
-            this.accelerating -= 1
+            this.accelerating -= this.game.inputs.keys.backward
 
         // Boosting
         if(this.game.inputs.keys.boost)
@@ -193,6 +196,9 @@ export class Player
             this.steering -= 1
         if(this.game.inputs.keys.left)
             this.steering += 1
+
+        if(this.steering === 0 && this.game.inputs.gamepad.joysticks.items.left.active)
+            this.steering = - this.game.inputs.gamepad.joysticks.items.left.safeX
     }
 
     updatePostPhysics()

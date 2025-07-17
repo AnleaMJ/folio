@@ -9,7 +9,7 @@ export class ClosingManager
         this.game = Game.getInstance()
 
         this.game.inputs.addMap([
-            { name: 'close', categories: [ 'modal', 'cinematic', 'playing' ], keys: [ 'Escape' ] },
+            { name: 'close', categories: [ 'modal', 'cinematic', 'playing' ], keys: [ 'Keyboard.Escape', 'Gamepad.triangle' ] },
         ])
         this.game.inputs.events.on('close', (event) =>
         {

@@ -68,7 +68,7 @@ export class View
         if(this.game.debug.active)
         {
             this.game.inputs.addMap([
-                { name: 'viewToggle', categories: [], keys: [ 'KeyV' ] }
+                { name: 'viewToggle', categories: [], keys: [ 'Keyboard.KeyV' ] }
             ])
 
             this.game.inputs.events.on('viewToggle', (event) =>
@@ -221,7 +221,9 @@ export class View
         this.zoom.sensitivity = 0.05
 
         this.game.inputs.addMap([
-            { name: 'zoom', categories: [ 'playing' ], keys: [ 'wheel' ] }
+            { name: 'zoom',    categories: [ 'playing' ], keys: [ 'wheel' ] },
+            { name: 'zoomIn',  categories: [ 'playing' ], keys: [ 'Gamepad.joystickRight' ] },
+            { name: 'zoomOut', categories: [ 'playing' ], keys: [ 'Gamepad.joystickLeft' ] },
         ])
 
         this.game.inputs.events.on('zoom', (wheelValue) =>
@@ -475,6 +477,18 @@ export class View
                 this.focusPoint.position.x -= mapMovement.x
                 this.focusPoint.position.z -= mapMovement.y
             }
+
+            if(this.game.inputs.gamepad.joysticks.items.right.active)
+            {
+                this.focusPoint.isTracking = false
+
+                const mapMovement = new THREE.Vector2(this.game.inputs.gamepad.joysticks.items.right.x, this.game.inputs.gamepad.joysticks.items.right.y)
+                mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
+                mapMovement.multiplyScalar(20 * this.game.ticker.delta)
+
+                this.focusPoint.position.x += mapMovement.x
+                this.focusPoint.position.z += mapMovement.y
+            }
         }
 
         // Focus point
@@ -493,6 +507,17 @@ export class View
         if(this.mode === View.DEFAULT_MODE)
         {
             // Zoom
+            if(this.game.inputs.keys.zoomIn)
+            {
+                this.zoom.baseRatio += 0.01
+                this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
+            }
+            if(this.game.inputs.keys.zoomOut)
+            {
+                this.zoom.baseRatio -= 0.01
+                this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
+            }
+
             const zoomSpeedRatio = smoothstep(focusPointSpeed, this.zoom.speedEdge.min, this.zoom.speedEdge.max)
             this.zoom.ratio = this.zoom.baseRatio
 

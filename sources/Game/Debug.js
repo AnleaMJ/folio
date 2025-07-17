@@ -19,7 +19,7 @@ export class Debug
             this.panel.registerPlugin(CamerakitPlugin)
 
             this.game.inputs.addMap([
-                { name: 'debugToggle', categories: [], keys: [ 'KeyH' ] }
+                { name: 'debugToggle', categories: [], keys: [ 'Keyboard.KeyH' ] }
             ])
 
             this.game.inputs.events.on('debugToggle', (event) =>
