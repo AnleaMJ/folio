@@ -20,9 +20,9 @@ export class BlackFriday
             this.update()
         }, 10)
 
-        this.game.inputs.events.on('close', (event) =>
+        this.game.inputs.events.on('close', (action) =>
         {
-            if(event.down)
+            if(action.active)
             {
                 if(this.outro.visible)
                     this.outro.hide()

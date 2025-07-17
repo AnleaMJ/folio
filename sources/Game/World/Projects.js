@@ -86,21 +86,21 @@ export class Projects
             this.close()
         })
 
-        this.game.inputs.events.on('left', (event) =>
+        this.game.inputs.events.on('left', (action) =>
         {
-            if(event.down)
+            if(action.active)
                 this.previous()
         })
 
-        this.game.inputs.events.on('right', (event) =>
+        this.game.inputs.events.on('right', (action) =>
         {
-            if(event.down)
+            if(action.active)
                 this.next()
         })
 
-        this.game.inputs.events.on('interact', (event) =>
+        this.game.inputs.events.on('interact', (action) =>
         {
-            if(!event.down && this.state === Projects.STATE_OPEN)
+            if(!action.active && this.state === Projects.STATE_OPEN)
             {
                 this.url.open()
             }
@@ -1206,7 +1206,8 @@ export class Projects
         })
 
         // Inputs filters
-        this.game.inputs.setFilters(['cinematic'])
+        this.game.inputs.filters.delete(['playing'])
+        this.game.inputs.filters.add(['cinematic'])
 
         // View cinematic
         this.game.view.cinematic.start(this.cinematic.position, this.cinematic.target)
@@ -1257,7 +1258,8 @@ export class Projects
         })
 
         // Input filters
-        this.game.inputs.setFilters(['playing'])
+        this.game.inputs.filters.delete(['cinematic'])
+        this.game.inputs.filters.add(['playing'])
 
         // View cinematic
         this.game.view.cinematic.end()

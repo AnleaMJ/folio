@@ -9,22 +9,23 @@ import Keyboard from './Keyboard.js'
 
 export class Inputs
 {
-    constructor(_map = [], filters = [])
+    constructor(actions = [], filters = [])
     {
         this.game = Game.getInstance()
         this.events = new Events()
 
-        this.keys = {}
-        this.map = []
-        this.filters = []
+        this.actions = new Map()
+        this.filters = new Set()
 
         this.setKeyboard()
         this.setGamepad()
         this.setPointer()
         this.setWheel()
 
-        this.addMap(_map)
-        this.setFilters(filters)
+        this.addActions(actions)
+        
+        for(const filter of filters)
+            this.filters.add(filter)
 
         this.game.ticker.events.on('tick', () =>
         {
@@ -76,38 +77,47 @@ export class Inputs
     {
         addEventListener('wheel', (_event) =>
         {
-            const maps = this.map.filter((_map) => _map.keys.indexOf('wheel') !== - 1 )
+            const filteredActions = [...this.actions.values()].filter((_action) => _action.keys.indexOf('wheel') !== - 1 )
             
-            for(const map of maps)
+            for(const action of filteredActions)
             {
-                if(this.checkCategory(map))
+                if(this.checkCategory(action))
                 {
                     const normalized = normalizeWheel(_event)
-                    this.events.trigger(map.name, [ normalized.spinY ])
+                    action.value = normalized.spinY
+                    this.events.trigger(action.name, [ action ])
                 }
             }
         }, { passive: true })
     }
 
-    addMap(_map)
+    addActions(actions)
     {
-        this.map.push(..._map)
+        for(const action of actions)
+        {
+            const formatedAction = {...action}
+            formatedAction.active = false
+            formatedAction.value = 0
+            formatedAction.activeKeys = new Set()
+
+            this.actions.set(action.name, formatedAction)
+        }
     }
 
-    checkCategory(map)
+    checkCategory(action)
     {
         // No filter => Allow all
-        if(this.filters.length === 0)
+        if(this.filters.size === 0)
             return true
 
-        // Has filter but no category on map => Forbid
-        if(map.categories.length === 0)
+        // Has filter but no category on action => Forbid
+        if(action.categories.length === 0)
             return true
 
         // Has matching category and filter => All
-        for(const category of map.categories)
+        for(const category of action.categories)
         {
-            if(this.filters.indexOf(category) !== -1)
+            if(this.filters.has(category))
                 return true
         }
 
@@ -117,50 +127,58 @@ export class Inputs
 
     down(key, value = 1)
     {
-        const maps = this.map.filter((_map) => _map.keys.indexOf(key) !== - 1 )
-        
-        for(const map of maps)
+        const filteredActions = [...this.actions.values()].filter((_action) => _action.keys.indexOf(key) !== - 1 )
+            
+        for(const action of filteredActions)
         {
-            if(map && !this.keys[map.name] && this.checkCategory(map))
+            if(action && this.checkCategory(action))
             {
-                this.keys[map.name] = value
-                this.events.trigger('keyDown', [ { down: true, name: map.name } ])
-                this.events.trigger(map.name, [ { down: true, name: map.name } ])
+                action.value = value
+                action.activeKeys.add(key)
+
+                if(!action.active)
+                {
+                    action.active = true
+                    
+                    this.events.trigger('actionStart', [ action ])
+                    this.events.trigger(action.name, [ action ])
+                }
             }
         }
     }
 
     up(key)
     {
-        const maps = this.map.filter((_map) => _map.keys.indexOf(key) !== - 1 )
-        
-        for(const map of maps)
+        const filteredActions = [...this.actions.values()].filter((_action) => _action.keys.indexOf(key) !== - 1 )
+            
+        for(const action of filteredActions)
         {
-            if(map && this.keys[map.name])
+            if(action && action.active)
             {
-                delete this.keys[map.name]
-                this.events.trigger('keyUp', [ { down: false, name: map.name } ])
-                this.events.trigger(map.name, [ { down: false, name: map.name } ])
+                action.activeKeys.delete(key)
+
+                if(action.activeKeys.size === 0)
+                {
+                    action.active = false
+                    action.value = 0
+                    this.events.trigger('actionEnd', [ action ])
+                    this.events.trigger(action.name, [ action ])
+                }
             }
         }
     }
 
     change(key, value = 1)
     {
-        const maps = this.map.filter((_map) => _map.keys.indexOf(key) !== - 1 )
-        
-        for(const map of maps)
+        const filteredActions = [...this.actions.values()].filter((_action) => _action.keys.indexOf(key) !== - 1 )
+            
+        for(const action of filteredActions)
         {
-            if(map && this.keys[map.name] && this.checkCategory(map) && this.keys[map.name] !== value)
+            if(action && action.active && this.checkCategory(action) && action.value !== value)
             {
-                this.keys[map.name] = value
+                action.value = value
             }
         }
-    }
-
-    setFilters(filters = [])
-    {
-        this.filters = filters
     }
 
     update()

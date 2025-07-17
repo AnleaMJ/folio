@@ -117,8 +117,8 @@ export class VisualVehicle
             running = true
             on = true
 
-            this.parts.blinkerLeft.visible = this.game.inputs.keys.left ? on : false
-            this.parts.blinkerRight.visible = this.game.inputs.keys.right ? on : false
+            this.parts.blinkerLeft.visible = this.game.inputs.actions.get('left').active ? on : false
+            this.parts.blinkerRight.visible = this.game.inputs.actions.get('right').active ? on : false
 
             interval = setInterval(blink, 400)
         }
@@ -127,25 +127,25 @@ export class VisualVehicle
         {
             on = !on
 
-            this.parts.blinkerLeft.visible = this.game.inputs.keys.left ? on : false
-            this.parts.blinkerRight.visible = this.game.inputs.keys.right ? on : false
+            this.parts.blinkerLeft.visible = this.game.inputs.actions.get('left').active ? on : false
+            this.parts.blinkerRight.visible = this.game.inputs.actions.get('right').active ? on : false
 
-            if(!this.game.inputs.keys.left && !this.game.inputs.keys.right && !on)
+            if(!this.game.inputs.actions.get('left').active && !this.game.inputs.actions.get('right').active && !on)
             {
                 clearInterval(interval)
                 running = false
             }
         }
 
-        this.game.inputs.events.on('left', (event) =>
+        this.game.inputs.events.on('left', (active) =>
         {
-            if(event.down)
+            if(active.active)
                 start()
         })
 
-        this.game.inputs.events.on('right', (event) =>
+        this.game.inputs.events.on('right', (active) =>
         {
-            if(event.down)
+            if(active.active)
                 start()
         })
     }
@@ -210,7 +210,7 @@ export class VisualVehicle
 
             // visualWheel.container.position.copy(physicalWheel.basePosition)
 
-            if(!this.game.inputs.keys.brake || this.game.inputs.keys.forward || this.game.inputs.keys.backward)
+            if(!this.game.inputs.actions.get('brake').active || this.game.inputs.actions.get('forward').active || this.game.inputs.actions.get('backward').active)
             {
                 if(!physicalVehicle.stop.active)
                 {
@@ -266,7 +266,7 @@ export class VisualVehicle
             this.parts.stopLights.visible = false
 
         // Boost trails
-        const trailAlpha = physicalVehicle.goingForward && this.game.player.boosting && (this.game.inputs.keys.forward) ? 1 : 0
+        const trailAlpha = physicalVehicle.goingForward && this.game.player.boosting && (this.game.inputs.actions.get('forward').active) ? 1 : 0
         this.boostTrails.leftReference.getWorldPosition(this.boostTrails.left.position)
         this.boostTrails.left.alpha = trailAlpha
         this.boostTrails.rightReference.getWorldPosition(this.boostTrails.right.position)

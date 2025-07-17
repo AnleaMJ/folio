@@ -8,12 +8,12 @@ export class ClosingManager
     {
         this.game = Game.getInstance()
 
-        this.game.inputs.addMap([
+        this.game.inputs.addActions([
             { name: 'close', categories: [ 'modal', 'cinematic', 'playing' ], keys: [ 'Keyboard.Escape', 'Gamepad.triangle' ] },
         ])
-        this.game.inputs.events.on('close', (event) =>
+        this.game.inputs.events.on('close', (action) =>
         {
-            if(event.down)
+            if(action.active)
             {
                 this.close()
             }

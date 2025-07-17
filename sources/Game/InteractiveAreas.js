@@ -35,9 +35,9 @@ export class InteractiveAreas
             this.update()
         })
 
-        this.game.inputs.events.on('interact', (event) =>
+        this.game.inputs.events.on('interact', (action) =>
         {
-            if(event.down && this.activeItem && this.activeItem.state !== InteractiveAreas.STATE_HIDDEN)
+            if(action.active && this.activeItem && this.activeItem.state !== InteractiveAreas.STATE_HIDDEN)
             {
                 this.activeItem.interact()
                 this.activeItem.callback()

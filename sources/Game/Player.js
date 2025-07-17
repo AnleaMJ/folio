@@ -39,7 +39,7 @@ export class Player
 
     setInputs()
     {
-        this.game.inputs.addMap([
+        this.game.inputs.addActions([
             { name: 'forward',               categories: [ 'playing'              ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
             { name: 'right',                 categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
             { name: 'backward',              categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowDown', 'Keyboard.KeyS', 'Gamepad.down', 'Gamepad.l2' ] },
@@ -60,31 +60,31 @@ export class Player
         ])
 
         // Reset
-        this.game.inputs.events.on('respawn', (_event) =>
+        this.game.inputs.events.on('respawn', (action) =>
         {
             if(this.state !== Player.STATE_DEFAULT)
                 return
 
-            if(_event.down)
+            if(action.active)
             {
                 this.respawn()
             }
         })
 
         // Suspensions
-        const suspensionsUpdate = (_event) =>
+        const suspensionsUpdate = () =>
         {
             if(this.state !== Player.STATE_DEFAULT)
                 return
 
             const activeSuspensions = [
-                this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsFront || this.game.inputs.keys.suspensionsRight || this.game.inputs.keys.suspensionsFrontRight, // front right
-                this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsFront || this.game.inputs.keys.suspensionsLeft || this.game.inputs.keys.suspensionsFrontLeft, // front left
-                this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsBack || this.game.inputs.keys.suspensionsRight || this.game.inputs.keys.suspensionsBackRight, // back right
-                this.game.inputs.keys.suspensions || this.game.inputs.keys.suspensionsBack || this.game.inputs.keys.suspensionsLeft || this.game.inputs.keys.suspensionsBackLeft, // back left
+                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsFrontRight').active, // front right
+                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsFront').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsFrontLeft').active, // front left
+                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsRight').active || this.game.inputs.actions.get('suspensionsBackRight').active, // back right
+                this.game.inputs.actions.get('suspensions').active || this.game.inputs.actions.get('suspensionsBack').active || this.game.inputs.actions.get('suspensionsLeft').active || this.game.inputs.actions.get('suspensionsBackLeft').active, // back left
             ]
 
-            const activeState = this.game.inputs.keys.suspensions ? 'high' : 'mid' // high = jump, mid = lowride
+            const activeState = this.game.inputs.actions.get('suspensions').active ? 'high' : 'mid' // high = jump, mid = lowride
 
             for(let i = 0; i < 4; i++)
                 this.suspensions[i] = activeSuspensions[i] ? activeState : 'low'
@@ -171,30 +171,27 @@ export class Player
             return
 
         // Accelerating (forward and backward)
-        if(this.game.inputs.keys.forward)
-        {
-            this.accelerating += this.game.inputs.keys.forward
-            // console.log(this.game.inputs.keys.forward)
-        }
+        if(this.game.inputs.actions.get('forward').active)
+            this.accelerating += this.game.inputs.actions.get('forward').value
 
-        if(this.game.inputs.keys.backward)
-            this.accelerating -= this.game.inputs.keys.backward
+        if(this.game.inputs.actions.get('backward').active)
+            this.accelerating -= this.game.inputs.actions.get('backward').value
 
         // Boosting
-        if(this.game.inputs.keys.boost)
+        if(this.game.inputs.actions.get('boost').active)
             this.boosting = 1
 
         // Braking
-        if(this.game.inputs.keys.brake)
+        if(this.game.inputs.actions.get('brake').active)
         {
             this.accelerating = 0
             this.braking = 1
         }
 
         // Steering
-        if(this.game.inputs.keys.right)
+        if(this.game.inputs.actions.get('right').active)
             this.steering -= 1
-        if(this.game.inputs.keys.left)
+        if(this.game.inputs.actions.get('left').active)
             this.steering += 1
 
         if(this.steering === 0 && this.game.inputs.gamepad.joysticks.items.left.active)

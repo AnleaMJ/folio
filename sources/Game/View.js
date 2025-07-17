@@ -67,13 +67,13 @@ export class View
         // Toggle
         if(this.game.debug.active)
         {
-            this.game.inputs.addMap([
+            this.game.inputs.addActions([
                 { name: 'viewToggle', categories: [], keys: [ 'Keyboard.KeyV' ] }
             ])
 
-            this.game.inputs.events.on('viewToggle', (event) =>
+            this.game.inputs.events.on('viewToggle', (action) =>
             {
-                if(event.down)
+                if(action.active)
                 {
                     this.toggleMode()
                 }
@@ -105,7 +105,7 @@ export class View
         this.focusPoint.position = new THREE.Vector3()
         this.focusPoint.smoothedPosition = new THREE.Vector3()
 
-        this.game.inputs.events.on('keyDown', () =>
+        this.game.inputs.events.on('actionStart', () =>
         {
             this.focusPoint.isTracking = true
         })
@@ -220,15 +220,15 @@ export class View
         this.zoom.speedEdge = { min: 5, max: 40 }
         this.zoom.sensitivity = 0.05
 
-        this.game.inputs.addMap([
+        this.game.inputs.addActions([
             { name: 'zoom',    categories: [ 'playing' ], keys: [ 'wheel' ] },
             { name: 'zoomIn',  categories: [ 'playing' ], keys: [ 'Gamepad.joystickRight' ] },
             { name: 'zoomOut', categories: [ 'playing' ], keys: [ 'Gamepad.joystickLeft' ] },
         ])
 
-        this.game.inputs.events.on('zoom', (wheelValue) =>
+        this.game.inputs.events.on('zoom', (action) =>
         {
-            this.zoom.baseRatio -= wheelValue * this.zoom.sensitivity
+            this.zoom.baseRatio -= action.value * this.zoom.sensitivity
             this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
         })
 
@@ -507,12 +507,12 @@ export class View
         if(this.mode === View.DEFAULT_MODE)
         {
             // Zoom
-            if(this.game.inputs.keys.zoomIn)
+            if(this.game.inputs.actions.get('zoomIn').active)
             {
                 this.zoom.baseRatio += 0.01
                 this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)
             }
-            if(this.game.inputs.keys.zoomOut)
+            if(this.game.inputs.actions.get('zoomOut').active)
             {
                 this.zoom.baseRatio -= 0.01
                 this.zoom.baseRatio = clamp(this.zoom.baseRatio, 0, 1)

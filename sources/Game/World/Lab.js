@@ -85,21 +85,21 @@ export class Lab
             this.close()
         })
 
-        this.game.inputs.events.on('left', (event) =>
+        this.game.inputs.events.on('left', (action) =>
         {
-            if(event.down)
+            if(action.active)
                 this.previous()
         })
 
-        this.game.inputs.events.on('right', (event) =>
+        this.game.inputs.events.on('right', (action) =>
         {
-            if(event.down)
+            if(action.active)
                 this.next()
         })
 
-        this.game.inputs.events.on('interact', (event) =>
+        this.game.inputs.events.on('interact', (action) =>
         {
-            if(!event.down && this.state === Lab.STATE_OPEN)
+            if(!action.active && this.state === Lab.STATE_OPEN)
             {
                 this.url.open()
             }
@@ -933,13 +933,13 @@ export class Lab
         })
 
         // Inputs
-        this.game.inputs.addMap([
+        this.game.inputs.addActions([
             { name: 'scroll', categories: [ 'cinematic' ], keys: [ 'wheel' ] }
         ])
 
-        this.game.inputs.events.on('scroll', (wheelValue) =>
+        this.game.inputs.events.on('scroll', (action) =>
         {
-            this.scroller.targetProgress -= wheelValue * this.scroller.wheelSensitivity
+            this.scroller.targetProgress -= action.value * this.scroller.wheelSensitivity
         })
     }
 
@@ -1137,7 +1137,8 @@ export class Lab
         })
 
         // Inputs filters
-        this.game.inputs.setFilters(['cinematic'])
+        this.game.inputs.filters.delete(['playing'])
+        this.game.inputs.filters.add(['cinematic'])
 
         // View cinematic
         this.game.view.cinematic.start(this.cinematic.position, this.cinematic.target)
@@ -1183,7 +1184,8 @@ export class Lab
         })
 
         // Input filters
-        this.game.inputs.setFilters(['playing'])
+        this.game.inputs.filters.delete(['cinematic'])
+        this.game.inputs.filters.add(['playing'])
 
         // View cinematic
         this.game.view.cinematic.end()

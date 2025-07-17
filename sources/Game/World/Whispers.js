@@ -528,13 +528,13 @@ export class Whispers
 
     setInputs()
     {
-        this.game.inputs.addMap([
+        this.game.inputs.addActions([
             { name: 'whisper', categories: [ 'playing' ], keys: [ 'Keyboard.KeyT' ] },
         ])
 
-        this.game.inputs.events.on('whisper', (event) =>
+        this.game.inputs.events.on('whisper', (action) =>
         {
-            if(event.down)
+            if(action.active)
                 this.game.modals.open('whispers')
         })
     }
