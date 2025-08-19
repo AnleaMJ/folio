@@ -66,6 +66,11 @@ export class Inputs
         {
             this.change(`Gamepad.${key.name}`, key.value)
         })
+
+        this.gamepad.events.on('joystickChange', (joystick) =>
+        {
+            this.change(`Gamepad.joystick${joystick.name.charAt(0).toUpperCase() + joystick.name.slice(1)}`, { x: joystick.x, y: joystick.y, radius: joystick.radius, active: joystick.active })
+        })
     }
 
     setPointer()

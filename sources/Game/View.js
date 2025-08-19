@@ -244,8 +244,8 @@ export class View
 
         this.game.inputs.addActions([
             { name: 'zoom',    categories: [ 'playing' ], keys: [ 'Wheel.roll' ] },
-            { name: 'zoomIn',  categories: [ 'playing' ], keys: [ 'Gamepad.joystickRight' ] },
-            { name: 'zoomOut', categories: [ 'playing' ], keys: [ 'Gamepad.joystickLeft' ] },
+            { name: 'zoomIn',  categories: [ 'playing' ], keys: [ 'Gamepad.r3' ] },
+            { name: 'zoomOut', categories: [ 'playing' ], keys: [ 'Gamepad.l3' ] },
         ])
 
         this.game.inputs.events.on('zoom', (action) =>
@@ -486,6 +486,7 @@ export class View
     {
         this.game.inputs.addActions([
             { name: 'viewMapPointer', categories: [ 'playing' ], keys: [ 'Pointer.any' ] },
+            // { name: 'viewMapJoystick', categories: [ 'playing' ], keys: [ 'Gamepad.joystickRight' ] },
         ])
 
         this.game.inputs.events.on('viewMapPointer', (action) =>
@@ -511,27 +512,23 @@ export class View
                 }
             }
         })
-
-
-        // Default mode
-        // if(this.mode === View.DEFAULT_MODE)
-        // {
-        //     if(this.game.inputs.gamepad.joysticks.items.right.active)
-        //     {
-        //         this.focusPoint.isTracking = false
-
-        //         const mapMovement = new THREE.Vector2(this.game.inputs.gamepad.joysticks.items.right.x, this.game.inputs.gamepad.joysticks.items.right.y)
-        //         mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
-        //         mapMovement.multiplyScalar(20 * this.game.ticker.delta)
-
-        //         this.focusPoint.position.x += mapMovement.x
-        //         this.focusPoint.position.z += mapMovement.y
-        //     }
-        // }
     }
 
     update()
     {
+        // Gamepad Joystick map controls
+        if(this.mode === View.DEFAULT_MODE && this.game.inputs.gamepad.joysticks.items.right.active)
+        {
+            this.focusPoint.isTracking = false
+
+            const mapMovement = new THREE.Vector2(this.game.inputs.gamepad.joysticks.items.right.x, this.game.inputs.gamepad.joysticks.items.right.y)
+            mapMovement.rotateAround(new THREE.Vector2(), -this.spherical.theta)
+            mapMovement.multiplyScalar(20 * this.game.ticker.delta)
+
+            this.focusPoint.position.x += mapMovement.x
+            this.focusPoint.position.z += mapMovement.y
+        }
+        
         // Focus point
         if(this.focusPoint.isTracking)
         {

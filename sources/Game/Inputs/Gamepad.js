@@ -23,8 +23,8 @@ export class Gamepad
             'r2',
             'select',
             'start',
-            'joystickLeft',
-            'joystickRight',
+            'l3',
+            'r3',
             'up',
             'down',
             'left',
@@ -55,8 +55,8 @@ export class Gamepad
                 '7': 'r2',
                 '8': 'select',
                 '9': 'start',
-                '10': 'joystickLeft',
-                '11': 'joystickRight',
+                '10': 'l3',
+                '11': 'r3',
                 '12': 'center',
                 '13': 'up',
                 '14': 'down',
@@ -75,8 +75,8 @@ export class Gamepad
                 '7': 'r2',
                 '8': 'select',
                 '9': 'start',
-                '10': 'joystickLeft',
-                '11': 'joystickRight',
+                '10': 'l3',
+                '11': 'r3',
                 '12': 'up',
                 '13': 'down',
                 '14': 'left',
@@ -260,6 +260,11 @@ export class Gamepad
                 for(const joystickName in this.joysticks.items)
                 {
                     const joystick = this.joysticks.items[joystickName]
+
+                    let oldX = joystick.x
+                    let oldY = joystick.y
+                    let oldActive = joystick.active
+
                     joystick.x = gamepad.axes[joystick.indexes[0]]
                     joystick.safeX = remapClamp(Math.abs(joystick.x), this.joysticks.deadZone, 1, 0, 1) * Math.sign(joystick.x)
 
@@ -272,6 +277,11 @@ export class Gamepad
                     joystick.safeRadius = remapClamp(joystick.radius, this.joysticks.deadZone, 1, 0, 1)
 
                     joystick.active = joystick.radius > this.joysticks.deadZone
+
+                    if(oldActive !== joystick.active || oldX !== joystick.x || oldY !== joystick.y)
+                    {
+                        this.events.trigger('joystickChange', [ joystick ])
+                    }
                 }
             }
         }
