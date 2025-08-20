@@ -81,10 +81,10 @@ export class Projects
 
     setInputs()
     {
-        this.game.inputs.events.on('backward', () =>
-        {
-            this.close()
-        })
+        // this.game.inputs.events.on('backward', () =>
+        // {
+        //     this.close()
+        // })
 
         this.game.inputs.events.on('left', (action) =>
         {

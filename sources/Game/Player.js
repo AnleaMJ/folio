@@ -18,7 +18,7 @@ export class Player
         this.braking = 0
         this.suspensions = ['low', 'low', 'low', 'low']
 
-        const respawn = this.game.respawns.getByName('landing')
+        const respawn = this.game.respawns.getByName('lab')
 
         this.position = respawn.position.clone()
         
@@ -41,7 +41,7 @@ export class Player
     setInputs()
     {
         this.game.inputs.addActions([
-            { name: 'forward',               categories: [ 'playing'              ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
+            { name: 'forward',               categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowUp', 'Keyboard.KeyW', 'Gamepad.up', 'Gamepad.r2' ] },
             { name: 'right',                 categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowRight', 'Keyboard.KeyD', 'Gamepad.right' ] },
             { name: 'backward',              categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowDown', 'Keyboard.KeyS', 'Gamepad.down', 'Gamepad.l2' ] },
             { name: 'left',                  categories: [ 'playing', 'cinematic' ], keys: [ 'Keyboard.ArrowLeft', 'Keyboard.KeyA', 'Gamepad.left' ] },

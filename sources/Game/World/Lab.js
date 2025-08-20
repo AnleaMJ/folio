@@ -80,10 +80,10 @@ export class Lab
 
     setInputs()
     {
-        this.game.inputs.events.on('backward', () =>
-        {
-            this.close()
-        })
+        // this.game.inputs.events.on('backward', () =>
+        // {
+        //     this.close()
+        // })
 
         this.game.inputs.events.on('left', (action) =>
         {
@@ -92,6 +92,18 @@ export class Lab
         })
 
         this.game.inputs.events.on('right', (action) =>
+        {
+            if(action.active)
+                this.next()
+        })
+
+        this.game.inputs.events.on('forward', (action) =>
+        {
+            if(action.active)
+                this.previous()
+        })
+
+        this.game.inputs.events.on('backward', (action) =>
         {
             if(action.active)
                 this.next()
