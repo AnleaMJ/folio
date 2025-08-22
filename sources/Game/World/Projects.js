@@ -5,6 +5,7 @@ import gsap from 'gsap'
 import projectsData from '../../data/projects.js'
 import { TextCanvas } from '../TextCanvas.js'
 import { add, color, float, Fn, If, luminance, mix, mul, normalWorld, positionGeometry, sin, step, texture, uniform, uv, vec3, vec4 } from 'three/tsl'
+import { Inputs } from '../Inputs/Inputs.js'
 
 export class Projects
 {
@@ -107,6 +108,18 @@ export class Projects
         this.game.inputs.events.on('right', (action) =>
         {
             if(action.active)
+                this.next()
+        })
+
+        this.game.inputs.events.on('forward', (action) =>
+        {
+            if(action.active && !action.activeKeys.has('Gamepad.r2'))
+                this.previous()
+        })
+
+        this.game.inputs.events.on('backward', (action) =>
+        {
+            if(action.active && !action.activeKeys.has('Gamepad.l2'))
                 this.next()
         })
 
@@ -1071,7 +1084,9 @@ export class Projects
         this.blackBoard = {}
         this.blackBoard.active = true
         this.blackBoard.mesh = this.references.get('blackBoard')[0]
+        this.blackBoard.parent = this.blackBoard.mesh.parent
         
+        // Jump timeline
         this.blackBoard.timeline = gsap.timeline({
             repeat: -1,
             repeatDelay: 5,
@@ -1091,6 +1106,33 @@ export class Projects
         this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: 0.1, duration: 0.3 }, 0.45 + 2)
         this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: -0.1, duration: 0.3 }, 0.75 + 2)
         this.blackBoard.timeline.to(this.blackBoard.mesh.rotation, { x: 0, duration: 0.3 }, 1.05 + 2)
+
+        // Labels
+        this.blackBoard.labelsGamepad = this.references.get('blackboardLabelsGamepad')[0]
+        this.blackBoard.labelsMouseKeyboard = this.references.get('blackboardLabelsMouseKeyboard')[0]
+        this.blackBoard.labelsGamepad.castShadow = false
+        this.blackBoard.labelsMouseKeyboard.castShadow = false
+        this.blackBoard.labelsGamepad.visible = false
+        
+        this.game.inputs.events.on('modeChange', () =>
+        {
+            if(this.game.inputs.mode === Inputs.MODE_GAMEPAD)
+            {
+                this.blackBoard.labelsGamepad.visible = true
+                this.blackBoard.labelsMouseKeyboard.visible = false
+                this.blackBoard.parent.add(this.blackBoard.mesh)
+            }
+            else if(this.game.inputs.mode === Inputs.MODE_MOUSEKEYBOARD)
+            {
+                this.blackBoard.labelsGamepad.visible = false
+                this.blackBoard.labelsMouseKeyboard.visible = true
+                this.blackBoard.parent.add(this.blackBoard.mesh)
+            }
+            else if(this.game.inputs.mode === Inputs.MODE_TOUCH)
+            {
+                this.blackBoard.parent.remove(this.blackBoard.mesh)
+            }
+        })
     }
 
     setFlame()

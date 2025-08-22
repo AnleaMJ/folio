@@ -295,7 +295,10 @@ export class Materials
                 alpha = float(baseMaterial.opacity)
 
             // Exceptions
-            if(baseMaterial.name === 'projectsLabels')
+            if(
+                baseMaterial.name === 'projectsLabels' ||
+                baseMaterial.name === 'blackboardLabels'
+            )
             {
                 material.premultipliedAlpha = true
                 material.transparent = true
