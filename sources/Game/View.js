@@ -382,6 +382,7 @@ export class View
     setCinematic()
     {
         this.cinematic = {}
+        this.cinematic.active = false
         this.cinematic.progress = 0
         this.cinematic.position = new THREE.Vector3()
         this.cinematic.target = new THREE.Vector3()
@@ -393,6 +394,7 @@ export class View
 
         this.cinematic.start = (position, target) =>
         {
+            this.cinematic.active = true
             this.cinematic.position = position.clone()
             this.cinematic.target = target.clone()
 
@@ -409,6 +411,7 @@ export class View
 
         this.cinematic.end = () =>
         {
+            this.cinematic.active = false
             gsap.to(this.cinematic, { progress: 0, duration: 1, ease: 'power2.inOut', overwrite: true })
         }
     }
@@ -574,7 +577,7 @@ export class View
     update()
     {
         // Gamepad Joystick map controls
-        if(this.mode === View.MODE_DEFAULT && this.game.inputs.gamepad.joysticks.right.active)
+        if(this.mode === View.MODE_DEFAULT && this.game.inputs.gamepad.joysticks.right.active && !this.cinematic.active)
         {
             this.focusPoint.isTracking = false
 
