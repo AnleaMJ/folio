@@ -155,8 +155,17 @@ export class Gamepad
                 // Joysticks
                 if(map.type === 'joystick')
                 {
-                    // TODO: dead zone?
-                    const joystick = { name: map.name, x: 0, y: 0, safeX: 0, safeY: 0, angle: 0, radius: 0, safeRadius: 0, active: false  }
+                    const joystick = {
+                        name: map.name,
+                        x: 0,
+                        y: 0,
+                        safeX: 0,
+                        safeY: 0,
+                        angle: 0,
+                        radius: 0,
+                        safeRadius: 0,
+                        active: false
+                    }
                     data.joysticks[map.name] = joystick
 
                     if(map.action === 'axesToCircle')
