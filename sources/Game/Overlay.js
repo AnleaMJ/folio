@@ -32,6 +32,7 @@ export class Overlay
             // Pattern
             const patternUv = viewportCoordinate.div(this.patternSize).mod(1)
             const patternMask = texture(this.game.resources.overlayPatternTexture, patternUv).a.remap(0, 0.68, 0, 1).toVar()
+            // return vec4(vec3(patternMask), 1)
 
             If(this.inverted.greaterThan(0.5), () =>
             {
