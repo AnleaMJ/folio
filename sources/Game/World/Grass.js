@@ -122,7 +122,7 @@ export class Grass
         const hiddenThreshold = 0.1
         // const terrainUv = this.game.terrain.worldPositionToUvNode(bladePosition)
         const terrainData = this.game.terrain.terrainNode(bladePosition)
-        const terrainDataGrass = terrainData.g.smoothstep(0.4, 0.6)
+        const terrainDataGrass = terrainData.g
         const hidden = step(terrainData.g.sub(0.4), hiddenThreshold)
 
         // Instance
@@ -156,7 +156,6 @@ export class Grass
                 .mul(this.bladeHeightRandomness.mul(attribute('heightRandomness')).add(this.bladeHeightRandomness.oneMinus()))
                 .mul(heightVariation)
                 .mul(terrainDataGrass)
-                
 
             // Shape
             const shape = vec3(

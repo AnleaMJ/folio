@@ -32,10 +32,9 @@ export class Field
         geometry.rotateX(-Math.PI * 0.5)
         geometry.deleteAttribute('normal')
 
-
         // Terrain data
         const terrainData = this.game.terrain.terrainNode(positionWorld.xz)
-        const terrainDataGrass = terrainData.g.smoothstep(0.4, 0.6)
+        const terrainDataGrass = terrainData.g
         const baseColor = this.game.terrain.colorNode(terrainData)
 
         // Material
