@@ -111,6 +111,13 @@ export class Physics
 
         if(typeof _physicalDescription.linearDamping !== 'undefined')
             rigidBodyDesc.setLinearDamping(_physicalDescription.linearDamping)
+        else
+            rigidBodyDesc.setLinearDamping(0.1)
+
+        if(typeof _physicalDescription.angularDamping !== 'undefined')
+            rigidBodyDesc.setAngularDamping(_physicalDescription.angularDamping)
+        else
+            rigidBodyDesc.setAngularDamping(0.1)
 
         if(typeof _physicalDescription.sleeping !== 'undefined')
             rigidBodyDesc.setSleeping(_physicalDescription.sleeping)

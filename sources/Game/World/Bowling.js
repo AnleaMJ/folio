@@ -43,22 +43,15 @@ export class Bowling
     {
         this.pins = {}
         this.pins.items = []
+        this.pins.allSleeping = true
+        this.pins.boundingUpdateTime = 0
         
         // References
         const references = InstancedGroup.getReferencesFromChildren(this.references.get('pinPositions')[0].children)
 
         // Instances
         const basePin = this.references.get('pin')[0]
-        const descriptions = this.game.objects.getFromModel(
-            basePin,
-            {
-
-            },
-            {
-                friction: 1,
-                restitution: 1,
-            }
-        )
+        const descriptions = this.game.objects.getFromModel(basePin, {}, {}) // To extract colliders
 
         let i = 0
         for(const reference of references)
@@ -82,8 +75,10 @@ export class Bowling
                     type: 'dynamic',
                     position: reference.position,
                     rotation: reference.quaternion,
-                    friction: 0.1,
+                    friction: 0.5,
                     resitution: 0.5,
+                    linearDamping: 0.1,
+                    angularDamping: 0.5,
                     sleeping: true,
                     colliders: descriptions[1].colliders,
                     waterGravityMultiplier: - 1,
@@ -97,6 +92,9 @@ export class Bowling
             pin.body = object.physical.body
             pin.basePosition = pin.group.position.clone()
             pin.baseRotation = pin.group.quaternion.clone()
+
+            // pin.body.setLinearDamping(0.2)
+            // pin.body.setAngularDamping(0.2)
 
             this.pins.items.push(pin)
 
@@ -116,7 +114,9 @@ export class Bowling
         )
         basePin.removeFromParent()
 
-        this.testInstancedGroup = new InstancedGroup(references, basePin, true)
+        this.instancedGroup = new InstancedGroup(references, basePin, true)
+
+        
 
         // Reset
         this.pins.reset = () =>
@@ -476,7 +476,8 @@ export class Bowling
         else
             this.screen.labelStrike.visible = false
 
-        // Pins
+        // Pins > Update
+        this.pins.allSleeping = true
         let pinStateChanged = false
         for(const pin of this.pins.items)
         {
@@ -495,6 +496,7 @@ export class Bowling
             }
 
             const isSleeping = pin.body.isSleeping()
+            this.pins.allSleeping = this.pins.allSleeping && isSleeping 
             if(isSleeping !== pin.isSleeping)
             {
                 pin.isSleeping = isSleeping
@@ -504,6 +506,7 @@ export class Bowling
             }
         }
 
+        // Pins > Texture update if needed and won event
         if(pinStateChanged)
         {
             this.dataTexture.needsUpdate = true
@@ -527,6 +530,15 @@ export class Bowling
             }
         }
 
+        // Pins > Update bounding at a fixed rate
+        if(this.game.ticker.elapsed > this.pins.boundingUpdateTime + 0.2)
+        {
+            this.pins.boundingUpdateTime = this.game.ticker.elapsed
+
+            if(!this.pins.allSleeping)
+                this.instancedGroup.updateBoundings()
+        }
+
         // Ball
         const ballIsSleeping = this.ball.body.isSleeping()
         if(ballIsSleeping !== this.ball.isSleeping)
@@ -540,5 +552,6 @@ export class Bowling
         // Restart interactive point
         if(showRestartInteractivePoint && this.restartInteractivePoint.state === InteractivePoints.STATE_HIDDEN)
             this.restartInteractivePoint.show()
+
     }
 }

@@ -65,6 +65,12 @@ export class InstancedGroup
         return references
     }
 
+    updateBoundings()
+    {
+        for(const mesh of this.meshes)
+            mesh.instance.computeBoundingSphere()
+    }
+
     update()
     {
         let i = 0
