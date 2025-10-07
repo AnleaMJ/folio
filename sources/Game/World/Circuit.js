@@ -40,6 +40,7 @@ export default class Circuit
         this.setCheckpoints()
         this.setObjects()
         this.setObstacles()
+        this.setRails()
         this.setInteractivePoint()
         this.setStartAnimation()
 
@@ -513,6 +514,13 @@ export default class Circuit
 
             i++
         }
+    }
+
+    setRails()
+    {
+        const rails = this.references.get('rails')[0]
+        rails.material = rails.material.clone()
+        rails.material.side = THREE.DoubleSide
     }
 
     setInteractivePoint()
