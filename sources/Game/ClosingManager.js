@@ -21,8 +21,8 @@ export class ClosingManager
             if(action.active)
             {
                 // Whispers flag select => Close
-                if(this.game.world.whispers?.modal.flagsSelectOpen)
-                    this.game.world.whispers.modal.closeFlagSelect()
+                if(this.game.world.whispers?.modal.inputFlag.isOpen)
+                    this.game.world.whispers.modal.inputFlag.close()
                 
                 // Modal open => Close
                 else if(this.game.modals.state === Modals.OPEN)

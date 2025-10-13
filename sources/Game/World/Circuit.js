@@ -7,6 +7,7 @@ import { Player } from '../Player.js'
 import { MeshDefaultMaterial } from '../Materials/MeshDefaultMaterial.js'
 import { add, color, float, Fn, max, mix, normalGeometry, objectPosition, PI, positionGeometry, positionWorld, rotateUV, sin, texture, uniform, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { alea } from 'seedrandom'
+import { InputFlag } from '../InputFlag.js'
 
 const rng = new alea('circuit')
 
@@ -1145,6 +1146,86 @@ export default class Circuit
             this.game.modals.close()
         })
 
+        this.modal.inputGroup = this.endModal.instance.element.querySelector('.js-input-group')
+        this.modal.input = this.modal.inputGroup.querySelector('.js-input')
+
+        const sanatize = (text = '', trim = false, limit = false, stripEmojis = false) =>
+        {
+            let sanatized = text
+            // if(trim)
+            //     sanatized = sanatized.trim()
+
+            // if(stripEmojis)
+            //     sanatized = sanatized.replace(emojiRegex(), '')
+            
+            // if(limit)
+            //     sanatized = sanatized.substring(0, this.count)
+
+            return sanatized
+        }
+
+        const submit = () =>
+        {
+            const sanatized = sanatize(this.modal.input.value, true, true, true)
+            
+            if(sanatized.length && this.game.server.connected)
+            {
+                // Insert
+                this.game.server.send({
+                    type: 'circuitInsert',
+                    countryCode: this.modal.inputFlag.countryCode,
+                    tag: 'BRU',
+                    duration: 25,
+                })
+
+                // Close modal
+                this.game.modals.close()
+            }
+        }
+
+        const updateGroup = () =>
+        {
+            if(this.modal.input.value.length && this.game.server.connected)
+                this.modal.inputGroup.classList.add('is-valide')
+            else
+                this.modal.inputGroup.classList.remove('is-valide')
+        }
+
+        this.modal.input.addEventListener('input', () =>
+        {
+            const sanatized = sanatize(this.modal.input.value, false, true, true)
+            this.modal.input.value = sanatized
+            updateGroup()
+        })
+
+        this.modal.inputGroup.addEventListener('submit', (event) =>
+        {
+            event.preventDefault()
+
+            submit()
+        })
+
+        this.modal.instance.events.on('closed', () =>
+        {
+            this.modal.input.value = ''
+            updateGroup()
+            this.modal.inputFlag.close()
+        })
+            
+        this.game.server.events.on('connected', () =>
+        {
+            updateGroup()
+        })
+
+        this.game.server.events.on('disconnected', () =>
+        {
+            updateGroup()
+        })
+
+        /**
+         * Flag
+         */
+        this.modal.inputFlag = new InputFlag(this.modal.inputGroup.querySelector('.js-input-flag'))
     }
 
     restart()

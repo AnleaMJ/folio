@@ -1,11 +1,11 @@
 import * as THREE from 'three/webgpu'
 import { Game } from '../Game.js'
-import { billboarding, cameraPosition, color, Fn, instanceIndex, min, mix, modelViewMatrix, mul, normalWorld, positionGeometry, positionViewDirection, positionWorld, smoothstep, storage, texture, time, uv, vec2, vec3, vec4 } from 'three/tsl'
+import { billboarding, cameraPosition, color, Fn, instanceIndex, log, min, mix, modelViewMatrix, mul, normalWorld, positionGeometry, positionViewDirection, positionWorld, smoothstep, storage, texture, time, uv, vec2, vec3, vec4 } from 'three/tsl'
 import { hash } from 'three/tsl'
 import gsap from 'gsap'
 import { Bubble } from './Bubble.js'
 import emojiRegex from 'emoji-regex'
-import countriesData from '../../data/countries.js'
+import { InputFlag } from '../InputFlag.js'
 
 export class Whispers
 {
@@ -14,7 +14,6 @@ export class Whispers
         this.game = Game.getInstance()
 
         this.count = parseInt(import.meta.env.VITE_WHISPERS_COUNT)
-        this.countries = new Map()
 
         this.setFlames()
         this.setData()
@@ -235,12 +234,13 @@ export class Whispers
     {
         this.modal = {}
 
-        const modalItem = this.game.modals.items.get('whispers')
-        this.modal.container = modalItem.element
+        this.modal.instance = this.game.modals.items.get('whispers')
+        this.modal.container = this.modal.instance.element
         this.modal.inputGroup = this.modal.container.querySelector('.js-input-group')
         this.modal.input = this.modal.inputGroup.querySelector('.js-input')
         this.modal.previewMessage = this.modal.container.querySelector('.js-preview-message')
         this.modal.previewMessageText = this.modal.previewMessage.querySelector('.js-text')
+        this.modal.previewMessageFlag = this.modal.previewMessage.querySelector('.js-flag')
 
         const sanatize = (text = '', trim = false, limit = false, stripEmojis = false) =>
         {
@@ -267,7 +267,7 @@ export class Whispers
                 this.game.server.send({
                     type: 'whispersInsert',
                     message: sanatized,
-                    countryCode: this.modal.countryCode,
+                    countryCode: this.modal.inputFlag.country ? this.modal.inputFlag.country.code : '',
                     x: this.game.player.position.x,
                     y: this.game.player.position.y,
                     z: this.game.player.position.z
@@ -322,12 +322,12 @@ export class Whispers
             submit()
         })
 
-        modalItem.events.on('closed', () =>
+        this.modal.instance.events.on('closed', () =>
         {
             this.modal.previewMessageText.textContent = 'Your message here'
             this.modal.input.value = ''
             updateGroup()
-            this.modal.closeFlagSelect()
+            this.modal.inputFlag.close()
         })
             
         this.game.server.events.on('connected', () =>
@@ -343,179 +343,26 @@ export class Whispers
         /**
          * Flag
          */
-        // Setup
-        this.modal.inputFlag = this.modal.inputGroup.querySelector('.js-input-flag')
-        this.modal.flagButton = this.modal.inputFlag.querySelector('.js-flag-button')
-        this.modal.flag = this.modal.flagButton.querySelector('.js-flag')
-        this.modal.flagSelect = this.modal.inputFlag.querySelector('.js-flag-select')
-        this.modal.flagClose = this.modal.inputFlag.querySelector('.js-flag-close')
-        this.modal.flagSearch = this.modal.inputFlag.querySelector('.js-flag-search')
-        this.modal.flagRemove = this.modal.inputFlag.querySelector('.js-flag-remove')
-        this.modal.flagNoResult = this.modal.inputFlag.querySelector('.js-no-result')
-        this.modal.previewMessageFlag = this.modal.previewMessage.querySelector('.js-flag')
-        this.modal.flagScroller = this.modal.inputFlag.querySelector('.js-scroller')
-
-        this.modal.flagsSelectOpen = false
-        this.modal.flagActive = null
-
-        // Select
-        const selectFlag = (country = null) =>
+        this.modal.inputFlag = new InputFlag(this.modal.inputGroup.querySelector('.js-input-flag'))
+        
+        this.modal.inputFlag.events.on('change', (country) =>
         {
-            // Selected a flag
             if(country)
             {
-                this.modal.flagActive = country
-                this.modal.flag.src = country.imageUrl
-                this.modal.flagButton.classList.add('has-flag')
                 this.modal.previewMessageFlag.classList.add('is-visible')
                 this.modal.previewMessageFlag.style.backgroundImage = `url(${country.imageUrl})`
-                this.modal.countryCode = country.code
-                localStorage.setItem('countryCode', country.code)
             }
-
-            // Selected no flag
             else
             {
-                this.modal.flagActive = null
-                this.modal.flagButton.classList.remove('has-flag')
+                
                 this.modal.previewMessageFlag.classList.remove('is-visible')
-                this.modal.countryCode = ''
-                localStorage.removeItem('countryCode')
             }
-
-            this.modal.closeFlagSelect()
-        }
-
-        // Remove
-        this.modal.flagRemove.addEventListener('click', (event) =>
-        {
-            event.preventDefault()
-            selectFlag(null)
         })
 
-        // Countries
-        for(const _country of countriesData)
+        if(this.modal.inputFlag.country)
         {
-            const imageUrl = `ui/flags/${_country[2]}.png`
-            const element = document.createElement('div')
-            element.classList.add('choice')
-            element.innerHTML = /* html */`
-                <img class="js-flag flag" src="${imageUrl}" loading="lazy">
-                <span class="label">${_country[0]} (${_country[2]})</span>
-            `
-
-            const country = {}
-            country.element = element
-            country.terms = `${_country[0]} ${_country[1]} ${_country[2]}`
-            country.imageUrl = imageUrl
-            country.code = _country[2]
-
-            country.element.addEventListener('click', () =>
-            {
-                selectFlag(country)
-            })
-
-            this.countries.set(country.code, country)
-        }
-
-        // Add to DOM
-        let flagsDOMAdded = false
-        const flagsAddDOM = () =>
-        {
-            this.countries.forEach(_country =>
-            {
-                this.modal.flagScroller.appendChild(_country.element)
-            })
-            
-            flagsDOMAdded = true
-        }
-
-        // Search
-        const searchFlag = (value) =>
-        {
-            const sanatizedValue = value.trim()
-            let found = false
-
-            // Empty search => All countries
-            if(sanatizedValue === '')
-            {
-                found = true
-                this.countries.forEach((country) =>
-                {
-                    country.element.style.display = 'block'
-                })
-            }
-
-            // Non-empty search => Search each terms
-            else
-            {
-                this.countries.forEach((country) =>
-                {
-                    if(country.terms.match(new RegExp(sanatizedValue, 'i')))
-                    {
-                        found = true
-                        country.element.style.display = 'block'
-                    }
-                    else
-                    {
-                        country.element.style.display = 'none'
-                    }
-                })
-            }
-
-            // No result
-            if(!found)
-                this.modal.flagNoResult.classList.add('is-visible')
-            else
-                this.modal.flagNoResult.classList.remove('is-visible')
-        }
-
-        this.modal.flagSearch.addEventListener('input', () =>
-        {
-            searchFlag(this.modal.flagSearch.value)
-        })
-
-        // Open
-        const openFlagSelect = () =>
-        {
-            if(!flagsDOMAdded)
-                flagsAddDOM()
-
-            this.modal.flagsSelectOpen = true
-            this.modal.flagSelect.classList.add('is-visible')
-            this.modal.flagSearch.focus()
-        }
-
-        this.modal.flagButton.addEventListener('click', (event) =>
-        {
-            event.preventDefault()
-            openFlagSelect()
-        })
-
-        // Close
-        this.modal.closeFlagSelect = () =>
-        {
-            this.modal.flagsSelectOpen = false
-            this.modal.flagSelect.classList.remove('is-visible')
-        }
-
-        this.modal.flagClose.addEventListener('click', (event) =>
-        {
-            event.preventDefault()
-            this.modal.closeFlagSelect()
-        })
-
-        // From localstorage
-        this.modal.countryCode = localStorage.getItem('countryCode') ?? ''
-
-        if(this.modal.countryCode)
-        {
-            const country = this.countries.get(this.modal.countryCode) ?? null
-
-            if(country)
-                selectFlag(country)
-            else
-                this.modal.countryCode = ''
+            this.modal.previewMessageFlag.classList.add('is-visible')
+            this.modal.previewMessageFlag.style.backgroundImage = `url(${this.modal.inputFlag.country.imageUrl})`
         }
     }
 
@@ -583,7 +430,7 @@ export class Whispers
 
                 if(closestWhisper.countryCode)
                 {
-                    const country = this.countries.get(closestWhisper.countryCode)
+                    const country = this.modal.inputFlag.countries.get(closestWhisper.countryCode)
 
                     if(country)
                         imageUrl = country.imageUrl
