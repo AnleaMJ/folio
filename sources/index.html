@@ -330,72 +330,19 @@
                             <img src="ui/warning.svg" alt="" class="icon"> Server currently offline. Scores can't be saved.
                         </p>
 
-                        <div class="online-element leaderboards">
-                            <table class="leaderboard">
+                        <div class="js-leaderboard-container leaderboard-container has-no-score">
+                            <div class="no-score">No score yet today</div>
+                            <table class="js-leaderboard leaderboard online-element">
                                 <tbody>
-                                    <tr>
-                                        <td>1</td>
-                                        <td>BRU</td>
-                                        <td>00:25:150</td>
-                                    </tr>
-                                    <tr>
-                                        <td>2</td>
-                                        <td>WWW</td>
-                                        <td>00:27:153</td>
-                                    </tr>
-                                    <tr>
-                                        <td>3</td>
-                                        <td>ORS</td>
-                                        <td>00:27:002</td>
-                                    </tr>
-                                    <tr>
-                                        <td>4</td>
-                                        <td>BAB</td>
-                                        <td>00:29:193</td>
-                                    </tr>
-                                    <tr>
-                                        <td>5</td>
-                                        <td>YOH</td>
-                                        <td>00:30:159</td>
-                                    </tr>
                                 </tbody>
                             
                             </table>
-                            <table class="leaderboard">
-                                <tbody>
-                                    <tr>
-                                        <td>6</td>
-                                        <td>PUH</td>
-                                        <td>00:37:103</td>
-                                    </tr>
-                                    <tr>
-                                        <td>7</td>
-                                        <td>WWW</td>
-                                        <td>00:40:253</td>
-                                    </tr>
-                                    <tr>
-                                        <td>8</td>
-                                        <td>PWT</td>
-                                        <td>00:41:315</td>
-                                    </tr>
-                                    <tr>
-                                        <td>9</td>
-                                        <td>RTT</td>
-                                        <td>00:45:035</td>
-                                    </tr>
-                                    <tr>
-                                        <td>10</td>
-                                        <td>AKA</td>
-                                        <td>00:49:531</td>
-                                    </tr>
-                                </tbody>
-                            
-                            </table>
-                        </div>
 
-                        <p class="online-element reset">
-                            Resets in <span class="js-reset-time reset-time"></span>
-                        </p>
+                            <p class="online-element reset">
+                                Resets in <span class="js-reset-time reset-time"></span>
+                            </p>
+
+                        </div>
 
                         <div class="horizontal-group">
                         
@@ -426,7 +373,7 @@
             </div>
 
             <!-- Circuit end -->
-            <div class="js-modal modal circuit-end is-simple" data-name="circuit-end" data-preopen>
+            <div class="js-modal modal circuit-end is-simple" data-name="circuit-end">
                 <div class="container">
                     <div class="content">
                         <button class="js-close js-main-focus close">

@@ -139,39 +139,49 @@
                         background-image url('../ui/controls/gamepad-cross.png')
             
         &.circuit
-            .leaderboards
+            .leaderboard-container
                 display flex
-                justify-content space-between
-                margin-top 1em
-                margin-bottom 1em
+                justify-content center
+                align-items center
+                flex-direction column
+                &.has-no-score
+                    .no-score
+                        display block
 
-                @media only screen and (max-width 520px)
-                    display block
+                .leaderboard
+                    font-weight 700
+                    margin-top 20px
+                    margin-bottom 20px
 
-            .leaderboard
-                font-weight 700
+                    tr
+                        td
+                            &:nth-child(1)
+                                opacity 0.5
+                                padding-right 30px
+                                text-align center
 
-                tr
-                    td
-                        &:nth-child(1)
-                            opacity 0.5
-                            padding-right 10px
-                            text-align center
+                                // @media only screen and (max-width 520px)
+                                //     width 60px
+                                
+                            &:nth-child(2)
+                                padding-right 30px
+                                
+                            &:nth-child(3)
+                                padding-right 30px
+                                
+                                // @media only screen and (max-width 520px)
+                                //     width 80px
 
-                            @media only screen and (max-width 520px)
-                                width 60px
-                            
-                        &:nth-child(2)
-                            padding-right 10px
-                            
-                            @media only screen and (max-width 520px)
-                                width 80px
+                .no-score
+                    margin-top 30px
+                    display none
+                    font-weight 700
+                    
+                .reset-time
+                    font-weight 700
 
-            .reset-time
-                font-weight 700
-
-            p
-                margin-bottom 1.5em
+                p
+                    margin-bottom 1.5em
 
         &.circuit-end
             .content
@@ -443,6 +453,10 @@
                     text-transform uppercase
                     font-weight 700
                     // padding 0 15px 0 5px
+
+                    &::placeholder
+                        letter-spacing 14px
+                        padding-left 4px
 
             > *
                 border-top 1px solid #555555

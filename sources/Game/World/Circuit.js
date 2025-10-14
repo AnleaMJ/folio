@@ -11,6 +11,36 @@ import { InputFlag } from '../InputFlag.js'
 
 const rng = new alea('circuit')
 
+const timeToRaceString = (time) =>
+{
+    const minutes = Math.floor(time / 60)
+    const seconds = Math.floor((time % 60))
+    const milliseconds = Math.floor((time * 1000) % 1000)
+
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`
+}
+
+function timeToReadableString(time)
+{
+    const hours = Math.floor(time / 3600)
+    const minutes = Math.floor((time % 3600) / 60)
+    // const seconds = Math.floor((time % 60))
+    // const milliseconds = (time * 1000) % 1000
+    
+    const parts = []
+
+    if(hours > 0)
+        parts.push(`${hours}h`)
+
+    if(hours > 0 || minutes > 0)
+        parts.push(`${minutes}m`)
+
+    // if(hours > 0 || minutes > 0 || seconds > 0)
+    //     parts.push(`${seconds}s`)
+
+    return parts.join(' ')
+}
+
 export default class Circuit
 {
     static STATE_PENDING = 1
@@ -206,15 +236,6 @@ export default class Circuit
             this.timer.group.add(mesh)
         }
 
-        const timeToString = (time) =>
-        {
-            const minutes = Math.floor(time / 60)
-            const seconds = Math.floor((time % 60))
-            const milliseconds = Math.floor((time * 1000) % 1000)
-
-            return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(milliseconds).padStart(3, '0')}`
-        }
-
         // Write
         this.timer.write = (text) =>
         {
@@ -280,7 +301,7 @@ export default class Circuit
             this.timer.running = false
             this.timer.elapsedTime = this.game.ticker.elapsed - this.timer.startTime
 
-            const formatedTime = timeToString(this.timer.elapsedTime)
+            const formatedTime = timeToRaceString(this.timer.elapsedTime)
             this.timer.write(formatedTime)
 
             // End modal
@@ -313,7 +334,7 @@ export default class Circuit
             if(this.timer.running)
             {
                 this.timer.elapsedTime = this.game.ticker.elapsed - this.timer.startTime
-                this.timer.write(timeToString(this.timer.elapsedTime))
+                this.timer.write(timeToRaceString(this.timer.elapsedTime))
             }
         }
     }
@@ -435,13 +456,6 @@ export default class Circuit
             }
 
             this.checkpoints.count = this.checkpoints.items.length
-
-            // Reset
-            checkpoint.reset = () =>
-            {
-                // // Mesh
-                // checkpoint.mesh.visible = false
-            }
 
             // Save
             this.checkpoints.items.push(checkpoint)
@@ -785,7 +799,7 @@ export default class Circuit
     setLeaderboard()
     {
         this.leaderboard = {}
-        const resolution = 256
+        const resolution = 512
 
         // Canvas
         const font = `700 ${resolution / 14}px "Nunito"`
@@ -807,6 +821,7 @@ export default class Circuit
         const textTexture = new THREE.Texture(canvas)
         textTexture.minFilter = THREE.LinearFilter
         textTexture.magFilter = THREE.LinearFilter
+        textTexture.colorSpace = THREE.SRGBColorSpace
         textTexture.generateMipmaps = false
 
         // Digits
@@ -821,12 +836,13 @@ export default class Circuit
         
         material.outputNode = Fn(() =>
         {
-            const text = texture(textTexture).r
+            const text = texture(textTexture)
+
             return vec4(
                 mix(
                     baseOutput.rgb,
-                    color('#ffffff').mul(1.3),
-                    text
+                    text.rgb.mul(1.3),
+                    text.a
                 ),
                 baseOutput.a
             )
@@ -837,46 +853,111 @@ export default class Circuit
 
         const columsSettings = [
             { align: 'right', x: resolution * 0.125 },
-            { align: 'center', x: resolution * 0.375},
-            { align: 'left', x: resolution * 0.625 },
+            { x: resolution * 0.19},
+            { align: 'center', x: resolution * 0.43},
+            { align: 'left', x: resolution * 0.725 },
         ]
         const interline = resolution / 12
+
+        const loadedFlags = new Map()
+        const flagsWidth = 54
+        const flagsHeight = 36
         this.leaderboard.draw = (scores = null) =>
         {
-            // Clear
-            context.fillStyle = '#000000'
-            context.fillRect(0, 0, canvas.width, canvas.height)
-
-            if(scores === null)
+            const draw = () =>
             {
-                context.font = font
-                context.fillStyle = '#ff87a2'
-                context.textBaseline = 'middle'
-                context.textAlign = 'center'
-                context.fillText('OFFLINE', resolution * 0.5, resolution * 0.5)
+                // Clear
+                context.clearRect(0, 0, canvas.width, canvas.height)
+
+                if(scores === null)
+                {
+                    context.font = font
+                    context.fillStyle = '#ff87a2'
+                    context.textBaseline = 'middle'
+                    context.textAlign = 'center'
+                    context.fillText('OFFLINE', resolution * 0.5, resolution * 0.5)
+                }
+                else if(scores.length === 0)
+                {
+                    context.font = font
+                    context.fillStyle = '#ffffff'
+                    context.textBaseline = 'middle'
+                    context.textAlign = 'center'
+                    context.fillText('NO SCORE YET TODAY', resolution * 0.5, resolution * 0.5)
+                }
+                else
+                {
+                    context.font = font
+                    context.fillStyle = '#ffffff'
+                    context.textBaseline = 'middle'
+
+                    let rank = 1
+                    for(const score of scores)
+                    {
+                        context.textAlign = columsSettings[0].align
+                        context.fillText(rank, columsSettings[0].x, (rank + 0.5) * interline)
+
+                        const image = loadedFlags.get(score[1])
+
+                        if(image)
+                            context.drawImage(
+                                image,
+                                columsSettings[1].x,
+                                (rank + 0.4) * interline - flagsHeight / 2,
+                                flagsWidth,
+                                flagsHeight
+                            )
+
+                        context.textAlign = columsSettings[2].align
+                        context.fillText(score[0], columsSettings[2].x, (rank + 0.5) * interline)
+
+                        context.textAlign = columsSettings[2].align
+                        context.fillText(timeToRaceString(score[2] / 1000), columsSettings[3].x, (rank + 0.5) * interline)
+
+                        rank++
+                    }
+                }
+                textTexture.needsUpdate = true
             }
-            else
+            const testFlagsLoaded = () =>
             {
-                context.font = font
-                context.fillStyle = '#ffffff'
-                context.textBaseline = 'middle'
+                if(flagsToLoad === 0)
+                    draw()
+            }
 
-                let rank = 1
+            let flagsToLoad = 0
+
+            if(scores)
+            {
                 for(const score of scores)
                 {
-                    context.textAlign = columsSettings[0].align
-                    context.fillText(rank, columsSettings[0].x, (rank + 0.5) * interline)
+                    const countryCode = score[1]
+                    if(countryCode)
+                    {                    
+                        const country = this.modal.inputFlag.countries.get(countryCode)
 
-                    context.textAlign = columsSettings[1].align
-                    context.fillText(score[0], columsSettings[1].x, (rank + 0.5) * interline)
+                        if(country)
+                        {
+                            if(!loadedFlags.has(countryCode))
+                            {
+                                const image = new Image()
+                                image.onload = () =>
+                                {
+                                    flagsToLoad--
+                                    testFlagsLoaded()
+                                }
+                                image.src = country.imageUrl
 
-                    context.textAlign = columsSettings[2].align
-                    context.fillText(score[1], columsSettings[2].x, (rank + 0.5) * interline)
+                                loadedFlags.set(countryCode, image)
 
-                    rank++
+                                flagsToLoad++
+                            }
+                        }
+                    }
                 }
             }
-            textTexture.needsUpdate = true
+
+            testFlagsLoaded()
         }
 
         this.leaderboard.draw(null)
@@ -953,27 +1034,6 @@ export default class Circuit
         const mesh = this.references.get('leaderboardReset')[0]
         mesh.material = material
 
-        function timeToString(ms)
-        {
-            const hours = Math.floor(ms / 3600000)
-            const minutes = Math.floor((ms % 3600000) / 60000)
-            // const seconds = Math.floor((ms % 60000) / 1000)
-            // const milliseconds = ms % 1000
-            
-            const parts = []
-
-            if(hours > 0)
-                parts.push(`${hours}h`)
-
-            if(hours > 0 || minutes > 0)
-                parts.push(`${minutes}m`)
-
-            // if(hours > 0 || minutes > 0 || seconds > 0)
-            //     parts.push(`${seconds}s`)
-
-            return parts.join(' ')
-        }
-
         this.resetTime.activate = (resetTime = 0) =>
         {
             this.resetTime.isActive = true
@@ -997,7 +1057,7 @@ export default class Circuit
         {
             const timeToReset = dayDuration - (Date.now() - this.resetTime.resetTime) % dayDuration
 
-            const formatedTime = timeToString(timeToReset)
+            const formatedTime = timeToReadableString(timeToReset / 1000)
 
             if(formatedTime !== this.resetTime.lastTimeDrawn)
             {
@@ -1090,6 +1150,61 @@ export default class Circuit
         this.modal = {}
         this.modal.instance = this.game.modals.items.get('circuit')
         this.modal.resetTimeElement = this.modal.instance.element.querySelector('.js-reset-time')
+        this.modal.leaderboardContainerElement = this.modal.instance.element.querySelector('.js-leaderboard-container')
+        this.modal.leaderboardElement = this.modal.leaderboardContainerElement.querySelector('.js-leaderboard tbody')
+        this.modal.leaderboardNeedsUpdate = false
+
+        this.modal.instance.events.on('open', () =>
+        {
+            if(this.modal.leaderboardNeedsUpdate)
+                this.modal.updateLeaderboard(this.modal.leaderboardNeedsUpdate)
+        })
+
+        
+        this.modal.updateLeaderboard = (scores = null) =>
+        {
+            // Modal not open => Set flag
+            if(!this.modal.instance.isOpen)
+            {
+                this.modal.leaderboardNeedsUpdate = scores
+            }
+
+            // Modal open => Update content
+            else
+            {
+                let html = ''
+                let rank = 1
+                
+                for(const score of scores)
+                {
+                    let flag = ''
+                    const country = this.modal.inputFlag.countries.get(score[1])
+
+                    if(country)
+                        flag = /* html */`<img width="27" height="18" src="${country.imageUrl}" loading="lazy">`
+
+                    html += /* html */`
+                        <tr>
+                            <td>${rank}</td>
+                            <td>${flag}</td>
+                            <td>${score[0]}</td>
+                            <td>${timeToRaceString(score[2] / 1000)}</td>
+                        </tr>
+                    `
+
+                    rank++
+                }
+
+                this.modal.leaderboardElement.innerHTML = html
+
+                if(scores.length)
+                    this.modal.leaderboardContainerElement.classList.remove('has-no-score')
+                else
+                    this.modal.leaderboardContainerElement.classList.add('has-no-score')
+
+                this.modal.leaderboardNeedsUpdate = false
+            }
+        }
         
         // Restart button
         const restartElement = this.modal.instance.element.querySelector('.js-button-restart')
@@ -1149,33 +1264,36 @@ export default class Circuit
         this.modal.inputGroup = this.endModal.instance.element.querySelector('.js-input-group')
         this.modal.input = this.modal.inputGroup.querySelector('.js-input')
 
-        const sanatize = (text = '', trim = false, limit = false, stripEmojis = false) =>
+        const sanatize = (text = '', trim = false, limit = false, stripNonLetter = false, toUpper = false) =>
         {
             let sanatized = text
-            // if(trim)
-            //     sanatized = sanatized.trim()
+            if(trim)
+                sanatized = sanatized.trim()
 
-            // if(stripEmojis)
-            //     sanatized = sanatized.replace(emojiRegex(), '')
+            if(stripNonLetter)
+                sanatized = sanatized.replace(/[^a-z]/gi, '')
             
-            // if(limit)
-            //     sanatized = sanatized.substring(0, this.count)
+            if(limit)
+                sanatized = sanatized.substring(0, 3)
+
+            if(toUpper)
+                sanatized = sanatized.toUpperCase()
 
             return sanatized
         }
 
         const submit = () =>
         {
-            const sanatized = sanatize(this.modal.input.value, true, true, true)
+            const sanatized = sanatize(this.modal.input.value, true, true, true, true)
             
-            if(sanatized.length && this.game.server.connected)
+            if(sanatized.length === 3 && this.game.server.connected)
             {
                 // Insert
                 this.game.server.send({
                     type: 'circuitInsert',
-                    countryCode: this.modal.inputFlag.countryCode,
-                    tag: 'BRU',
-                    duration: 25,
+                    countryCode: this.modal.inputFlag.country ? this.modal.inputFlag.country.code : '',
+                    tag: sanatized,
+                    duration: Math.round(this.timer.elapsedTime * 1000),
                 })
 
                 // Close modal
@@ -1185,7 +1303,7 @@ export default class Circuit
 
         const updateGroup = () =>
         {
-            if(this.modal.input.value.length && this.game.server.connected)
+            if(this.modal.input.value.length === 3 && this.game.server.connected)
                 this.modal.inputGroup.classList.add('is-valide')
             else
                 this.modal.inputGroup.classList.remove('is-valide')
@@ -1193,7 +1311,7 @@ export default class Circuit
 
         this.modal.input.addEventListener('input', () =>
         {
-            const sanatized = sanatize(this.modal.input.value, false, true, true)
+            const sanatized = sanatize(this.modal.input.value, false, true, true, true)
             this.modal.input.value = sanatized
             updateGroup()
         })
@@ -1271,8 +1389,6 @@ export default class Circuit
             // Checkpoints
             this.checkpoints.doorReached.mesh.visible = false
             this.checkpoints.doorTarget.mesh.visible = false
-            for(const checkpoint of this.checkpoints.items)
-                checkpoint.reset()
 
             this.checkpoints.items[0].setTarget()
 
@@ -1342,18 +1458,13 @@ export default class Circuit
             if(data.type === 'init')
             {
                 this.resetTime.activate(data.circuitResetTime)
-                this.leaderboard.draw([
-                    [ 'BRU', '00:25:150' ],
-                    [ 'TTU', '00:27:153' ],
-                    [ 'ORS', '00:27:002' ],
-                    [ 'BAB', '00:29:193' ],
-                    [ 'YOH', '00:30:159' ],
-                    [ 'PUH', '00:37:103' ],
-                    [ 'WWW', '00:40:253' ],
-                    [ 'PWT', '00:41:315' ],
-                    [ 'PRT', '00:45:035' ],
-                    [ 'BOO', '00:49:531' ],
-                ])
+                this.leaderboard.draw(data.circuitLeaderboard)
+                this.modal.updateLeaderboard(data.circuitLeaderboard)
+            }
+            else if(data.type === 'circuitUpdate')
+            {
+                this.leaderboard.draw(data.circuitLeaderboard)
+                this.modal.updateLeaderboard(data.circuitLeaderboard)
             }
         })
 
@@ -1362,24 +1473,15 @@ export default class Circuit
         {
             this.resetTime.deactivate()
             this.leaderboard.draw(null)
+            this.modal.updateLeaderboard(null)
         })
 
         // Message already received
         if(this.game.server.initData)
         {
             this.resetTime.activate(this.game.server.initData.circuitResetTime)
-            this.leaderboard.draw([
-                [ 'BRU', '00:25:150' ],
-                [ 'TTU', '00:27:153' ],
-                [ 'ORS', '00:27:002' ],
-                [ 'BAB', '00:29:193' ],
-                [ 'YOH', '00:30:159' ],
-                [ 'PUH', '00:37:103' ],
-                [ 'WWW', '00:40:253' ],
-                [ 'PWT', '00:41:315' ],
-                [ 'PRT', '00:45:035' ],
-                [ 'BOO', '00:49:531' ],
-            ])
+            this.leaderboard.draw(this.game.server.initData.circuitLeaderboard)
+            this.modal.updateLeaderboard(this.game.server.initData.circuitLeaderboard)
         }
     }
 
