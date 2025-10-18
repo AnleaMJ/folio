@@ -29,6 +29,7 @@ export class Intro
             this.references.get('interactivePoint')[0].position,
             'Read me!',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.game.inputs.interactiveButtons.clearItems()

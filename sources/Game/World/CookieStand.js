@@ -235,6 +235,7 @@ export class CookieStand
             this.references.get('interactivePoint')[0].position,
             'Accept cookie',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.accept()

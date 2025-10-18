@@ -74,6 +74,7 @@ export class Projects
             this.references.get('interactivePoint')[0].position,
             'Projects',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.open()

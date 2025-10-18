@@ -28,6 +28,7 @@ export class InteractivePoints
 
         this.items = []
         this.activeItem = null
+        this.revealed = false
 
         this.setGeometries()
         this.setMaterials()
@@ -88,7 +89,16 @@ export class InteractivePoints
         })
     }
 
-    create(position, text = '', align = InteractivePoints.ALIGN_LEFT, interactCallback = null, revealCallback = null, concealCallback = null, hideCallback = null)
+    create(
+        position,
+        text = '',
+        align = InteractivePoints.ALIGN_LEFT,
+        state = InteractivePoints.STATE_CONCEALED,
+        interactCallback = null,
+        revealCallback = null,
+        concealCallback = null,
+        hideCallback = null
+    )
     {
         const newPosition = position.clone()
         // newPosition.y = 2.25
@@ -110,7 +120,7 @@ export class InteractivePoints
         // Material
         const diamondMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: false })
 
-        const threshold = uniform(0.250)
+        const threshold = uniform(0)
         const lineThickness = uniform(0.150)
         const lineOffset = uniform(0.175)
 
@@ -141,6 +151,7 @@ export class InteractivePoints
         )
         diamond.renderOrder = 3
         diamond.rotation.z = Math.PI * 0.25
+        diamond.visible = false
         group.add(diamond)
 
         /**
@@ -257,7 +268,7 @@ export class InteractivePoints
         // Material
         const labelMaterial = new THREE.MeshLambertNodeMaterial({ transparent: true, depthTest: false })
 
-        const labelOffset = uniform(align === InteractivePoints.ALIGN_LEFT ? - 1 : 1)
+        const labelOffset = uniform(1)
         labelMaterial.outputNode = Fn(() =>
         {
             // const _uv = uv().add(vec2(labelOffset, 0))
@@ -304,14 +315,13 @@ export class InteractivePoints
         item.concealCallback = concealCallback
         item.hideCallback = hideCallback
         item.isIn = false
-        item.state = InteractivePoints.STATE_OPEN
         this.items.push(item)
 
         /**
          * Cursor
          */
         item.intersect = this.game.rayCursor.addIntersects({
-            active: true,
+            active: false,
             shapes:
             [
                 new THREE.Sphere(newPosition, 1)
@@ -442,6 +452,28 @@ export class InteractivePoints
                 item.conceal()
         }
 
+        /**
+         * Default state
+         */
+        if(state === InteractivePoints.STATE_CONCEALED)
+        {
+            // Points not revealed yet => Force hidden and wait
+            if(!this.revealed)
+            {
+                item.state = InteractivePoints.STATE_HIDDEN
+                item.showAfterReveal = true
+            }
+
+            // Points already revealed => Activate
+            else
+            {
+                item.state = state
+                item.intersect.active = false
+                diamond.visible = true
+                key.visible = true
+                threshold.value = 0.25
+            }
+        }
 
         /**
          * Debug
@@ -511,6 +543,19 @@ export class InteractivePoints
         else
         {
             this.activeItem = null
+        }
+    }
+
+    reveal()
+    {
+        this.revealed = true
+        
+        for(const item of this.items)
+        {
+            if(item.showAfterReveal)
+            {
+                item.show()
+            }
         }
     }
 }

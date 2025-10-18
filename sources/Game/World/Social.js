@@ -49,6 +49,7 @@ export class Social
                 position,
                 link.name,
                 link.align === 'left' ? InteractivePoints.ALIGN_LEFT : InteractivePoints.ALIGN_RIGHT,
+                InteractivePoints.STATE_CONCEALED,
                 () =>
                 {
                     window.open(link.url, '_blank')
@@ -157,6 +158,7 @@ export class Social
             this.references.get('onlyFans')[0].position,
             'OnlyFans',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.fans.pop()

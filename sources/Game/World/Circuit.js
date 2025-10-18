@@ -608,6 +608,7 @@ export default class Circuit
             this.references.get('interactivePoint')[0].position,
             'Start race!',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.restart()

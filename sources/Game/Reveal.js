@@ -109,6 +109,16 @@ export class Reveal
             },
             'b'
         )
+
+        // Interactive points
+        timeline.call(
+            () =>
+            {
+                this.game.interactivePoints.reveal()
+            },
+            [],
+            'c'
+        )
     }
 
     update()

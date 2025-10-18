@@ -42,6 +42,7 @@ export class Controls
             this.references.get('interactivePoint')[0].position,
             'Controls',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.game.inputs.interactiveButtons.clearItems()

@@ -332,6 +332,7 @@ export class Bowling
             this.references.get('bumpersInteractivePoint')[0].position,
             'Bumpers',
             InteractivePoints.ALIGN_LEFT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.bumpers.toggle()
@@ -423,6 +424,7 @@ export class Bowling
             this.references.get('jukeboxInteractivePoint')[0].position,
             'Change song',
             InteractivePoints.ALIGN_LEFT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 console.log('change music')

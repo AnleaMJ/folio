@@ -93,6 +93,7 @@ export class Bonfire
             this.references.get('interactivePoint')[0].position,
             'Res(e)t',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 // Interactive buttons

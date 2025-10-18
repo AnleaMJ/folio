@@ -73,6 +73,7 @@ export class Lab
             this.references.get('interactivePoint')[0].position,
             'Lab',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
                 this.open()
