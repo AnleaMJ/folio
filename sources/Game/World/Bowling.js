@@ -164,8 +164,10 @@ export class Bowling
             this.references.get('restartInteractivePoint')[0].position,
             'Restart',
             InteractivePoints.ALIGN_RIGHT,
+            InteractivePoints.STATE_CONCEALED,
             () =>
             {
+                console.log('ok')
                 this.won = false
 
                 this.pins.reset()
