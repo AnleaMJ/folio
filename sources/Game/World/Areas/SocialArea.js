@@ -77,8 +77,6 @@ export class SocialArea extends Area
     setFans()
     {
         const baseFan = this.references.get('fan')[0]
-        for(const child of baseFan.children)
-            child.position.sub(baseFan.position)
         baseFan.removeFromParent()
 
         this.fans = {}
