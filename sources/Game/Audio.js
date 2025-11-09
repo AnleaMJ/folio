@@ -8,6 +8,7 @@ export class Audio
     {
         this.game = Game.getInstance()
 
+        this.initiated = false
         this.groups = new Map()
 
         this.setMuteToggle()
@@ -20,10 +21,23 @@ export class Audio
 
     init()
     {
+        this.initiated = true
+
         this.setMusic()
         this.setAmbiants()
         this.setPunctuals()
+        
         this.music.play()
+
+        // Play all autoplays that didn't start because not initated
+        this.groups.forEach((group, name) =>
+        {
+            for(const item of group)
+            {
+                if(item.autoplay && !item.playing)
+                    item.play()
+            }
+        })
     }
 
     register(name, options = {})
@@ -32,12 +46,17 @@ export class Audio
         item.howl = new Howl({
             src: [ options.path ],
             pool: 2,
-            autoplay: options.autoplay ?? false,
+            autoplay: (this.initiated && options.autoplay) ?? false,
             loop: options.loop ?? false,
             volume: options.volume ?? 0.5,
+            preload: options.preload ?? true,
             onloaderror: () =>
             {
                 console.error(`Audio > Load error > ${options.path}`, options)
+            },
+            onend: () =>
+            {
+                item.playing = false
             }
         })
         item.positions = options.positions ?? null
@@ -50,9 +69,24 @@ export class Audio
         item.lastPlay = -Infinity
         item.tickBinding = options.tickBinding ?? null
         item.playBinding = options.playBinding ?? null
+        item.loaded = options.preload ?? true
+        item.autoplay = options.autoplay ?? false
+        item.playing = (this.initiated && options.autoplay) ?? false
 
         item.play = (...parameters) =>
         {
+            if(!this.initiated)
+            {
+                return
+            }
+
+            // Load
+            if(!item.loaded)
+            {
+                item.loaded = true
+                item.howl.load()
+            }
+
             // Anti spam
             if(item.antiSpam)
             {
@@ -69,6 +103,7 @@ export class Audio
 
             // Save last play for anti spam
             item.lastPlay = this.game.ticker.elapsed
+            item.playing = true
         }
 
         // Save into groups
@@ -384,7 +419,7 @@ export class Audio
         this.muteToggle = {}
         this.muteToggle.buttonElement = this.game.domElement.querySelector('.audio-toggle')
 
-        this.muteToggle.active = true
+        this.muteToggle.active = false
 
         this.muteToggle.toggle = () =>
         {
@@ -399,9 +434,9 @@ export class Audio
             if(this.muteToggle.active)
                 return
             
-            Howler.mute(false)
+            Howler.mute(true)
             this.muteToggle.active = true
-            this.muteToggle.buttonElement.classList.add('is-active')
+            this.muteToggle.buttonElement.classList.remove('is-active')
             localStorage.setItem('soundToggle', '1')
         }
 
@@ -410,17 +445,30 @@ export class Audio
             if(!this.muteToggle.active)
                 return
             
-            Howler.mute(true)
+            Howler.mute(false)
             this.muteToggle.active = false
-            this.muteToggle.buttonElement.classList.remove('is-active')
+            this.muteToggle.buttonElement.classList.add('is-active')
             localStorage.setItem('soundToggle', '0')
         }
 
         const soundToggleLocal = localStorage.getItem('soundToggle')
-        if(soundToggleLocal !== null && soundToggleLocal === '0')
-            this.muteToggle.deactivate()
+        if(soundToggleLocal !== null && soundToggleLocal === '1')
+            this.muteToggle.activate()
 
         this.muteToggle.buttonElement.addEventListener('click', this.muteToggle.toggle)
+
+        // Tab focus / blur
+        window.addEventListener('blur', () =>
+        {
+            Howler.mute(true)
+        })
+
+        window.addEventListener('focus', () =>
+        {
+            if(!this.muteToggle.active)
+                Howler.mute(false)
+        })
+
     }
 
     update()
