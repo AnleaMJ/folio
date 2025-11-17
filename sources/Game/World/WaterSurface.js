@@ -305,7 +305,7 @@ export class WaterSurface
         })
 
         const baseOutput = material.outputNode
-        material.outputNode = Fn(() =>
+        const blurredOutput = Fn(() =>
         {
             const blurOutput = this.blurOutputNode()
             const surfaceAlpha = baseOutput.a
@@ -319,7 +319,42 @@ export class WaterSurface
 
             return finalOuput
         })()
+
+        // Quality
+        const qualityChange = (level) =>
+        {
+            if(level === 0)
+            {
+                material.outputNode = blurredOutput
+            }
+            else if(level === 1)
+            {
+                material.outputNode = baseOutput
+            }
+            
+            material.needsUpdate = true
+        }
+        qualityChange(this.game.quality.level)
+        this.game.quality.events.on('change', qualityChange)
+
+
+        // const baseOutput = material.outputNode
+        // material.outputNode = Fn(() =>
+        // {
+        //     const blurOutput = this.blurOutputNode()
+        //     const surfaceAlpha = baseOutput.a
+        //     const surfaceOutput = vec4(baseOutput.rgb, 1)
+
+        //     const finalOuput = select(
+        //         surfaceAlpha.lessThan(0.5),
+        //         blurOutput,
+        //         surfaceOutput
+        //     )
+
+        //     return finalOuput
+        // })()
         
+
         material.castShadowNode = Fn(() =>
         {
             this.detailsMask().lessThan(0.5).discard()

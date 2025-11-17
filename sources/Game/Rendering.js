@@ -44,7 +44,7 @@ export class Rendering
         this.renderer = new THREE.WebGPURenderer({ canvas: this.game.canvasElement, forceWebGL: false, antialias: true })
         this.renderer.setSize(this.game.viewport.width, this.game.viewport.height)
         this.renderer.setPixelRatio(this.game.viewport.pixelRatio)
-        // this.renderer.sortObjects = false
+        this.renderer.sortObjects = false
         this.renderer.domElement.classList.add('experience')
         this.renderer.shadowMap.enabled = true
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap
@@ -75,8 +75,22 @@ export class Rendering
 
         this.cheapDOFPass = cheapDOF(renderOutput(scenePass))
 
-        // this.postProcessing.outputNode = scenePassColor.add(this.bloomPass)
-        this.postProcessing.outputNode = this.cheapDOFPass.add(this.bloomPass)
+        // Quality
+        const qualityChange = (level) =>
+        {
+            if(level === 0)
+            {
+                this.postProcessing.outputNode = this.cheapDOFPass.add(this.bloomPass)
+            }
+            else if(level === 1)
+            {
+                this.postProcessing.outputNode = scenePassColor.add(this.bloomPass)
+            }
+
+            this.postProcessing.needsUpdate = true
+        }
+        qualityChange(this.game.quality.level)
+        this.game.quality.events.on('change', qualityChange)
 
         // Debug
         if(this.game.debug.active)

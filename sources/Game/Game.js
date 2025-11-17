@@ -41,6 +41,7 @@ import { Reveal } from './Reveal.js'
 import { KonamiCode } from './KonamiCode.js'
 import { Achievements } from './Achievements.js'
 import { Notifications } from './Notifications.js'
+import { Quality } from './Quality.js'
 
 export class Game
 {
@@ -75,6 +76,7 @@ export class Game
         ])
         this.scene = new THREE.Scene()
         this.debug = new Debug()
+        this.quality = new Quality()
         this.server = new Server()
         this.ticker = new Ticker()
         this.time = new Time()
