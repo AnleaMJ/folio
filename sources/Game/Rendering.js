@@ -116,8 +116,8 @@ export class Rendering
 
     setStats()
     {
-        if(!this.game.debug.active)
-            return
+        // if(!this.game.debug.active)
+        //     return
 
         this.stats = {}
         this.stats.feed = {}

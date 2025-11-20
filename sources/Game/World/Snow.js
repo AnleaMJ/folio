@@ -272,7 +272,8 @@ export class Snow
         this.material = new MeshDefaultMaterial({
             normalNode: computeNormal,
             alphaNode: deltaY.smoothstep(this.fadeEdgeLow, this.fadeEdgeHigh),
-            transparent: true
+            transparent: true,
+            alphaTest: 0.1
         })
 
         this.material.positionNode = Fn(() =>
@@ -413,7 +414,7 @@ export class Snow
         this.mesh = new THREE.Mesh(this.geometry, this.material)
         this.mesh.castShadow = false
         this.mesh.receiveShadow = true
-        this.mesh.frustumCulled = false
+        this.mesh.visible = false
         this.game.scene.add(this.mesh)
     }
 
@@ -421,6 +422,7 @@ export class Snow
     {
         // Apply weather
         this.elevationBinding.update()
+        this.mesh.visible = this.elevation.value > 0
 
         // Glitter
         // this.glitterPositionDelta.value = 1 + (this.game.view.camera.position.x + this.game.view.camera.position.z) * this.glitterViewMultiplier + this.game.ticker.elapsedScaled * 0.4
