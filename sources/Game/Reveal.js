@@ -38,10 +38,8 @@ export class Reveal
             this.debugPanel.addBinding(this.intensity, 'value', { label: 'intensity', min: 1, max: 20, step: 0.001 })
         }
 
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        }, 9)
+        this.update = this.update.bind(this)
+        this.game.ticker.events.on('tick', this.update, 9)
     }
 
     step(step)
@@ -145,7 +143,7 @@ export class Reveal
                 }
             })
         }
-        else if(step = 1)
+        else if(step === 1)
         {
             // Audio
             this.game.audio.init()
@@ -187,9 +185,7 @@ export class Reveal
                     overwrite: true,
                     onComplete: () =>
                     {
-                        this.game.interactivePoints.recover()
-                        this.game.world.init(2)
-                        this.game.world.grid.hide()
+                        this.step(2)
                     }
                 }
             )
@@ -207,6 +203,16 @@ export class Reveal
                     }
                 )
             }
+        }
+        else if(step === 2)
+        {
+            this.game.interactivePoints.recover()
+            this.game.world.init(2)
+            this.game.world.grid.destroy()
+            this.game.world.intro.destroy()
+            this.game.world.intro = null
+
+            this.game.ticker.events.off('tick', this.update)
         }
     }
 

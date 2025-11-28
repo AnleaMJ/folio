@@ -16,10 +16,8 @@ export class Intro
         this.setCircle()
         this.setLabel()
 
-        this.game.ticker.events.on('tick', () =>
-        {
-            this.update()
-        })
+        this.update = this.update.bind(this)
+        this.game.ticker.events.on('tick', this.update)
     }
 
     setLabel()
@@ -101,13 +99,15 @@ export class Intro
 
     setText()
     {
+        this.text = {}
+
         // Geometry
         const scale = 1.3
         const geometry = new THREE.PlaneGeometry(2 * scale, 1 * scale)
 
         // Texture
-        const textures = new Map()
-        const updateTexture = async () =>
+        this.text.textures = new Map()
+        this.text.updateTexture = async () =>
         {
             // Define name
             let name = 'mouseKeyboard'
@@ -129,7 +129,7 @@ export class Intro
             }
 
             // Load, set and save texture
-            let cachedTexture = textures.get(name)
+            let cachedTexture = this.text.textures.get(name)
             if(!cachedTexture)
             {
                 const loader = this.game.resourcesLoader.getLoader('textureKtx')
@@ -139,7 +139,7 @@ export class Intro
                     resourcePath,
                     (loadedTexture) =>
                     {
-                        textures.set(name, loadedTexture)
+                        this.text.textures.set(name, loadedTexture)
 
                         // Update material and mesh
                         material.outputNode = Fn(() =>
@@ -165,29 +165,22 @@ export class Intro
 
         }
 
-        updateTexture()
+        this.text.updateTexture()
 
         // Material
         const material = new THREE.MeshBasicNodeMaterial({
             transparent: true
         })
 
-        this.game.inputs.gamepad.events.on('typeChange', () =>
-        {
-            updateTexture()
-        })
-
-        this.game.inputs.events.on('modeChange', () =>
-        {
-            updateTexture()
-        })
+        this.game.inputs.gamepad.events.on('typeChange', this.text.updateTexture)
+        this.game.inputs.events.on('modeChange', this.text.updateTexture)
 
         const mesh = new THREE.Mesh(geometry, material)
         mesh.visible = false
 
         this.label.add(mesh)
 
-        this.text = mesh
+        this.text.mesh = mesh
     }
 
     setSoundButton()
@@ -282,7 +275,7 @@ export class Intro
                 },
                 onComplete: () =>
                 {
-                    this.text.removeFromParent()
+                    this.text.mesh.removeFromParent()
                     this.soundButton.mesh.removeFromParent()
                     this.game.rayCursor.removeIntersect(this.soundButton.intersect)
                 }
@@ -298,5 +291,33 @@ export class Intro
     update()
     {
         this.circle.smoothedProgress.value += (this.circle.progress - this.circle.smoothedProgress.value) * this.game.ticker.delta * 10
+    }
+
+    destroy()
+    {
+        this.label.removeFromParent()
+
+        // Geometries
+        this.circle.mesh.geometry.dispose()
+        this.soundButton.mesh.geometry.dispose()
+        this.text.mesh.geometry.dispose()
+
+        // Materials
+        this.circle.mesh.material.dispose()
+        this.soundButton.mesh.material.dispose()
+        this.text.mesh.material.dispose()
+
+        // Textures
+        this.game.resources.soundTexture.dispose()
+
+        this.text.textures.forEach((value, key) =>
+        {
+            value.dispose()
+        })
+        
+        // Events
+        this.game.ticker.events.off('tick', this.update)
+        this.game.inputs.gamepad.events.off('typeChange', this.text.updateTexture)
+        this.game.inputs.events.off('modeChange', this.text.updateTexture)
     }
 }

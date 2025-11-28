@@ -115,8 +115,10 @@ export class Grid
         this.game.scene.add(this.mesh)
     }
 
-    hide()
+    destroy()
     {
-        this.game.scene.remove(this.mesh)
+        this.mesh.material.dispose()
+        this.mesh.geometry.dispose()
+        this.mesh.removeFromParent()
     }
 }
