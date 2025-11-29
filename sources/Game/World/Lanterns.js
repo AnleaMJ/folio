@@ -55,7 +55,7 @@ export class Lanterns
         }
 
         // Instanced group
-        this.testInstancedGroup = new InstancedGroup(references, base)
+        this.instancedGroup = new InstancedGroup(references, base)
 
         // Tick update
         this.game.ticker.events.on('tick', () =>

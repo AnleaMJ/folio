@@ -149,11 +149,19 @@ export class ExplosiveCrates
         {
             this.game.objects.resetObject(crate.object)
             crate.exploded = false
+
+            this.game.ticker.wait(2, () =>
+            {
+                crate.object.physical.body.setEnabled(true)
+            })
         }
+        
+        this.instancedGroup.needsUpdate = true
 
         // Disable every other object to prevent explosion trigger
         this.game.objects.list.forEach((object) =>
         {
+            // console.log(this.game.objects)
             if(
                 object.physical &&
                 (object.physical.type === 'dynamic' || object.physical.type === 'kinematicPositionBased') &&
@@ -170,6 +178,7 @@ export class ExplosiveCrates
                     // Sleep
                     if(object.physical.initialState.sleeping)
                         object.physical.body.sleep()
+
                 })
             }
         })

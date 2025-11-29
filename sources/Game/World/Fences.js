@@ -27,34 +27,32 @@ export class Fences
         this.objects = []
         for(const reference of references)
         {
-            this.objects.push(
-                this.game.objects.add(
+            this.objects.push(this.game.objects.add(
+                {
+                    model: reference,
+                    updateMaterials: false,
+                    parent: null,
+                },
+                {
+                    type: 'dynamic',
+                    position: reference.position,
+                    rotation: reference.quaternion,
+                    friction: 0.7,
+                    mass: 0.1,
+                    sleeping: true,
+                    colliders: descriptions[1].colliders,
+                    waterGravityMultiplier: - 1,
+                    contactThreshold: 10,
+                    onCollision: (force, position) =>
                     {
-                        model: reference,
-                        updateMaterials: false,
-                        parent: null,
-                    },
-                    {
-                        type: 'dynamic',
-                        position: reference.position,
-                        rotation: reference.quaternion,
-                        friction: 0.7,
-                        mass: 0.1,
-                        sleeping: true,
-                        colliders: descriptions[1].colliders,
-                        waterGravityMultiplier: - 1,
-                        contactThreshold: 10,
-                        onCollision: (force, position) =>
-                        {
-                            // this.game.audio.groups.get('hitMetal').playRandomNext(force, position)
-                        }
-                    },
-                )
-            )
+                        // this.game.audio.groups.get('hitMetal').playRandomNext(force, position)
+                    }
+                },
+            ))
         }
 
         // Instanced group
-        this.testInstancedGroup = new InstancedGroup(references, base)
+        this.instancedGroup = new InstancedGroup(references, base)
 
         // Tick update
         this.game.ticker.events.on('tick', () =>

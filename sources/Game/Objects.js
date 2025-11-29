@@ -19,7 +19,8 @@ export class Objects
         const object = {
             visual: null,
             physical: null,
-            needsUpdate: false
+            needsUpdate: false,
+            reseting: false
         }
 
         /**
@@ -222,9 +223,12 @@ export class Objects
     {
         if(
             !object.physical ||
-            (object.physical.type !== 'dynamic' && object.physical.type !== 'kinematicPositionBased')
+            (object.physical.type !== 'dynamic' && object.physical.type !== 'kinematicPositionBased') ||
+            object.reseting
         )
             return
+
+        object.reseting = true
 
         const isEnabled = object.physical.body.isEnabled()
         object.physical.body.setEnabled(false)
@@ -243,6 +247,12 @@ export class Objects
             // Sleep
             if(object.physical.initialState.sleeping)
                 object.physical.body.sleep()
+
+            object.reseting = false
+            this.game.ticker.wait(1, () =>
+            {
+                object.needsUpdate = true
+            })
         })
         
         if(object.visual)
@@ -294,15 +304,18 @@ export class Objects
 
             // Apply physical to visual
             if(
-                _object.needsUpdate ||
+                _object.visual &&
+                _object.physical &&
                 (
-                    _object.visual &&
-                    _object.physical &&
-                    !_object.physical.body.isSleeping() &&
-                    _object.physical.body.isEnabled()
+                    _object.needsUpdate ||
+                    (
+                        !_object.physical.body.isSleeping() &&
+                        _object.physical.body.isEnabled()
+                    )
                 )
             )
             {
+                _object.needsUpdate = false
                 _object.visual.object3D.position.copy(position)
                 _object.visual.object3D.quaternion.copy(_object.physical.body.rotation())
             }

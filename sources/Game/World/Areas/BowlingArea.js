@@ -150,7 +150,7 @@ export class BowlingArea extends Area
         // )
         // basePin.removeFromParent()
 
-        this.instancedGroup = new InstancedGroup(references, basePin)
+        this.pins.instancedGroup = new InstancedGroup(references, basePin)
 
         // Reset
         this.pins.reset = () =>
@@ -208,6 +208,8 @@ export class BowlingArea extends Area
         this.pins.reset()
         this.ball.reset()
         this.screen.reset()
+
+        this.pins.instancedGroup.needsUpdate = true
 
         this.game.ticker.wait(1, () =>
         {
@@ -623,7 +625,7 @@ export class BowlingArea extends Area
             this.pins.boundingUpdateTime = this.game.ticker.elapsed
 
             if(!this.pins.allSleeping)
-                this.instancedGroup.updateBoundings()
+                this.pins.instancedGroup.updateBoundings()
         }
 
         // Ball

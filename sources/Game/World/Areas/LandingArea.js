@@ -248,13 +248,36 @@ export class LandingArea extends Area
                     if(this.game.world.areas.bowling)
                         this.game.world.areas.bowling.restart()
 
+                    // Cookie
+                    if(this.game.world.areas.cookie)
+                        this.game.world.areas.cookie.cookies.instancedGroup.needsUpdate = true
+
                     // Toilet
                     if(this.game.world.areas.toilet)
                         this.game.world.areas.toilet.cabin.down = false
 
                     // Social
                     if(this.game.world.areas.social)
+                    {
                         this.game.world.areas.social.statue.down = false
+                        this.game.world.areas.social.fans.instancedGroup.needsUpdate = true
+                    }
+                    
+                    // Benches
+                    if(this.game.world.benches)
+                        this.game.world.benches.instancedGroup.needsUpdate = true
+                    
+                    // Fences
+                    if(this.game.world.fences)
+                        this.game.world.fences.instancedGroup.needsUpdate = true
+                    
+                    // Bricks
+                    if(this.game.world.bricks)
+                        this.game.world.bricks.instancedGroup.needsUpdate = true
+                    
+                    // Lanterns
+                    if(this.game.world.lanterns)
+                        this.game.world.lanterns.instancedGroup.needsUpdate = true
 
                     // Sound
                     this.game.audio.groups.get('campfire').items[0].positions.push(position)

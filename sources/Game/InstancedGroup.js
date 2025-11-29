@@ -10,6 +10,7 @@ export class InstancedGroup
         this.references = references
         this.group = group
         this.count = this.references.length
+        this.needsUpdate = false
 
         this.setMeshes()
 
@@ -94,7 +95,7 @@ export class InstancedGroup
         let i = 0
         for(const _reference of this.references)
         {
-            if(_reference.needsUpdate)
+            if(this.needsUpdate || _reference.needsUpdate)
             {
                 updated++
                 _reference.needsUpdate = false
@@ -113,5 +114,7 @@ export class InstancedGroup
         if(updated)
             for(const instancedMesh of this.meshes)
                 instancedMesh.instance.instanceMatrix.needsUpdate = true
+
+        this.needsUpdate = false
     }
 }
