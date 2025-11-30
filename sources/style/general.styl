@@ -97,15 +97,16 @@ ol
     display flex
     align-items center
     justify-content center
+    gap 10px
 
     @media only screen and (max-width 520px)
         flex-direction column
 
     > *
-        margin-right 10px
+        // margin-right 10px
 
-        &:last-child
-            margin-right 0
+        // &:last-child
+        //     margin-right 0
 
 .button
     vertical-align top
@@ -117,6 +118,14 @@ ol
     border-radius 8px
     border 1px solid #ffffff
     white-space nowrap
+
+    @media only screen and (max-width 520px)
+        padding 0 13px
+        height 50px
+
+    @media only screen and (max-width 420px)
+        padding 0 10px
+        height 45px
 
     &:hover
         opacity 1

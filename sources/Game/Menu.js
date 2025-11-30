@@ -1,6 +1,7 @@
 import { Events } from './Events.js'
 import { Game } from './Game.js'
 import { Tabs } from './Tabs.js'
+import { CircuitArea } from './World/Areas/CircuitArea.js'
 
 export class Menu
 {
@@ -19,6 +20,7 @@ export class Menu
         this.default = null
         this.events = new Events()
 
+        this.setTrigger()
         this.setClose()
         this.setItems()
         this.preopen()
@@ -45,6 +47,41 @@ export class Menu
             
             this.element.classList.remove('is-displayed')
         }
+    }
+
+    setTrigger()
+    {
+        const triggerElement = document.querySelector('.js-menu-trigger')
+
+        triggerElement.addEventListener('click', (event) =>
+        {
+            event.preventDefault()
+
+            if(this.game.world.areas?.circuit?.state === CircuitArea.STATE_RUNNING || this.game.world.areas?.circuit?.state === CircuitArea.STATE_STARTING)
+                this.open('circuit')
+            else
+                this.open()
+        })
+    }
+
+    setClose()
+    {
+        const closeElements = this.element.querySelectorAll('.js-close')
+
+        for(const element of closeElements)
+        {
+            element.addEventListener('click', () =>
+            {
+                this.pending = null
+                this.close()
+            })
+        }
+
+        this.element.addEventListener('click', (event) =>
+        {
+            if(event.target === this.element)
+                this.close()
+        })
     }
 
     setItems()
@@ -87,26 +124,6 @@ export class Menu
             if(this.default === null)
                 this.default = item
         }
-    }
-
-    setClose()
-    {
-        const closeElements = this.element.querySelectorAll('.js-close')
-
-        for(const element of closeElements)
-        {
-            element.addEventListener('click', () =>
-            {
-                this.pending = null
-                this.close()
-            })
-        }
-
-        this.element.addEventListener('click', (event) =>
-        {
-            if(event.target === this.element)
-                this.close()
-        })
     }
 
     open(name = null)
