@@ -60,7 +60,7 @@
                 .lock
                     display block
 
-            &:hover
+            html:not(.is-mode-touch) &:hover
                 &::after
                     opacity 0.75
 
@@ -95,8 +95,8 @@
 
                 .lock-icon
                     position absolute
-                    top calc(50% - 16px / 2)
-                    left calc(50% - 14px / 2)
+                    top calc(50% - 22px / 2)
+                    left calc(50% - 16px / 2)
                     opacity 0.75
 
     .items
