@@ -13,7 +13,7 @@ export class Tornado
 
         this.running = false
         this.strength = 0
-        this.resolution = 20
+        this.resolution = 100
         this.position = new THREE.Vector3()
         this.achievementAchieved = this.game.achievements.groups.get('cataclysm')?.items[0].achieved
 
@@ -48,22 +48,31 @@ export class Tornado
     {
         const points = []
 
-        const referenceArray = this.game.resources.tornadoPathModel.scene.children[0].geometry.attributes.position.array
-        const count = referenceArray.length / 3
-
-        for(let i = 0; i < count; i++)
+        const children = [...this.game.resources.tornadoPathReferencesModel.scene.children]
+        children.sort((a, b) =>
         {
-            const i3 = i * 3
+            if ( a.name < b.name )
+                return -1
+            
+            if ( a.name > b.name )
+                return 1
+            
+            return 0
+        })
+        
+        for(const child of children)
+        {
             const point = new THREE.Vector3(
-                referenceArray[i3 + 0], 
+                child.position.x, 
                 0, 
-                referenceArray[i3 + 2]
+                child.position.z
             )
 
             points.push(point)
         }
         const curve = new THREE.CatmullRomCurve3(points, true)
         this.path = curve.getSpacedPoints(this.resolution)
+        // this.path = points
     }
 
     setPreviews()
@@ -209,10 +218,10 @@ export class Tornado
             return
 
         // Position on path
-        const progress = this.game.dayCycles.absoluteProgress * 2
+        const progress = this.game.dayCycles.absoluteProgress * 1
         const newPosition = this.getPosition(progress)
         
-        this.position.lerp(newPosition, 0.1 * this.game.ticker.deltaScaled)
+        this.position.lerp(newPosition, 0.3 * this.game.ticker.deltaScaled)
 
         // Previews
         if(this.previews)
