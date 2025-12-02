@@ -420,40 +420,51 @@ export class Snow
 
     update()
     {
-        // Apply weather
         this.elevationBinding.update()
-        this.mesh.visible = this.elevation.value > 0
 
-        // Glitter
-        // this.glitterPositionDelta.value = 1 + (this.game.view.camera.position.x + this.game.view.camera.position.z) * this.glitterViewMultiplier + this.game.ticker.elapsedScaled * 0.4
-        // this.glitterPositionDelta.value = 123.456 + (this.game.view.camera.position.x + this.game.view.camera.position.z) * this.glitterViewMultiplier
-        
-        // this.glitterViewMultiplier = 0.001
-        // this.glitterTimeMultiplier = 0.001
-        this.glitterVariation.value += this.game.ticker.deltaScaled * this.glitterTimeMultiplier + this.game.view.delta.length() * this.glitterViewMultiplier
+        if(this.elevation.value > -0.9)
+        {
+            // Apply weather
+            this.mesh.visible = true
 
-        // Rounded position
-        this.roundedPosition.value.x = Math.round(this.game.view.optimalArea.position.x / this.subdivisionSize) * this.subdivisionSize
-        this.roundedPosition.value.y = Math.round(this.game.view.optimalArea.position.z / this.subdivisionSize) * this.subdivisionSize
+            if(this.elevation.value > 0)
+                this.game.achievements.setProgress('weatherSnow', 1)
 
-        // Tracks delta
-        this.tracksDelta.value.set(
-            this.roundedPosition.value.x - this.game.tracks.focusPoint.x,
-            this.roundedPosition.value.y - this.game.tracks.focusPoint.y
-        )
+            // Glitter
+            // this.glitterPositionDelta.value = 1 + (this.game.view.camera.position.x + this.game.view.camera.position.z) * this.glitterViewMultiplier + this.game.ticker.elapsedScaled * 0.4
+            // this.glitterPositionDelta.value = 123.456 + (this.game.view.camera.position.x + this.game.view.camera.position.z) * this.glitterViewMultiplier
+            
+            // this.glitterViewMultiplier = 0.001
+            // this.glitterTimeMultiplier = 0.001
+            this.glitterVariation.value += this.game.ticker.deltaScaled * this.glitterTimeMultiplier + this.game.view.delta.length() * this.glitterViewMultiplier
 
-        // this.game.rendering.renderer.setRenderTarget(this.snowElevation.renderTarget)
-        // this.snowElevation.quadMesh.render(this.game.rendering.renderer)
-        // this.game.rendering.renderer.setRenderTarget(null)
-        
-        // Render
-        const rendererState = THREE.RendererUtils.resetRendererState(this.game.rendering.renderer)
+            // Rounded position
+            this.roundedPosition.value.x = Math.round(this.game.view.optimalArea.position.x / this.subdivisionSize) * this.subdivisionSize
+            this.roundedPosition.value.y = Math.round(this.game.view.optimalArea.position.z / this.subdivisionSize) * this.subdivisionSize
 
-        this.game.rendering.renderer.setPixelRatio(1)
-        this.game.rendering.renderer.setRenderTarget(this.snowElevation.renderTarget)
-        this.snowElevation.quadMesh.render(this.game.rendering.renderer)
-        this.game.rendering.renderer.setRenderTarget(null)
+            // Tracks delta
+            this.tracksDelta.value.set(
+                this.roundedPosition.value.x - this.game.tracks.focusPoint.x,
+                this.roundedPosition.value.y - this.game.tracks.focusPoint.y
+            )
 
-        THREE.RendererUtils.restoreRendererState(this.game.rendering.renderer, rendererState)
+            // this.game.rendering.renderer.setRenderTarget(this.snowElevation.renderTarget)
+            // this.snowElevation.quadMesh.render(this.game.rendering.renderer)
+            // this.game.rendering.renderer.setRenderTarget(null)
+            
+            // Render
+            const rendererState = THREE.RendererUtils.resetRendererState(this.game.rendering.renderer)
+
+            this.game.rendering.renderer.setPixelRatio(1)
+            this.game.rendering.renderer.setRenderTarget(this.snowElevation.renderTarget)
+            this.snowElevation.quadMesh.render(this.game.rendering.renderer)
+            this.game.rendering.renderer.setRenderTarget(null)
+
+            THREE.RendererUtils.restoreRendererState(this.game.rendering.renderer, rendererState)
+        }
+        else
+        {
+            this.mesh.visible = false
+        }
     }
 }

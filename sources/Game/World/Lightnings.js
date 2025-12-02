@@ -35,7 +35,7 @@ export class Lightnings
             { label: 'hitChances', min: 0, max: 1, step: 0.001 },
             () =>
             {
-                return 1
+                // return 1
                 return Math.max(0, this.game.weather.clouds.value) * Math.max(0, this.game.weather.electricField.value) * this.game.weather.humidity.value
             }
         )

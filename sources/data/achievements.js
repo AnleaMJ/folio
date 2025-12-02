@@ -140,6 +140,12 @@ export default
         1
     ],
     [
+        'fullDay',
+        'Don’t you have work to do?',
+        'Spend a full day cycle here in one go.',
+        1
+    ],
+    [
         'distanceDriven',
         'Baby step',
         'Drive 1km.',
@@ -161,6 +167,18 @@ export default
         'sacrifice',
         'One for the god of Chaos',
         'Sacrifice yourself into the altar.',
+        1
+    ],
+    [
+        'weatherSnow',
+        'Do you want to build a snowman?',
+        'Witness snowy weather.',
+        1
+    ],
+    [
+        'weatherRain',
+        'I’m singing in the rain',
+        'Witness a rainy weather.',
         1
     ],
     [
