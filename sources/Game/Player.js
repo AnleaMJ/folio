@@ -448,11 +448,14 @@ export class Player
     setTimePlayed()
     {
         const localTimePlayed = localStorage.getItem('timePlayed')
-        this.timePlayed = localTimePlayed ? parseFloat(localTimePlayed) : 0
+        this.timePlayed = {}
+        this.timePlayed.all = localTimePlayed ? parseFloat(localTimePlayed) : 0
+        this.timePlayed.session = 0
+        this.timePlayed.achieved = false
 
         setInterval(() =>
         {
-            localStorage.setItem('timePlayed', this.timePlayed)
+            localStorage.setItem('timePlayed', this.timePlayed.all)
         }, 1000)
     }
 
@@ -635,7 +638,14 @@ export class Player
         }
 
         // Time played
-        this.timePlayed += this.game.ticker.delta
+        this.timePlayed.all += this.game.ticker.delta
+        this.timePlayed.session += this.game.ticker.delta
+
+        if(!this.timePlayed.achieved && this.timePlayed.session > this.game.dayCycles.duration)
+        {
+            this.timePlayed.achieved = true
+            this.game.achievements.setProgress('fullDay', 1)
+        }
 
         // Sea achievement
         const distanceToCenter = this.position2.length()
