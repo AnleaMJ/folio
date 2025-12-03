@@ -167,12 +167,7 @@ export class InputFlag
         this.searchElement.focus()
 
         if(this.country)
-        {
             this.scrollerElement.scrollTop = this.country.element.offsetTop - 15
-            console.log(this.country.element.offsetTop)
-        }
-        console.log('open')
-        console.log(this.country)
     }
 
     close()
