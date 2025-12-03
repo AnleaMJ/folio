@@ -25,8 +25,8 @@ import sharp from 'sharp'
 
     for(const inputFile of files)
     {
-        const ktx2File = inputFile.replace('.glb', '-ktx.glb')
-        const dracoFile = inputFile.replace('.glb', '-draco.glb')
+        const ktx2File = inputFile.replace('.glb', '-compressed.glb')
+        const dracoFile = inputFile.replace('.glb', '-compressed.glb')
         
         const ktx2Command = spawn(
             'gltf-transform',
