@@ -3,6 +3,7 @@ import { Howl, Howler } from 'howler'
 import { Game } from './Game.js'
 import { remap, remapClamp, clamp } from './utilities/maths.js'
 import gsap from 'gsap'
+import { Events } from './Events.js'
 
 export class Audio
 {
@@ -12,6 +13,7 @@ export class Audio
 
         this.initiated = false
         this.groups = new Map()
+        this.events = new Events()
 
         this.setMute()
 
@@ -636,7 +638,6 @@ export class Audio
     setMute()
     {
         this.mute = {}
-        this.mute.buttonElement = this.game.domElement.querySelector('.js-audio-toggle')
 
         this.mute.active = false
 
@@ -655,8 +656,9 @@ export class Audio
             
             Howler.mute(true)
             this.mute.active = true
-            this.mute.buttonElement.classList.remove('is-active')
             localStorage.setItem('soundToggle', '1')
+            document.documentElement.classList.add('is-audio-muted')
+            this.events.trigger('muteChange', [ true ])
         }
 
         this.mute.deactivate = () =>
@@ -666,17 +668,15 @@ export class Audio
             
             Howler.mute(false)
             this.mute.active = false
-            this.mute.buttonElement.classList.add('is-active')
             localStorage.setItem('soundToggle', '0')
+            document.documentElement.classList.remove('is-audio-muted')
+            this.events.trigger('muteChange', [ false ])
         }
 
         // From local storage
         const soundToggleLocal = localStorage.getItem('soundToggle')
         if(soundToggleLocal !== null && soundToggleLocal === '1')
             this.mute.activate()
-
-        // Button click
-        this.mute.buttonElement.addEventListener('click', this.mute.toggle)
 
         // Inputs keyboard
         this.game.inputs.addActions([

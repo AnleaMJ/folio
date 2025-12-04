@@ -102,7 +102,7 @@
             width @css{ min(600px, calc(100% - 20px)) }
             height @css{ max(80vh, calc(100% - (44px + 10px))) }
 
-        @media only screen and (max-width 400px)
+        @media only screen and (max-width 440px)
             left 0
             width calc(100vw - 10px)
 
@@ -214,7 +214,7 @@
             @media only screen and (max-width 520px)
                 padding 15px 20px 20px 20px
 
-            @media only screen and (max-width 400px)
+            @media only screen and (max-width 440px)
                 padding 10px 15px 15px 15px
                 width calc(100vw - 10px)
 
@@ -233,7 +233,7 @@
 
         @media only screen and (max-width 520px)
             left 0
-            gap 2px
+            gap 1px
 
         .item
             position relative
@@ -241,6 +241,10 @@
             height 44px
 
             --hover-translate 4px
+
+            @media only screen and (max-width 440px)
+                width 43px
+                height 40px
 
             html:not(.is-mode-touch) &:hover
                 .button-inner
@@ -306,7 +310,11 @@
         @media only screen and (max-width 520px)
             right 0
 
-        @media only screen and (max-width 400px)
+        @media only screen and (max-width 440px)
+            width 43px
+            height 40px
+
+        @media only screen and (max-width 360px)
             right -1px
             top 10px
             bottom auto

@@ -12,8 +12,6 @@ export class Quality
         const isMobile = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)
         this.level = isMobile ? 1 : 0 // 0 = highest quality
 
-        this.setToggle()
-
         // Debug
         if(this.game.debug.active)
         {
@@ -39,20 +37,6 @@ export class Quality
         }
     }
 
-    setToggle()
-    {
-        this.toggle = {}
-        this.toggle.buttonElement = this.game.domElement.querySelector('.js-quality-toggle')
-        this.toggle.buttonElement.textContent = this.level === 0 ? 'High' : 'Low'
-
-        this.toggle.activate = () =>
-        {
-            this.changeLevel(this.level === 0 ? 1 : 0)
-        }
-
-        this.toggle.buttonElement.addEventListener('click', this.toggle.activate)
-    }
-
     changeLevel(level = 0)
     {
         // Same
@@ -60,7 +44,6 @@ export class Quality
             return
             
         this.level = level
-        this.toggle.buttonElement.textContent = this.level === 0 ? 'High' : 'Low'
         this.events.trigger('change', [ this.level ])
     }
 }

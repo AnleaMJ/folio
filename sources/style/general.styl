@@ -53,7 +53,7 @@ html
     @media only screen and (max-width 520px)
         font-size 18px
 
-    @media only screen and (max-width 400px)
+    @media only screen and (max-width 440px)
         font-size 16px;
 
 ul
@@ -113,34 +113,52 @@ a.button
 
 .button
     vertical-align top
-    cursor pointer
-    border-color #ffceca
     padding 0 16px
-    opacity 0.8
     height 58px
     line-height 58px
     border-radius 8px
-    border 1px solid #ffffff
     white-space nowrap
     color inherit
     text-decoration none
+    border 1px solid alpha(#ffffff, 0.8)
+    color alpha(#ffffff, 0.8)
+    cursor default
 
     @media only screen and (max-width 520px)
         padding 0 13px
         height 50px
         line-height 50px
 
-    @media only screen and (max-width 400px)
+    @media only screen and (max-width 440px)
         padding 0 10px
         height 45px
         line-height 45px
 
-    html:not(.is-mode-touch) &:hover
-        opacity 1
+    &:not(.is-disabled)
+        cursor pointer
+
+    &.is-disabled
+        border-style dashed
+
+        &.has-tooltip
+            cursor help
+
+    &.is-success
+        color #d5ff95
+
+    &.is-danger
+        color #ff6a7c
+
+    html:not(.is-mode-touch) &:not(.is-disabled):hover
+        border 1px solid alpha(#ffffff, 1)
+        color alpha(#ffffff, 1)
 
     .icon
         position relative
         vertical-align middle
+
+        &.icon-audio
+            top -2px
 
         &.icon-restart
             top -2px

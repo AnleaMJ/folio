@@ -45,6 +45,7 @@ import { Quality } from './Quality.js'
 import { Menu } from './Menu.js'
 import { Title } from './Title.js'
 import { PreRenderer } from './PreRenderer.js'
+import { Options } from './Options.js'
 
 export class Game
 {
@@ -96,6 +97,7 @@ export class Game
             [ 'paletteTexture',             'palette.ktx',                           'textureKtx', (resource) => { resource.minFilter = THREE.NearestFilter; resource.magFilter = THREE.NearestFilter; resource.generateMipmaps = false; resource.colorSpace = THREE.SRGBColorSpace; } ],
 
         ])
+        this.options = new Options()
         this.respawns = new Respawns(import.meta.env.VITE_PLAYER_SPAWN || 'landing')
         this.view = new View()
         this.rendering.setPostprocessing()

@@ -100,6 +100,15 @@
                         </div>
                     </button>
 
+                    <!-- Intro -->
+                    <button class="js-navigation-item item" data-name="options" data-preopen>
+                        <div class="button-inner">
+                            <div class="icon-container">
+                                <img src="ui/gear.svg">
+                            </div>
+                        </div>
+                    </button>
+
                     <!-- Controls -->
                     <button class="js-navigation-item item" data-name="controls">
                         <div class="button-inner">
@@ -155,6 +164,11 @@
                             <img class="background" src="ui/previews/home.webp" loading="lazy">
                         </div>
 
+                        <!-- Options -->
+                        <div class="js-preview preview options-preview">
+                            <img class="background" src="ui/previews/home.webp" loading="lazy">
+                        </div>
+
                         <!-- Controls -->
                         <div class="js-preview preview controls-preview">
                             <img class="background" src="ui/previews/controls.webp" loading="lazy">
@@ -189,8 +203,16 @@
                             <div class="content-inner">
                                 <div class="title">Bruno's Home</div>
                                 <p class="text">Welcome!</p>
-                                <p class="text">My name is Bruno and I'm a creative developer.</p>
-                                <p class="text">Drive around to learn more about me and discover the many secrets of this world.</p>
+                                <p class="text">My name is <strong>Bruno Simon</strong>, and I'm a <strong>creative developer</strong> (mostly for the web).</p>
+                                <p class="text">This is my portfolio. Please drive around to learn more about me and discover the many secrets of this world.</p>
+                                <p class="text">And don't break anything!</p>
+                            </div>
+                        </div>
+
+                        <!-- Options -->
+                        <div class="js-content content options-content">
+                            <div class="content-inner">
+                                <div class="title">Options</div>
                                 <table class="options">
                                     <tbody>
                                         <tr>
@@ -198,9 +220,10 @@
                                                 Audio 
                                             </td>
                                             <td>
-                                                <button class="js-audio-toggle audio-toggle button is-active">
-                                                    <img class="audio-on" src="ui/audio/audioOn.svg">
-                                                    <img class="audio-off" src="ui/audio/audioOff.svg">
+                                                <button class="js-audio-toggle audio-toggle button is-small has-tooltip">
+                                                    <div class="tooltip">Toggles sound</div>
+                                                    <img class="icon icon-audio audio-on" src="ui/audio/audioOn.svg">
+                                                    <img class="icon icon-audio audio-off" src="ui/audio/audioOff.svg">
                                                 </button>
                                             </td>
                                         </tr>
@@ -209,8 +232,9 @@
                                                 Quality 
                                             </td>
                                             <td>
-                                                <button class="js-quality-toggle quality-toggle button">
-                                                    Low
+                                                <button class="js-quality-toggle quality-toggle button is-small has-tooltip">
+                                                    <div class="tooltip">Toggles some effects</div>
+                                                    <span>Low</span>
                                                 </button>
                                             </td>
                                         </tr>
@@ -219,8 +243,31 @@
                                                 I'm stuck!
                                             </td>
                                             <td>
-                                                <button class="js-respawn button">
+                                                <button class="js-respawn button is-small has-tooltip">
+                                                    <div class="tooltip">Teleports you to the closest respawn</div>
                                                     Respawn
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Renderer
+                                            </td>
+                                            <td>
+                                                <button class="js-renderer button is-small is-disabled is-success has-tooltip">
+                                                    <div class="js-tooltip tooltip">Best for performance</div>
+                                                    <span>WebGPU</span>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                Server
+                                            </td>
+                                            <td>
+                                                <button class="js-server button is-small is-disabled has-tooltip">
+                                                    <div class="js-tooltip tooltip"></div>
+                                                    <span>Pending</span>
                                                 </button>
                                             </td>
                                         </tr>

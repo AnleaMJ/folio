@@ -223,7 +223,6 @@ export class Intro
             onClick: () =>
             {
                 this.game.audio.mute.toggle()
-                texture.offset.x = this.game.audio.mute.active ? 0.5 : 0
             },
             onEnter: () =>
             {
@@ -233,6 +232,11 @@ export class Intro
             {
                 gsap.to(intensity, { value: 1, duration: 0.3, overwrite: true })
             }
+        })
+
+        this.game.audio.events.on('muteChange', (active) =>
+        {
+            texture.offset.x = active ? 0.5 : 0
         })
 
         this.soundButton.mesh = mesh
