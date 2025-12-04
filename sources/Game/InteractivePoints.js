@@ -29,6 +29,7 @@ export class InteractivePoints
         this.activeItem = null
         this.revealed = false
         this.temporaryHidden = true
+        this.needsTest = false
 
         this.setSounds()
         this.setGeometries()
@@ -530,6 +531,8 @@ export class InteractivePoints
                 item.reveal()
             else
                 item.conceal()
+
+            this.needsTest = true
         }
 
         /**
@@ -579,8 +582,9 @@ export class InteractivePoints
         )
 
         // Only update is moved enough
-        if(distanceTraveled > 0.2)
+        if(distanceTraveled > 0.2 || this.needsTest)
         {
+            this.needsTest = false
             this.playerPosition.value.copy(this.game.player.position2)
 
             let distance = Infinity
