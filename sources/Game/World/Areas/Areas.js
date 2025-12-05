@@ -25,7 +25,7 @@ export class Areas
             [ 'behindTheScene', BehindTheSceneArea ],
             [ 'bowling', BowlingArea ],
             [ 'career', CareerArea ],
-            [ 'circuit', CircuitArea ], // Error
+            [ 'circuit', CircuitArea ],
             [ 'cookie', CookieArea ],
             [ 'lab', LabArea ],
             [ 'landing', LandingArea ],
