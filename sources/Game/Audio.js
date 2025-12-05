@@ -175,7 +175,7 @@ export class Audio
                 autoplay: false,
                 loop: false,
                 preload: false,
-                volume: 0.25,
+                volume: 0.2,
                 onend: () =>
                 {
                     this.playlist.next()
@@ -288,7 +288,7 @@ export class Audio
                         positions: new THREE.Vector3(),
                         onPlay: (item) =>
                         {
-                            item.volume = 0.2 + Math.random() * 0.15
+                            item.volume = 0.2 + Math.random() * 0.3
                             item.rate = 1 + Math.random() * 0.7
                             item.positions[0].copy(getRandomDirection())
                         }
@@ -322,7 +322,7 @@ export class Audio
                 positions: new THREE.Vector3(),
                 onPlay: (item) =>
                 {
-                    item.volume = 0.2 + Math.random() * 0.15
+                    item.volume = 0.2 + Math.random() * 0.25
                     item.rate = 1 + Math.random() * 0.3
                     item.positions[0].copy(getRandomDirection())
                 }
@@ -353,7 +353,7 @@ export class Audio
                 positions: new THREE.Vector3(),
                 onPlay: (item) =>
                 {   
-                    item.volume = 0.05 + Math.random() * 0.15
+                    item.volume = 0.1 + Math.random() * 0.2
                     item.positions[0].copy(getRandomDirection())
                 }
             })
@@ -376,7 +376,7 @@ export class Audio
                 positions: new THREE.Vector3(),
                 onPlay: (item) =>
                 {   
-                    item.volume = 0.05 + Math.random() * 0.15
+                    item.volume = 0.1 + Math.random() * 0.2
                     item.positions[0].copy(getRandomDirection())
                 }
             })
@@ -390,18 +390,17 @@ export class Audio
 
         // Crickets
         {
-
             const sound = this.register({
                 group: 'crickets',
                     path: 'sounds/crickets/Crickets.mp3',
                 autoplay: true,
                 loop: true,
-                volume: this.game.dayCycles.intervalEvents.get('night').inInterval ? 0.4 : 0
+                volume: this.game.dayCycles.intervalEvents.get('night').inInterval ? 0.65 : 0
             })
 
             this.game.dayCycles.events.on('night', (inInterval) =>
             {
-                gsap.to(sound, { volume: inInterval ? 1 : 0, duration: 15, overwrite: true })
+                gsap.to(sound, { volume: inInterval ? 0.65 : 0, duration: 15, overwrite: true })
             })
         }
 
@@ -415,7 +414,7 @@ export class Audio
             onPlaying: (item) =>
             {
                 const sine = Math.sin(this.game.ticker.elapsedScaled * 0.1) * 0.5 + 0.5
-                const targetVolume = Math.max(0, this.game.weather.snow.value) * 0.3 * sine
+                const targetVolume = Math.max(0, this.game.weather.snow.value) * 0.35 * sine
 
                 const easing = targetVolume > item.volume ? 0.005 : 0.05
                 item.volume += (targetVolume - item.volume) * this.game.ticker.deltaScaled * easing
@@ -432,7 +431,8 @@ export class Audio
             onPlaying: (item) =>
             {
                 const snowAttenuation = remapClamp(this.game.weather.snow.value, 0, 0.6, 1, 0)
-                item.volume = Math.pow(this.game.weather.rain.value * snowAttenuation, 2)
+                const rainVolume = remapClamp(this.game.weather.rain.value, 0.1, 0.6, 0, 1)
+                item.volume = rainVolume * snowAttenuation
             }
         })
 
@@ -462,15 +462,15 @@ export class Audio
                     this.game.terrain.size / 2 - Math.abs(this.game.player.position.x),
                     this.game.terrain.size / 2 - Math.abs(this.game.player.position.z)
                 )
-                item.volume = Math.pow(remapClamp(distanceToSide, 0, 40, 1, 0.1), 2) * 0.5
+                item.volume = Math.pow(remapClamp(distanceToSide, 0, 40, 1, 0.1), 2) * 0.7
             }
         })
 
         // Oven fire (Project Area + Cookie Area)
         {
             const positions = []
-            if(this.game.world.areas?.cookieStand)
-                positions.push(this.game.world.areas.cookieStand.references.items.get('spawner')[0].position)
+            if(this.game.world.areas?.cookie)
+                positions.push(this.game.world.areas.cookie.references.items.get('spawner')[0].position)
             if(this.game.world.areas?.projects)
                 positions.push(this.game.world.areas.projects.references.items.get('oven')[0].position)
 
@@ -481,7 +481,7 @@ export class Audio
                     path: 'sounds/fire/Mountain Audio - Fire Burning in a Wood Stove 1.mp3',
                     autoplay: true,
                     loop: true,
-                    volume: 0.4,
+                    volume: 0.8,
                     positions: positions,
                     distanceFade: 13,
                 })
@@ -501,7 +501,7 @@ export class Audio
                     path: 'sounds/fire/Fire Burning.mp3',
                     autoplay: true,
                     loop: true,
-                    volume: 0.4,
+                    volume: 1,
                     positions: positions,
                     distanceFade: 13,
                 })

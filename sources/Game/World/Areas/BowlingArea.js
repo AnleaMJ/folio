@@ -215,6 +215,11 @@ export class BowlingArea extends Area
         {
             this.restartInteractivePoint.hide()
         })
+
+        // Sound
+        const sound = this.game.audio.groups.get('click')
+        if(sound)
+            sound.play(true)
     }
 
     setRestart()

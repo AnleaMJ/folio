@@ -1348,6 +1348,11 @@ export class ProjectsArea extends Area
         this.game.inputs.interactiveButtons.clearItems()
         this.game.inputs.interactiveButtons.addItems(['previous', 'next', 'open', 'close'])
 
+        // Sound
+        const sound = this.game.audio.groups.get('click')
+        if(sound)
+            sound.play(true)
+
         // Achievements
         this.game.achievements.setProgress('projects', this.navigation.current.title)
     }
@@ -1401,6 +1406,11 @@ export class ProjectsArea extends Area
             
         // Buttons
         this.game.inputs.interactiveButtons.clearItems([])
+
+        // Sound
+        const sound = this.game.audio.groups.get('click')
+        if(sound)
+            sound.play(false)
     }
 
     previous()

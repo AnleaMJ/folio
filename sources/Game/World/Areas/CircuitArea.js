@@ -583,6 +583,11 @@ export class CircuitArea extends Area
             InteractivePoints.STATE_CONCEALED,
             () =>
             {
+                // Sound
+                const sound = this.game.audio.groups.get('click')
+                if(sound)
+                    sound.play(true)
+
                 this.restart()
             },
             () =>
