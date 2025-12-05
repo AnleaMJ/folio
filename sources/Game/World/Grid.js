@@ -28,8 +28,8 @@ export class Grid
         const lines = [
             // new MeshGridMaterialLine(0x705df2, 1, 0.03, 0.2),
             // new MeshGridMaterialLine(0xffffff, 10, 0.003, 1),
-            new MeshGridMaterialLine(0x6f53bf, 10, 0.03, 0.2),
-            new MeshGridMaterialLine(0xcfcfcf, 100, 0.003, 1),
+            new MeshGridMaterialLine('#8d55ff', 10, 0.02, 0.2),
+            new MeshGridMaterialLine('#675369', 100, 0.002, 1),
         ]
 
         const uvGridMaterial = new MeshGridMaterial({
@@ -73,16 +73,11 @@ export class Grid
         // Debug
         if(this.game.debug.active)
         {
-            const debugPanel = this.game.debug.panel.addFolder({
-                title: '🌐 Grid Floor',
-                expanded: false,
-            })
-
-            debugPanel.addBinding(uvGridMaterial, 'scale', { min: 0, max: 0.002, step: 0.0001 })
+            this.debugPanel.addBinding(uvGridMaterial, 'scale', { min: 0, max: 0.002, step: 0.0001 })
 
             for(const line of lines)
             {
-                const lineDebugPanel = debugPanel.addFolder({
+                const lineDebugPanel = this.debugPanel.addFolder({
                     title: 'Line',
                     expanded: false,
                 })
