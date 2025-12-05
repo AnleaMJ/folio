@@ -12,7 +12,7 @@ import { View } from './View.js'
 import { Viewport } from './Viewport.js'
 import { World } from './World/World.js'
 import { Tracks } from './Tracks.js'
-import { Monitoring } from './Monitoring.js'
+// import { Monitoring } from './Monitoring.js'
 import { Lighting } from './Ligthing.js'
 import { Materials } from './Materials.js'
 import { Objects } from './Objects.js'
@@ -184,7 +184,7 @@ export class Game
         this.achievements = new Achievements()
         this.tornado = new Tornado()
         this.title = new Title()
-        this.monitoring = new Monitoring()
+        // this.monitoring = new Monitoring()
         this.world.init(1)
 
         // Pre-render if quality high
