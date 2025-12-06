@@ -1,5 +1,7 @@
 # Folio 2025
 
+![image info](./static/social/share-image.png)
+
 ## Setup
 
 Create `.env` file based on `.env.example`
@@ -8,7 +10,7 @@ Download and install [Node.js](https://nodejs.org/en/download/) then run this fo
 
 ``` bash
 # Install dependencies
-npm install
+npm install --force
 
 # Serve at localhost:1234
 npm run dev

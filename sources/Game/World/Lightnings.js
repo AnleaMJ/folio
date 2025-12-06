@@ -19,7 +19,7 @@ export class Lightnings
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '⚡️ Lightnings',
-                expanded: true,
+                expanded: false,
             })
         }
 
