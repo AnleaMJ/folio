@@ -243,6 +243,7 @@ export default [
     [ 'Vanuatu', 'Vanuatu', 'vu' ],
     [ 'Wallis and Futuna', 'Wallis and Futuna', 'wf' ],
     [ 'Samoa', 'Samoa', 'ws' ],
+    [ 'Kosovo', 'Republika e Kosovës', 'xk' ],
     [ 'Yemen', 'Yemen', 'ye' ],
     [ 'Mayotte', 'Mayotte', 'yt' ],
     [ 'South Africa', 'Nanz Feih', 'za' ],
