@@ -72,6 +72,7 @@ export class Game
         // Setup
         this.domElement = document.querySelector('.game')
         this.canvasElement = this.domElement.querySelector('.js-canvas')
+        document.documentElement.classList.add('is-started')
 
         // First batch for intro
         this.scene = new THREE.Scene()

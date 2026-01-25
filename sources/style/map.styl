@@ -1,5 +1,5 @@
 .map-trigger
-    display block
+    display none
     position absolute
     right 0
     top 70px
@@ -9,6 +9,9 @@
     -webkit-user-select none
     -moz-user-select none
     user-select none
+
+    html.is-started &
+        display block
 
     html.input-filter-menu &
     html.input-filter-cinematic &
