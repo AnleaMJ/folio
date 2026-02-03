@@ -1,6 +1,7 @@
 import { TempNode } from 'three/webgpu'
 import { nodeObject, Fn, uv, uniform, convertToTexture, vec2, vec3, vec4, mat3, luminance, add, blur, mix } from 'three/tsl'
 import { boxBlur } from 'three/examples/jsm/tsl/display/boxBlur.js'
+import { hashBlur } from 'three/examples/jsm/tsl/display/hashBlur.js'
 
 class CheapDOFNode extends TempNode
 {
@@ -14,30 +15,36 @@ class CheapDOFNode extends TempNode
 		super('vec4')
 
 		this.textureNode = textureNode
-		this.strength = uniform(2)
+		this.size = uniform(2)
+		this.separation = uniform(1.25)
+		this.start = uniform(0.2)
+		this.end = uniform(0.5)
+
+		this.repeats = uniform(25)
+		this.amount = uniform(0.003)
 	}
 
 	setup()
 	{
 		const outputNode = Fn( () =>
 		{
-			const strength = uv().y.sub(0.5).abs().mul(this.strength).pow(2)
-
-			// const strength = uv().sub(0.5).length().sub(0.3).max(0).mul(this.strength).pow(2)
-
+			// Strength
+			const strength = uv().y.sub(0.5).abs().smoothstep(this.start, this.end)
 			// return vec4(vec3(strength), 1)
 
-			// return gaussianBlur(this.textureNode, 2, 3)
+			// Hash blur
+			const blurOutput = hashBlur(this.textureNode, strength.mul(this.amount), {
+				repeats: this.repeats,
+				premultipliedAlpha: true
+			})
 
-			// return hashBlur(this.textureNode, 0.01, {
-			// 	repeats: 46,
-			// 	premultipliedAlpha: true
+			// // Box blur
+			// const blurOutput = boxBlur(this.textureNode, {
+			// 	size: this.size,
+			// 	separation: this.separation
 			// })
 
-			const blurOutput = boxBlur(this.textureNode, {
-				size: 1,
-				separation: 2
-			})
+			// return blurOutput
 
 			return mix(this.textureNode, blurOutput, strength)
 		} )()

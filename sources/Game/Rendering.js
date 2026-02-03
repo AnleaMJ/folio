@@ -15,7 +15,7 @@ export class Rendering
         {
             this.debugPanel = this.game.debug.panel.addFolder({
                 title: '📸 Rendering',
-                expanded: false,
+                expanded: true,
             })
         }
     }
@@ -112,10 +112,15 @@ export class Rendering
 
             const blurPanel = this.debugPanel.addFolder({
                 title: 'blur',
-                expanded: false,
+                expanded: true,
             })
 
-            blurPanel.addBinding(this.cheapDOFPass.strength, 'value', { label: 'strength', min: 0, max: 3, step: 0.01 })
+            blurPanel.addBinding(this.cheapDOFPass.start, 'value', { label: 'start', min: 0, max: 0.5, step: 0.001 })
+            blurPanel.addBinding(this.cheapDOFPass.end, 'value', { label: 'end', min: 0, max: 0.5, step: 0.001 })
+            // blurPanel.addBinding(this.cheapDOFPass.size, 'value', { label: 'size', min: 1, max: 5, step: 1 })
+            // blurPanel.addBinding(this.cheapDOFPass.separation, 'value', { label: 'separation', min: 0, max: 5, step: 0.001 })
+            blurPanel.addBinding(this.cheapDOFPass.repeats, 'value', { label: 'repeats', min: 1, max: 100, step: 1 })
+            blurPanel.addBinding(this.cheapDOFPass.amount, 'value', { label: 'amount', min: 0, max: 0.02, step: 0.0001 })
         }
     }
 
