@@ -29,6 +29,8 @@ export class Lightnings
         this.colorA = uniform(color('#ff4c00'))
         this.colorB = uniform(color('#5180ff'))
         this.intensity = uniform(3)
+        this.group = new THREE.Group()
+        this.game.scene.add(this.group)
 
         // Debug
         this.hitChancesBinding = this.game.debug.addManualBinding(
@@ -204,7 +206,7 @@ export class Lightnings
             mesh.rotation.y = rng() * Math.PI * 2
             mesh.count = this.anticipationParticles.count
             mesh.renderOrder = 2
-            this.game.scene.add(mesh)
+            this.group.add(mesh)
 
             return mesh
         }
@@ -300,7 +302,7 @@ export class Lightnings
             mesh.position.copy(coordinates)
             mesh.rotation.y = rng() * Math.PI * 2
             mesh.renderOrder = 2
-            this.game.scene.add(mesh)
+            this.group.add(mesh)
             
             return mesh
         }
@@ -393,7 +395,7 @@ export class Lightnings
             mesh.count = this.explosionParticles.count
             mesh.rotation.y = rng() * Math.PI * 2
             mesh.renderOrder = 2
-            this.game.scene.add(mesh)
+            this.group.add(mesh)
 
             gsap.to(mesh.position, { y: - this.explosionParticles.fallAmplitude, duration: this.explosionParticles.duration })
             
